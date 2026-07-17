@@ -22,9 +22,12 @@ export const COLLECTIONS: Record<CollectionName, string> = {
   // Promotions
   promotions: 'promotions',
   // Organization
-  stores: 'organization',
+  organizations: 'organization',
+  branches: 'organization',
   registers: 'organization',
-  organizationSettings: 'organization',
+  memberships: 'organization',
+  branchAssignments: 'organization',
+  invites: 'organization',
   // Auth
   users: 'auth',
   sessions: 'auth',
@@ -32,4 +35,4 @@ export const COLLECTIONS: Record<CollectionName, string> = {
   auditEntries: 'audit',
 }
 
-export const CURRENT_SCHEMA_VERSION = 1
+export const CURRENT_SCHEMA_VERSION = 2

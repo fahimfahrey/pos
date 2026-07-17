@@ -407,46 +407,181 @@ export function runCrudSuite(getProvider: () => StorageProvider): void {
     })
 
     describe('organization', () => {
-      it('should save and find store by id', async () => {
+      it('should save and find organization by id', async () => {
         await getProvider().withTransaction(async (repos) => {
-          const store = fixtures.makeStore({ id: 'store1' })
-          await repos.organization.saveStore(store)
-          const found = await repos.organization.findStoreById('store1')
-          expect(found).toEqual(store)
+          const org = fixtures.makeOrganization({ id: 'org1' })
+          await repos.organization.saveOrganization(org)
+          const found = await repos.organization.findOrganizationById('org1')
+          expect(found).toEqual(org)
         })
       })
 
-      it('should list all stores', async () => {
+      it('should find organization by slug', async () => {
         await getProvider().withTransaction(async (repos) => {
-          const store = fixtures.makeStore({ id: 'store1' })
-          await repos.organization.saveStore(store)
-          const all = await repos.organization.listStores()
-          expect(all).toContainEqual(store)
+          const org = fixtures.makeOrganization({ id: 'org1', slug: 'unique-slug' })
+          await repos.organization.saveOrganization(org)
+          const found = await repos.organization.findOrganizationBySlug('unique-slug')
+          expect(found).toEqual(org)
         })
       })
 
-      it('should save and list registers for store', async () => {
+      it('should list all organizations', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const org = fixtures.makeOrganization({ id: 'org1' })
+          await repos.organization.saveOrganization(org)
+          const all = await repos.organization.listOrganizations()
+          expect(all).toContainEqual(org)
+        })
+      })
+
+      it('should save and find branch by id', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const branch = fixtures.makeBranch({ id: 'branch1', orgId: 'org1' })
+          await repos.organization.saveBranch(branch)
+          const found = await repos.organization.findBranchById('branch1')
+          expect(found).toEqual(branch)
+        })
+      })
+
+      it('should list branches for organization', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const branch = fixtures.makeBranch({ id: 'branch1', orgId: 'org1' })
+          await repos.organization.saveBranch(branch)
+          const branches = await repos.organization.listBranchesForOrg('org1')
+          expect(branches).toContainEqual(branch)
+        })
+      })
+
+      it('should save and find register by id', async () => {
         await getProvider().withTransaction(async (repos) => {
           const register = fixtures.makeRegister({
             id: 'reg1',
-            storeId: 'store1',
+            orgId: 'org1',
+            branchId: 'branch1',
           })
           await repos.organization.saveRegister(register)
-          const regs = await repos.organization.listRegistersForStore('store1')
-          expect(regs).toContainEqual(register)
+          const found = await repos.organization.findRegisterById('reg1')
+          expect(found).toEqual(register)
         })
       })
 
-      it('should put and get setting', async () => {
+      it('should list registers for branch', async () => {
         await getProvider().withTransaction(async (repos) => {
-          const setting = fixtures.makeOrganizationSetting({
-            id: 'set1',
-            key: 'test-key',
-            value: 'test-value',
+          const register = fixtures.makeRegister({
+            id: 'reg1',
+            orgId: 'org1',
+            branchId: 'branch1',
           })
-          await repos.organization.putSetting(setting)
-          const found = await repos.organization.getSetting('test-key')
-          expect(found).toEqual(setting)
+          await repos.organization.saveRegister(register)
+          const registers = await repos.organization.listRegistersForBranch('branch1')
+          expect(registers).toContainEqual(register)
+        })
+      })
+
+      it('should save and find membership by org and user', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const membership = fixtures.makeMembership({
+            id: 'mem1',
+            orgId: 'org1',
+            userId: 'user1',
+          })
+          await repos.organization.saveMembership(membership)
+          const found = await repos.organization.findMembership('org1', 'user1')
+          expect(found).toEqual(membership)
+        })
+      })
+
+      it('should list memberships for organization', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const membership = fixtures.makeMembership({
+            id: 'mem1',
+            orgId: 'org1',
+            userId: 'user1',
+          })
+          await repos.organization.saveMembership(membership)
+          const memberships = await repos.organization.listMembershipsForOrg('org1')
+          expect(memberships).toContainEqual(membership)
+        })
+      })
+
+      it('should list memberships for user', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const membership = fixtures.makeMembership({
+            id: 'mem1',
+            orgId: 'org1',
+            userId: 'user1',
+          })
+          await repos.organization.saveMembership(membership)
+          const memberships = await repos.organization.listMembershipsForUser('user1')
+          expect(memberships).toContainEqual(membership)
+        })
+      })
+
+      it('should save and list branch assignments for membership', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const assignment = fixtures.makeBranchAssignment({
+            id: 'assign1',
+            orgId: 'org1',
+            membershipId: 'mem1',
+            branchId: 'branch1',
+          })
+          await repos.organization.saveBranchAssignment(assignment)
+          const assignments = await repos.organization.listAssignmentsForMembership('mem1')
+          expect(assignments).toContainEqual(assignment)
+        })
+      })
+
+      it('should list branch assignments for branch', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const assignment = fixtures.makeBranchAssignment({
+            id: 'assign1',
+            orgId: 'org1',
+            membershipId: 'mem1',
+            branchId: 'branch1',
+          })
+          await repos.organization.saveBranchAssignment(assignment)
+          const assignments = await repos.organization.listAssignmentsForBranch('branch1')
+          expect(assignments).toContainEqual(assignment)
+        })
+      })
+
+      it('should delete branch assignment', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const assignment = fixtures.makeBranchAssignment({
+            id: 'assign1',
+            orgId: 'org1',
+            membershipId: 'mem1',
+            branchId: 'branch1',
+          })
+          await repos.organization.saveBranchAssignment(assignment)
+          await repos.organization.deleteBranchAssignment('assign1')
+          const found = (await repos.organization.listAssignmentsForBranch('branch1')).find((a) => a.id === 'assign1')
+          expect(found).toBeUndefined()
+        })
+      })
+
+      it('should save and find invite by token', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const invite = fixtures.makeInvite({
+            id: 'inv1',
+            orgId: 'org1',
+            token: 'unique-token-123',
+          })
+          await repos.organization.saveInvite(invite)
+          const found = await repos.organization.findInviteByToken('unique-token-123')
+          expect(found).toEqual(invite)
+        })
+      })
+
+      it('should list invites for organization', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const invite = fixtures.makeInvite({
+            id: 'inv1',
+            orgId: 'org1',
+          })
+          await repos.organization.saveInvite(invite)
+          const invites = await repos.organization.listInvitesForOrg('org1')
+          expect(invites).toContainEqual(invite)
         })
       })
     })

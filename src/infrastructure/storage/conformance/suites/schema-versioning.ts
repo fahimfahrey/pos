@@ -36,8 +36,9 @@ export function runSchemaSuite(getProvider: () => StorageProvider, adapter: Conf
         expect(version).toBe(3)
 
         // Verify data transformation occurred
-        await driver.transaction(['organizationSettings'], 'readonly', async (tx: any) => {
-          const records = await tx.getAll('organizationSettings')
+        // Verify data transformation occurred
+        await driver.transaction(['organizations'], 'readonly', async (tx: any) => {
+          const records = await tx.getAll('organizations')
           // After v3, records should have derivedField if they had data
           for (const record of records) {
             if (record.testField !== undefined) {
@@ -71,8 +72,9 @@ export function runSchemaSuite(getProvider: () => StorageProvider, adapter: Conf
         expect(version).toBe(1)
 
         // Verify transformations reversed
-        await driver.transaction(['organizationSettings'], 'readonly', async (tx: any) => {
-          const records = await tx.getAll('organizationSettings')
+        // Verify transformations reversed
+        await driver.transaction(['organizations'], 'readonly', async (tx: any) => {
+          const records = await tx.getAll('organizations')
           for (const record of records) {
             // After downgrade, derived fields should be gone
             expect(record.derivedField).toBeUndefined()

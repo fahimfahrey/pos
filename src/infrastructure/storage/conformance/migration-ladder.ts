@@ -11,7 +11,7 @@ export const migrationLadder: SchemaStep[] = [
     description: 'Initialize test collection',
     async migrate(ctx: MigrationContext) {
       // Create test collection implicitly on first use
-      await ctx.createCollection('organizationSettings' as any)
+      await ctx.createCollection('organizations' as any)
     },
     async down(ctx: MigrationContext) {
       // No-op for v1 down (it's the base version)
@@ -19,9 +19,9 @@ export const migrationLadder: SchemaStep[] = [
   },
   {
     version: 2,
-    description: 'Add testField to organizationSettings',
+    description: 'Add testField to organizations',
     async migrate(ctx: MigrationContext) {
-      const coll = ctx.collection<any>('organizationSettings' as any)
+      const coll = ctx.collection<any>('organizations' as any)
       const records = await coll.getAll()
 
       // Add testField to each record
@@ -33,7 +33,7 @@ export const migrationLadder: SchemaStep[] = [
       }
     },
     async down(ctx: MigrationContext) {
-      const coll = ctx.collection<any>('organizationSettings' as any)
+      const coll = ctx.collection<any>('organizations' as any)
       const records = await coll.getAll()
 
       // Remove testField from each record
@@ -45,9 +45,9 @@ export const migrationLadder: SchemaStep[] = [
   },
   {
     version: 3,
-    description: 'Add derivedField to organizationSettings',
+    description: 'Add derivedField to organizations',
     async migrate(ctx: MigrationContext) {
-      const coll = ctx.collection<any>('organizationSettings' as any)
+      const coll = ctx.collection<any>('organizations' as any)
       const records = await coll.getAll()
 
       // Add derivedField based on testField or id
@@ -60,7 +60,7 @@ export const migrationLadder: SchemaStep[] = [
       }
     },
     async down(ctx: MigrationContext) {
-      const coll = ctx.collection<any>('organizationSettings' as any)
+      const coll = ctx.collection<any>('organizations' as any)
       const records = await coll.getAll()
 
       // Remove derivedField from each record

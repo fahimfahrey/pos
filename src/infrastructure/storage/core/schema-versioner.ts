@@ -42,6 +42,20 @@ export const schemaSteps: SchemaStep[] = [
       }
     },
   },
+  {
+    version: 2,
+    description: 'Introduce organization/branch/membership/invite collections',
+    async migrate(ctx: MigrationContext) {
+      // Structural changes: new collections created implicitly on first use
+      // Collections: organizations, branches, memberships, branchAssignments, invites
+      // Removed: stores, organizationSettings
+      // Modified: registers now use branchId instead of storeId
+      const newCollections: CollectionName[] = ['organizations', 'branches', 'memberships', 'branchAssignments', 'invites']
+      for (const name of newCollections) {
+        await ctx.createCollection(name)
+      }
+    },
+  },
 ]
 
 export class SchemaVersioner {

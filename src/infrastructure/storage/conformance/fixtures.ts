@@ -8,7 +8,12 @@ import type { Customer } from '@domains/customers/entities/customer'
 import type { Supplier } from '@domains/purchasing/entities/supplier'
 import type { PurchaseOrder, PurchaseOrderLine } from '@domains/purchasing/entities/purchase-order'
 import type { Promotion } from '@domains/promotions/entities/promotion'
-import type { Store, Register, OrganizationSetting } from '@domains/organization/entities/store'
+import type { Organization } from '@domains/organization/entities/organization'
+import type { Branch } from '@domains/organization/entities/branch'
+import type { Register } from '@domains/organization/entities/register'
+import type { Membership } from '@domains/organization/entities/membership'
+import type { BranchAssignment } from '@domains/organization/entities/branch-assignment'
+import type { Invite } from '@domains/organization/entities/invite'
 import type { User, Session } from '@domains/auth/entities/user'
 import type { AuditEntry } from '@domains/audit/entities/audit-entry'
 
@@ -233,19 +238,40 @@ export function makePromotion(overrides?: FixtureOverrides & Partial<Promotion>)
 
 // Organization
 
-export function makeStore(overrides?: FixtureOverrides & Partial<Store>): Store {
-  const id = overrides?.id ?? 'store-001'
+export function makeOrganization(overrides?: FixtureOverrides & Partial<Organization>): Organization {
+  const id = overrides?.id ?? 'org-001'
   const { id: _id, ...rest } = overrides ?? {}
   return {
     id,
-    name: 'Test Store',
+    name: 'Test Organization',
+    slug: 'test-org',
+    plan: 'free',
+    status: 'active',
+    settings: {},
+    createdAt: FIXED_DATE,
+    updatedAt: FIXED_DATE,
+    ...rest,
+  }
+}
+
+export function makeBranch(overrides?: FixtureOverrides & Partial<Branch>): Branch {
+  const id = overrides?.id ?? 'branch-001'
+  const { id: _id, orgId: _orgId, ...rest } = overrides ?? {}
+  const orgId = overrides?.orgId ?? 'org-001'
+  return {
+    id,
+    orgId,
+    name: 'Test Branch',
+    code: 'BRANCH-001',
     address: '789 Store Lane',
     city: 'Retail City',
     zipCode: '99999',
     country: 'USA',
     phone: '+1987654321',
-    email: 'store@test.com',
+    email: 'branch@test.com',
     timezone: 'America/New_York',
+    settings: {},
+    active: true,
     createdAt: FIXED_DATE,
     updatedAt: FIXED_DATE,
     ...rest,
@@ -254,10 +280,13 @@ export function makeStore(overrides?: FixtureOverrides & Partial<Store>): Store 
 
 export function makeRegister(overrides?: FixtureOverrides & Partial<Register>): Register {
   const id = overrides?.id ?? 'register-001'
-  const { id: _id, ...rest } = overrides ?? {}
+  const { id: _id, orgId: _orgId, ...rest } = overrides ?? {}
+  const orgId = overrides?.orgId ?? 'org-001'
+  const branchId = overrides?.branchId ?? 'branch-001'
   return {
     id,
-    storeId: 'store-001',
+    orgId,
+    branchId,
     number: 'REG-001',
     name: 'Main Register',
     active: true,
@@ -267,13 +296,50 @@ export function makeRegister(overrides?: FixtureOverrides & Partial<Register>): 
   }
 }
 
-export function makeOrganizationSetting(overrides?: FixtureOverrides & Partial<OrganizationSetting>): OrganizationSetting {
-  const id = overrides?.id ?? 'setting-001'
-  const { id: _id, ...rest } = overrides ?? {}
+export function makeMembership(overrides?: FixtureOverrides & Partial<Membership>): Membership {
+  const id = overrides?.id ?? 'membership-001'
+  const { id: _id, orgId: _orgId, ...rest } = overrides ?? {}
+  const orgId = overrides?.orgId ?? 'org-001'
   return {
     id,
-    key: 'currency',
-    value: 'USD',
+    orgId,
+    userId: 'user-001',
+    role: 1, // OWNER
+    status: 'active',
+    createdAt: FIXED_DATE,
+    updatedAt: FIXED_DATE,
+    ...rest,
+  }
+}
+
+export function makeBranchAssignment(overrides?: FixtureOverrides & Partial<BranchAssignment>): BranchAssignment {
+  const id = overrides?.id ?? 'assignment-001'
+  const { id: _id, orgId: _orgId, ...rest } = overrides ?? {}
+  const orgId = overrides?.orgId ?? 'org-001'
+  return {
+    id,
+    orgId,
+    membershipId: 'membership-001',
+    branchId: 'branch-001',
+    createdAt: FIXED_DATE,
+    ...rest,
+  }
+}
+
+export function makeInvite(overrides?: FixtureOverrides & Partial<Invite>): Invite {
+  const id = overrides?.id ?? 'invite-001'
+  const { id: _id, orgId: _orgId, ...rest } = overrides ?? {}
+  const orgId = overrides?.orgId ?? 'org-001'
+  return {
+    id,
+    orgId,
+    email: 'newuser@test.com',
+    role: 3, // MEMBER
+    branchIds: ['branch-001'],
+    token: 'invite-token-abc123',
+    status: 'pending',
+    invitedBy: 'user-001',
+    expiresAt: new Date('2024-02-15'),
     createdAt: FIXED_DATE,
     updatedAt: FIXED_DATE,
     ...rest,
@@ -363,9 +429,12 @@ export async function seedAll(repos: RepositorySet, opts?: { orgId?: string }): 
   await repos.promotions.save(makePromotion({ id: 'promotion-001', orgId }))
 
   // Organization
-  await repos.organization.saveStore(makeStore({ id: 'store-001', orgId }))
-  await repos.organization.saveRegister(makeRegister({ id: 'register-001', storeId: 'store-001', orgId }))
-  await repos.organization.putSetting(makeOrganizationSetting({ id: 'setting-001', orgId }))
+  await repos.organization.saveOrganization(makeOrganization({ id: 'org-001', orgId }))
+  await repos.organization.saveBranch(makeBranch({ id: 'branch-001', orgId }))
+  await repos.organization.saveRegister(makeRegister({ id: 'register-001', orgId, branchId: 'branch-001' }))
+  await repos.organization.saveMembership(makeMembership({ id: 'membership-001', orgId }))
+  await repos.organization.saveBranchAssignment(makeBranchAssignment({ id: 'assignment-001', orgId }))
+  await repos.organization.saveInvite(makeInvite({ id: 'invite-001', orgId }))
 
   // Auth
   await repos.auth.saveUser(makeUser({ id: 'user-001', orgId }))

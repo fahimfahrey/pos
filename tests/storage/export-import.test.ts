@@ -65,7 +65,7 @@ describe('Export/Import', () => {
     expect(exported.format).toBe('pos.storage.export')
     expect(exported.formatVersion).toBe(1)
     expect(exported.engine).toBe('memory')
-    expect(exported.schemaVersion).toBe(1)
+    expect(exported.schemaVersion).toBe(2)
     expect(typeof exported.exportedAt).toBe('string')
     expect(Array.isArray(exported.entities)).toBe(true)
 
