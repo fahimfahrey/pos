@@ -15,6 +15,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:conformance": "vitest run src/infrastructure/storage/conformance",
     "test:e2e": "playwright test",
     "format": "prettier --write ."
   },

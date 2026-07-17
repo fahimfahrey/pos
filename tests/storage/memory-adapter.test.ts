@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { MemoryStorageDriver } from '@infra/storage/adapters/memory/memory-driver'
-import { runStorageConformance } from './conformance'
 import { createStorageProvider } from '@infra/storage'
-
-runStorageConformance('memory', () => new MemoryStorageDriver())
 
 describe('MemoryStorageDriver specific', () => {
   it('should create a storage provider with memory engine', async () => {

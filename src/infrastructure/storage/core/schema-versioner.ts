@@ -13,6 +13,7 @@ export interface SchemaStep {
   version: number
   description: string
   migrate(ctx: MigrationContext): Promise<void>
+  down?(ctx: MigrationContext): Promise<void>
 }
 
 class InternalMigrationContext implements MigrationContext {
@@ -44,20 +45,50 @@ export const schemaSteps: SchemaStep[] = [
 ]
 
 export class SchemaVersioner {
+  constructor(private steps: SchemaStep[] = schemaSteps) {}
+
   async migrate(driver: StorageDriver): Promise<void> {
+    return this.migrateTo(driver, this.steps[this.steps.length - 1]?.version ?? 1)
+  }
+
+  async migrateTo(driver: StorageDriver, targetVersion: number): Promise<void> {
     const currentVersion = await driver.getSchemaVersion()
 
-    const stepsToRun = schemaSteps.filter((step) => step.version > currentVersion)
+    if (currentVersion === targetVersion) {
+      return
+    }
 
-    for (const step of stepsToRun) {
-      try {
-        await driver.transaction([...Object.keys(COLLECTIONS)] as CollectionName[], 'readwrite', async (tx) => {
-          const ctx = new InternalMigrationContext(tx)
-          await step.migrate(ctx)
-          await driver.setSchemaVersion(step.version, tx)
-        })
-      } catch (error) {
-        throw new MigrationError(step.version, step.description, error as Error)
+    if (targetVersion > currentVersion) {
+      // Upgrade: run steps in ascending order
+      const stepsToRun = this.steps.filter((step) => step.version > currentVersion && step.version <= targetVersion)
+
+      for (const step of stepsToRun) {
+        try {
+          await driver.transaction([...Object.keys(COLLECTIONS)] as CollectionName[], 'readwrite', async (tx) => {
+            const ctx = new InternalMigrationContext(tx)
+            await step.migrate(ctx)
+            await driver.setSchemaVersion(step.version, tx)
+          })
+        } catch (error) {
+          throw new MigrationError(step.version, step.description, error as Error)
+        }
+      }
+    } else {
+      // Downgrade: run steps in descending order, calling down()
+      const stepsToRun = this.steps.filter((step) => step.version <= currentVersion && step.version > targetVersion).sort((a, b) => b.version - a.version)
+
+      for (const step of stepsToRun) {
+        try {
+          await driver.transaction([...Object.keys(COLLECTIONS)] as CollectionName[], 'readwrite', async (tx) => {
+            const ctx = new InternalMigrationContext(tx)
+            if (step.down) {
+              await step.down(ctx)
+            }
+            await driver.setSchemaVersion(step.version - 1, tx)
+          })
+        } catch (error) {
+          throw new MigrationError(step.version, step.description, error as Error)
+        }
       }
     }
   }
