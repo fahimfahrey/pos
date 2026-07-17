@@ -1,8 +1,17 @@
 import type { ConformanceAdapter } from './types'
-import { createStorageProvider } from '@infra/storage'
+import { createStorageProvider, registerEngine } from '@infra/storage'
+import { IndexedDBDriver, ephemeralDatabaseName } from '@infra/storage/adapters/indexeddb'
 
 // Ensure engine registry is populated
 import '@infra/storage'
+
+// Register the ephemeral IndexedDB engine for conformance testing
+registerEngine('indexeddb-conformance', () =>
+  new IndexedDBDriver({
+    databaseName: ephemeralDatabaseName(),
+    ephemeral: true,
+  }),
+)
 
 export const defaultConformanceAdapters: ConformanceAdapter[] = [
   {
@@ -13,6 +22,16 @@ export const defaultConformanceAdapters: ConformanceAdapter[] = [
     },
     createProvider: async () => {
       return createStorageProvider({ engine: 'memory' })
+    },
+  },
+  {
+    name: 'indexeddb',
+    engine: 'indexeddb-conformance',
+    capabilities: {
+      serializableTransactions: false,
+    },
+    createProvider: async () => {
+      return createStorageProvider({ engine: 'indexeddb-conformance' })
     },
   },
 ]

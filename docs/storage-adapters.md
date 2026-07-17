@@ -149,9 +149,11 @@ export class IndexedDBDriver implements StorageDriver {
     return this.db?.version ?? 1
   }
 
-  async setSchemaVersion(version: number): Promise<void> {
-    // For IndexedDB, version is managed by open() upgrade handler
-    // This is a no-op for browser databases
+  async setSchemaVersion(version: number, tx?: DriverTransaction): Promise<void> {
+    // Store logical schema version in an internal __meta__ store
+    // Decoupled from the database structural version (managed by open())
+    const metaStore = this.tx.objectStore('__meta__')
+    await this.putInStore(metaStore, { id: 'schemaVersion', value: version })
   }
 
   async close(): Promise<void> {
@@ -303,4 +305,4 @@ to override the env var.
 
 ---
 
-**Questions?** See `src/infrastructure/storage/core/` for the canonical interfaces and `src/infrastructure/storage/adapters/memory/` for a complete reference implementation.
+**Questions?** See `src/infrastructure/storage/core/` for the canonical interfaces, `src/infrastructure/storage/adapters/memory/` for a complete reference implementation, and `src/infrastructure/storage/adapters/indexeddb/README.md` for browser-specific caveats. For backup/restore procedures, see `docs/backup.md`.
