@@ -8,6 +8,7 @@ const serverSchema = z.object({
 })
 const clientSchema = z.object({
   NEXT_PUBLIC_APP_NAME: z.string().min(1).default('POS'),
+  NEXT_PUBLIC_STORAGE_ENGINE: z.string().min(1).default('indexeddb'),
 })
 
 const parsedServer = serverSchema.safeParse(process.env)

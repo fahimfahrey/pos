@@ -1,6 +1,7 @@
 import { ORDER_STATUS } from '@constants/enums/order-status'
 import type { Order, OrderLine, Money } from '@domains/sales/entities/order'
-import type { SalesRepository } from '@domains/sales/repositories/sales-repository'
+// eslint-disable-next-line boundaries/no-unknown
+import type { SalesRepository } from '@domains/sales/repository'
 import type { Clock } from '@shared/ports/clock'
 import type { IdGenerator } from '@shared/ports/id-generator'
 

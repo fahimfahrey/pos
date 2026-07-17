@@ -86,6 +86,7 @@ export default [
         { type: 'actions', pattern: 'src/domains/*/actions/**' },
         { type: 'services', pattern: 'src/domains/*/services/**' },
         { type: 'repositories', pattern: 'src/domains/*/repositories/**' },
+        { type: 'repositories', pattern: 'src/domains/*/repository.ts' },
         { type: 'entities', pattern: 'src/domains/*/entities/**' },
         { type: 'infrastructure', pattern: 'src/infrastructure/**' },
         { type: 'shared', pattern: 'src/shared/**' },

@@ -1,10 +1,8 @@
+import type { Money } from '@shared/types/money'
 import { ORDER_STATUS, type OrderStatus } from '@constants/enums/order-status'
 import { PAYMENT_METHOD, type PaymentMethod } from '@constants/enums/payment-method'
 
-export interface Money {
-  amount: number
-  currency: string
-}
+export type { Money }
 
 export interface OrderLine {
   id: string

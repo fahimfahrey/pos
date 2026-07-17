@@ -1,5 +1,6 @@
 import type { Order } from '@domains/sales/entities/order'
-import type { SalesRepository } from '@domains/sales/repositories/sales-repository'
+// eslint-disable-next-line boundaries/no-unknown
+import type { SalesRepository } from '@domains/sales/repository'
 import { ORDER_STATUS } from '@constants/enums/order-status'
 import { db } from '@infra/db/dexie-db'
 
@@ -15,5 +16,16 @@ export class DexieSalesRepository implements SalesRepository {
 
   async listOpen(): Promise<Order[]> {
     return db.orders.where('status').equals(ORDER_STATUS.OPEN).toArray()
+  }
+
+  async listByStatus(status: string): Promise<Order[]> {
+    return db.orders.where('status').equals(status).toArray()
+  }
+
+  async listByDateRange(from: Date, to: Date): Promise<Order[]> {
+    return db.orders
+      .where('createdAt')
+      .between(from, to, true, true)
+      .toArray()
   }
 }

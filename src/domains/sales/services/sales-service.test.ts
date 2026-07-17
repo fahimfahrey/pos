@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { SalesService } from './sales-service'
 import { ORDER_STATUS } from '@constants/enums/order-status'
-import type { SalesRepository } from '@domains/sales/repositories/sales-repository'
+import type { SalesRepository } from '@domains/sales/repository'
 import type { Clock } from '@shared/ports/clock'
 import type { IdGenerator } from '@shared/ports/id-generator'
 
@@ -21,6 +21,8 @@ describe('SalesService', () => {
       }),
       findById: vi.fn(),
       listOpen: vi.fn(),
+      listByStatus: vi.fn(),
+      listByDateRange: vi.fn(),
     }
 
     mockClock = {

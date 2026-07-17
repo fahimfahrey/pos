@@ -1,5 +1,6 @@
 import type { Product } from '@domains/inventory/entities/product'
-import type { InventoryRepository } from '@domains/inventory/repositories/inventory-repository'
+// eslint-disable-next-line boundaries/no-unknown
+import type { InventoryRepository } from '@domains/inventory/repository'
 import type { Clock } from '@shared/ports/clock'
 import type { IdGenerator } from '@shared/ports/id-generator'
 

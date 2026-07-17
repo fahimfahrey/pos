@@ -1,0 +1,40 @@
+// eslint-disable-next-line boundaries/no-unknown
+import type { PaymentsRepository } from '@domains/payments/repository'
+ 
+import type { Payment, Refund } from '@domains/payments/entities/payment'
+import { Collection } from '../collection'
+import type { DriverTransaction } from '../driver'
+
+export class CorePaymentsRepository implements PaymentsRepository {
+  private paymentCollection: Collection<Payment>
+  private refundCollection: Collection<Refund>
+
+  constructor(tx: DriverTransaction) {
+    this.paymentCollection = new Collection<Payment>(tx, 'payments')
+    this.refundCollection = new Collection<Refund>(tx, 'refunds')
+  }
+
+  async savePayment(payment: Payment): Promise<void> {
+    await this.paymentCollection.put(payment)
+  }
+
+  async findPaymentById(id: string): Promise<Payment | null> {
+    return (await this.paymentCollection.get(id)) ?? null
+  }
+
+  async listPaymentsForOrder(orderId: string): Promise<Payment[]> {
+    return this.paymentCollection.filter((p) => p.orderId === orderId)
+  }
+
+  async saveRefund(refund: Refund): Promise<void> {
+    await this.refundCollection.put(refund)
+  }
+
+  async listRefundsForPayment(paymentId: string): Promise<Refund[]> {
+    return this.refundCollection.filter((r) => r.paymentId === paymentId)
+  }
+
+  async listPaymentsByDateRange(from: Date, to: Date): Promise<Payment[]> {
+    return this.paymentCollection.filter((p) => p.createdAt >= from && p.createdAt <= to)
+  }
+}
