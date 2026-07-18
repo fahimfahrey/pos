@@ -85,6 +85,9 @@ export const COLLECTION_INDEXES: Record<CollectionName, string> = {
 
   // Audit
   auditEntries: 'id, entityType, entityId, actorId, createdAt',
+
+  // System Enums
+  systemEnumValues: 'id, orgId, registryKey, [orgId+registryKey], value',
 }
 
 /**
@@ -116,5 +119,9 @@ export function buildVersionChain(db: Dexie): void {
     branchAssignments: 'id, orgId, branchId, membershipId, [membershipId+branchId]', // new
     invites: 'id, orgId, token, email, status', // new
     [META_STORE]: 'id', // preserved
+  })
+  // Version 3: add systemEnumValues collection for org-level runtime enum extensibility
+  db.version(3).stores({
+    systemEnumValues: 'id, orgId, registryKey, [orgId+registryKey], value',
   })
 }

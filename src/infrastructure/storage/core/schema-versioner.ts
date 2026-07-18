@@ -56,6 +56,13 @@ export const schemaSteps: SchemaStep[] = [
       }
     },
   },
+  {
+    version: 3,
+    description: 'Introduce systemEnumValues collection for org-level runtime enum extensibility',
+    async migrate(ctx: MigrationContext) {
+      await ctx.createCollection('systemEnumValues' as CollectionName)
+    },
+  },
 ]
 
 export class SchemaVersioner {

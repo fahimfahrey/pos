@@ -715,3 +715,60 @@ export function runCrudSuite(getProvider: () => StorageProvider): void {
     })
   })
 }
+
+    describe('system-enums', () => {
+      it('should save and find system enum value by id', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const value = fixtures.makeSystemEnumValue({ id: 'enum1' })
+          await repos.systemEnums.save(value)
+          const found = await repos.systemEnums.findById('enum1')
+          expect(found).toEqual(value)
+        })
+      })
+
+      it('should return null for missing system enum value', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const found = await repos.systemEnums.findById('missing')
+          expect(found).toBeNull()
+        })
+      })
+
+      it('should list system enum values for org', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const value = fixtures.makeSystemEnumValue({ id: 'enum1', orgId: 'org1' })
+          await repos.systemEnums.save(value)
+          const values = await repos.systemEnums.listForOrg('org1')
+          expect(values).toContainEqual(value)
+        })
+      })
+
+      it('should list system enum values for org and key', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const value1 = fixtures.makeSystemEnumValue({
+            id: 'enum1',
+            orgId: 'org1',
+            registryKey: 'paymentMethod',
+          })
+          const value2 = fixtures.makeSystemEnumValue({
+            id: 'enum2',
+            orgId: 'org1',
+            registryKey: 'discountType',
+          })
+          await repos.systemEnums.save(value1)
+          await repos.systemEnums.save(value2)
+          const values = await repos.systemEnums.listForOrgAndKey('org1', 'paymentMethod')
+          expect(values).toContainEqual(value1)
+          expect(values).not.toContainEqual(value2)
+        })
+      })
+
+      it('should delete system enum value', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const value = fixtures.makeSystemEnumValue({ id: 'enum1', orgId: 'org1' })
+          await repos.systemEnums.save(value)
+          await repos.systemEnums.delete('enum1')
+          const found = await repos.systemEnums.findById('enum1')
+          expect(found).toBeNull()
+        })
+      })
+    })

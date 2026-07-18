@@ -18,6 +18,8 @@ import type { OrganizationRepository } from '@domains/organization/repository'
 import type { AuthRepository } from '@domains/auth/repository'
 // eslint-disable-next-line boundaries/no-unknown
 import type { AuditRepository } from '@domains/audit/repository'
+// eslint-disable-next-line boundaries/no-unknown
+import type { SystemEnumValueRepository } from '@domains/system-enums/repository'
 
 export interface RepositorySet {
   catalog: CatalogRepository
@@ -30,6 +32,7 @@ export interface RepositorySet {
   organization: OrganizationRepository
   auth: AuthRepository
   audit: AuditRepository
+  systemEnums: SystemEnumValueRepository
 }
 
 export interface RepositoryContext {
@@ -43,4 +46,5 @@ export interface RepositoryContext {
   organization: OrganizationRepository
   auth: AuthRepository
   audit: AuditRepository
+  systemEnums: SystemEnumValueRepository
 }

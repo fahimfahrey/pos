@@ -24,6 +24,7 @@ export {
   makeUser,
   makeSession,
   makeAuditEntry,
+  makeSystemEnumValue,
   seedAll,
 } from './fixtures'
 export { migrationLadder } from './migration-ladder'

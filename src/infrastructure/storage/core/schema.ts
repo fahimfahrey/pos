@@ -33,6 +33,8 @@ export const COLLECTIONS: Record<CollectionName, string> = {
   sessions: 'auth',
   // Audit
   auditEntries: 'audit',
+  // System Enums
+  systemEnumValues: 'system-enums',
 }
 
-export const CURRENT_SCHEMA_VERSION = 2
+export const CURRENT_SCHEMA_VERSION = 3

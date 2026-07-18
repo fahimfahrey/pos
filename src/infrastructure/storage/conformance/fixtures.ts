@@ -16,6 +16,7 @@ import type { BranchAssignment } from '@domains/organization/entities/branch-ass
 import type { Invite } from '@domains/organization/entities/invite'
 import type { User, Session } from '@domains/auth/entities/user'
 import type { AuditEntry } from '@domains/audit/entities/audit-entry'
+import type { SystemEnumValue } from '@domains/system-enums/entities/system-enum-value'
 
 const FIXED_DATE = new Date('2024-01-15T10:30:00Z')
 
@@ -396,6 +397,26 @@ export function makeAuditEntry(overrides?: FixtureOverrides & Partial<AuditEntry
   }
 }
 
+// System Enums
+
+export function makeSystemEnumValue(overrides?: FixtureOverrides & Partial<SystemEnumValue>): SystemEnumValue {
+  const id = overrides?.id ?? 'enum-value-001'
+  const { id: _id, orgId: _orgId, ...rest } = overrides ?? {}
+  const orgId = overrides?.orgId ?? 'org-001'
+  return {
+    id,
+    orgId,
+    registryKey: 'paymentMethod',
+    value: 'bkash',
+    label: 'bKash',
+    active: true,
+    createdAt: FIXED_DATE,
+    updatedAt: FIXED_DATE,
+    createdBy: 'user-001',
+    ...rest,
+  }
+}
+
 /**
  * Seed all entity types into the repository set.
  * Creates one instance of each entity type with optional orgId for tenant scoping.
@@ -442,4 +463,7 @@ export async function seedAll(repos: RepositorySet, opts?: { orgId?: string }): 
 
   // Audit
   await repos.audit.append(makeAuditEntry({ id: 'audit-001', orgId }))
+
+  // System Enums
+  await repos.systemEnums.save(makeSystemEnumValue({ id: 'enum-value-001', orgId }))
 }
