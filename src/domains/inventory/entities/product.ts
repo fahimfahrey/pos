@@ -1,8 +1,3 @@
-export interface StockLevel {
-  quantity: number
-  unit: string
-}
-
 export interface Product {
   id: string
   name: string
@@ -11,7 +6,10 @@ export interface Product {
     amount: number
     currency: string
   }
-  stock: StockLevel
+  stock: {
+    quantity: number
+    unit: string
+  }
   createdAt: Date
   updatedAt: Date
 }

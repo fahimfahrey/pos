@@ -57,6 +57,7 @@ export class MemoryStorageDriver implements StorageDriver {
   readonly engine = 'memory'
   private store = new Map<CollectionName, Map<string, unknown>>()
   private version = 0
+  private writeQueue: Promise<void> = Promise.resolve()
 
   async open(schema: SchemaDescriptor): Promise<void> {
     // Initialize empty collections for the schema
@@ -72,10 +73,31 @@ export class MemoryStorageDriver implements StorageDriver {
     mode: TxMode,
     work: (tx: DriverTransaction) => Promise<T>,
   ): Promise<T> {
-    // For in-memory, we stage a snapshot of touched collections
+    if (mode !== 'readwrite') {
+      return this.runTransaction(collections, mode, work)
+    }
+
+    const previous = this.writeQueue
+    let release!: () => void
+    this.writeQueue = new Promise((r) => {
+      release = r
+    })
+
+    try {
+      await previous
+      return await this.runTransaction(collections, mode, work)
+    } finally {
+      release()
+    }
+  }
+
+  private async runTransaction<T>(
+    collections: CollectionName[],
+    mode: TxMode,
+    work: (tx: DriverTransaction) => Promise<T>,
+  ): Promise<T> {
     const staged = new Map<CollectionName, Map<string, unknown>>()
 
-    // Clone touched collections into staging area
     for (const collection of collections) {
       const original = this.store.get(collection)
       if (original) {
@@ -90,10 +112,8 @@ export class MemoryStorageDriver implements StorageDriver {
     }
 
     const tx = new InMemoryTransaction(staged)
-
     const result = await work(tx)
 
-    // On success, swap staged back to live store
     if (mode === 'readwrite') {
       for (const collection of collections) {
         const staged_coll = staged.get(collection)

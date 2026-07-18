@@ -1,6 +1,9 @@
 import type { RepositorySet } from '@infra/storage'
-import type { Product, StockLevel } from '@domains/inventory/entities/product'
+import type { Product } from '@domains/inventory/entities/product'
+import type { StockLevel } from '@domains/inventory/entities/stock-level'
 import type { StockMovement } from '@domains/inventory/entities/stock-movement'
+import type { StocktakeSession } from '@domains/inventory/entities/stocktake-session'
+import type { StocktakeCount } from '@domains/inventory/entities/stocktake-count'
 import type { Order, OrderLine } from '@domains/sales/entities/order'
 import type { Category, CatalogItem } from '@domains/catalog/entities/catalog-item'
 import type { Payment, Refund } from '@domains/payments/entities/payment'
@@ -36,7 +39,7 @@ export function makeProduct(overrides?: FixtureOverrides & Partial<Product>): Pr
     name: 'Test Product',
     sku: overrides?.sku ?? `SKU-${id}`,
     price: { amount: 99.99, currency: 'USD' },
-    stock: { quantity: 100, unit: 'unit' } as StockLevel,
+    stock: { quantity: 100, unit: 'unit' },
     createdAt: FIXED_DATE,
     updatedAt: FIXED_DATE,
     ...rest,
@@ -45,15 +48,64 @@ export function makeProduct(overrides?: FixtureOverrides & Partial<Product>): Pr
 
 export function makeStockMovement(overrides?: FixtureOverrides & Partial<StockMovement>): StockMovement {
   const id = overrides?.id ?? 'movement-001'
-  const { id: _id, ...rest } = overrides ?? {}
+  const orgId = overrides?.orgId ?? 'org-001'
+  const { id: _id, orgId: _orgId, ...rest } = overrides ?? {}
   return {
     id,
-    productId: 'product-001',
+    orgId,
+    branchId: 'branch-001',
+    variantId: 'variant-001',
     quantity: 10,
-    movementType: 'in',
+    movementType: 'adjustment',
     reason: 'Stock adjustment',
     createdAt: FIXED_DATE,
     createdBy: 'admin',
+    ...rest,
+  }
+}
+
+export function makeStockLevel(overrides?: FixtureOverrides & Partial<StockLevel>): StockLevel {
+  const id = overrides?.id ?? 'level-001'
+  const orgId = overrides?.orgId ?? 'org-001'
+  const { id: _id, orgId: _orgId, ...rest } = overrides ?? {}
+  return {
+    id,
+    orgId,
+    branchId: 'branch-001',
+    variantId: 'variant-001',
+    quantity: 100,
+    updatedAt: FIXED_DATE,
+    ...rest,
+  }
+}
+
+export function makeStocktakeSession(overrides?: FixtureOverrides & Partial<StocktakeSession>): StocktakeSession {
+  const id = overrides?.id ?? 'session-001'
+  const orgId = overrides?.orgId ?? 'org-001'
+  const { id: _id, orgId: _orgId, ...rest } = overrides ?? {}
+  return {
+    id,
+    orgId,
+    branchId: 'branch-001',
+    status: 'open',
+    createdBy: 'admin',
+    createdAt: FIXED_DATE,
+    updatedAt: FIXED_DATE,
+    ...rest,
+  }
+}
+
+export function makeStocktakeCount(overrides?: FixtureOverrides & Partial<StocktakeCount>): StocktakeCount {
+  const id = overrides?.id ?? 'count-001'
+  const { id: _id, ...rest } = overrides ?? {}
+  return {
+    id,
+    sessionId: 'session-001',
+    variantId: 'variant-001',
+    countedQuantity: 95,
+    expectedQuantityAtCount: 100,
+    countedBy: 'admin',
+    countedAt: FIXED_DATE,
     ...rest,
   }
 }
@@ -426,7 +478,7 @@ export async function seedAll(repos: RepositorySet, opts?: { orgId?: string }): 
 
   // Inventory
   await repos.inventory.save(makeProduct({ id: 'product-001', orgId }))
-  await repos.inventory.recordMovement(makeStockMovement({ id: 'movement-001', productId: 'product-001', orgId }))
+  await repos.inventory.appendMovement(makeStockMovement({ id: 'movement-001', orgId }))
 
   // Sales
   await repos.sales.save(makeOrder({ id: 'order-001', orgId }))

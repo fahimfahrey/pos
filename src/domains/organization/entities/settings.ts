@@ -49,6 +49,10 @@ export interface SecuritySettings {
   authWindowMinutes: number
 }
 
+export interface InventorySettings {
+  allowOversell: boolean
+}
+
 export interface ResolvedSettings {
   currency: string
   locale: string
@@ -61,6 +65,7 @@ export interface ResolvedSettings {
   barcodeSymbology: BarcodeSymbology
   loyalty: LoyaltyRules
   security: SecuritySettings
+  inventory: InventorySettings
 }
 
 export type OrganizationSettings = Partial<ResolvedSettings>
@@ -98,5 +103,8 @@ export const DEFAULT_SETTINGS: ResolvedSettings = {
     pinReauthTimeoutMinutes: 15,
     maxAuthAttempts: 5,
     authWindowMinutes: 15,
+  },
+  inventory: {
+    allowOversell: false,
   },
 }

@@ -18,7 +18,7 @@ export const defaultConformanceAdapters: ConformanceAdapter[] = [
     name: 'memory',
     engine: 'memory',
     capabilities: {
-      serializableTransactions: false,
+      serializableTransactions: true,
     },
     createProvider: async () => {
       return createStorageProvider({ engine: 'memory' })
@@ -28,7 +28,7 @@ export const defaultConformanceAdapters: ConformanceAdapter[] = [
     name: 'indexeddb',
     engine: 'indexeddb-conformance',
     capabilities: {
-      serializableTransactions: false,
+      serializableTransactions: true,
     },
     createProvider: async () => {
       return createStorageProvider({ engine: 'indexeddb-conformance' })

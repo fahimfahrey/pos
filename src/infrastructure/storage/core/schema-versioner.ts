@@ -63,6 +63,27 @@ export const schemaSteps: SchemaStep[] = [
       await ctx.createCollection('systemEnumValues' as CollectionName)
     },
   },
+  {
+    version: 4,
+    description: 'Replace catalogItems with products/productVariants/priceLists/priceListEntries, add orgId to categories',
+    async migrate(ctx: MigrationContext) {
+      // New collections: catalogProducts, catalogProductVariants, priceLists, priceListEntries
+      await ctx.createCollection('catalogProducts' as CollectionName)
+      await ctx.createCollection('catalogProductVariants' as CollectionName)
+      await ctx.createCollection('priceLists' as CollectionName)
+      await ctx.createCollection('priceListEntries' as CollectionName)
+    },
+  },
+  {
+    version: 5,
+    description: 'Add stock levels, stocktake sessions/counts, and reindex stock movements',
+    async migrate(ctx: MigrationContext) {
+      // New collections: stockLevels, stocktakeSessions, stocktakeCounts
+      await ctx.createCollection('stockLevels' as CollectionName)
+      await ctx.createCollection('stocktakeSessions' as CollectionName)
+      await ctx.createCollection('stocktakeCounts' as CollectionName)
+    },
+  },
 ]
 
 export class SchemaVersioner {

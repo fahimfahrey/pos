@@ -48,10 +48,11 @@ export function runCrudSuite(getProvider: () => StorageProvider): void {
           await repos.inventory.save(product)
           const movement = fixtures.makeStockMovement({
             id: 'm1',
-            productId: 'p1',
+            orgId: 'org-001',
+            variantId: 'v1',
           })
-          await repos.inventory.recordMovement(movement)
-          const movements = await repos.inventory.listMovements('p1')
+          await repos.inventory.appendMovement(movement)
+          const movements = await repos.inventory.listMovementsForVariant('org-001', 'branch-001', 'v1')
           expect(movements).toContainEqual(movement)
         })
       })

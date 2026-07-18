@@ -6,6 +6,9 @@ export { normalizeExport } from './normalize'
 export {
   makeProduct,
   makeStockMovement,
+  makeStockLevel,
+  makeStocktakeSession,
+  makeStocktakeCount,
   makeOrder,
   makeCategory,
   makeCatalogItem,

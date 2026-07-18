@@ -11,7 +11,10 @@ const V1_STORES_SPEC: Record<string, string> = {
   catalogItems: 'id, sku, barcode, categoryId, active, createdAt',
   // Inventory
   products: 'id, sku, createdAt, orgId, [orgId+branchId]',
-  stockMovements: 'id, productId, createdAt',
+  stockMovements: 'id, orgId, branchId, variantId, movementType, createdAt, reference',
+  stockLevels: 'id, orgId, branchId, variantId, [branchId+variantId]',
+  stocktakeSessions: 'id, orgId, branchId, status',
+  stocktakeCounts: 'id, sessionId, variantId, [sessionId+variantId]',
   // Sales
   orders: 'id, status, createdAt, orgId, shiftId, [orgId+branchId]',
   orderLines: 'id, orderId',
@@ -53,7 +56,10 @@ export const COLLECTION_INDEXES: Record<CollectionName, string> = {
 
   // Inventory
   products: 'id, sku, createdAt, orgId, [orgId+branchId]',
-  stockMovements: 'id, productId, createdAt',
+  stockMovements: 'id, orgId, branchId, variantId, movementType, createdAt, reference',
+  stockLevels: 'id, orgId, branchId, variantId, [branchId+variantId]',
+  stocktakeSessions: 'id, orgId, branchId, status',
+  stocktakeCounts: 'id, sessionId, variantId, [sessionId+variantId]',
 
   // Sales
   orders: 'id, status, createdAt, orgId, shiftId, [orgId+branchId]',
@@ -101,6 +107,13 @@ export function buildStoresSpec(): Record<string, string> {
     ...COLLECTION_INDEXES,
     [META_STORE]: 'id',
   }
+  // Version 5: update stockMovements indexes and add stock level/stocktake collections
+  db.version(5).stores({
+    stockMovements: 'id, orgId, branchId, variantId, movementType, createdAt, reference', // re-indexed
+    stockLevels: 'id, orgId, branchId, variantId, [branchId+variantId]', // new
+    stocktakeSessions: 'id, orgId, branchId, status', // new
+    stocktakeCounts: 'id, sessionId, variantId, [sessionId+variantId]', // new
+  })
 }
 
 /**
