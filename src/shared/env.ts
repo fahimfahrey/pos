@@ -5,10 +5,12 @@ const serverSchema = z.object({
   LOG_LEVEL: z
     .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
     .default('info'),
+  AUTH_SECRET: z.string().min(32).default('dev-secret-this-must-be-changed-in-production-12345'),
 })
 const clientSchema = z.object({
   NEXT_PUBLIC_APP_NAME: z.string().min(1).default('POS'),
   NEXT_PUBLIC_STORAGE_ENGINE: z.string().min(1).default('indexeddb'),
+  NEXT_PUBLIC_AUTH_MODE: z.enum(['server', 'local']).default('server'),
 })
 
 const parsedServer = serverSchema.safeParse(process.env)

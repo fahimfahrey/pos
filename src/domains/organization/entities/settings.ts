@@ -42,6 +42,13 @@ export interface LoyaltyRules {
   rewardThreshold?: number
 }
 
+export interface SecuritySettings {
+  sessionTimeoutMinutes: number
+  pinReauthTimeoutMinutes: number
+  maxAuthAttempts: number
+  authWindowMinutes: number
+}
+
 export interface ResolvedSettings {
   currency: string
   locale: string
@@ -53,6 +60,7 @@ export interface ResolvedSettings {
   businessHours: BusinessHours
   barcodeSymbology: BarcodeSymbology
   loyalty: LoyaltyRules
+  security: SecuritySettings
 }
 
 export type OrganizationSettings = Partial<ResolvedSettings>
@@ -84,5 +92,11 @@ export const DEFAULT_SETTINGS: ResolvedSettings = {
   barcodeSymbology: 'ean13',
   loyalty: {
     enabled: false,
+  },
+  security: {
+    sessionTimeoutMinutes: 480,
+    pinReauthTimeoutMinutes: 15,
+    maxAuthAttempts: 5,
+    authWindowMinutes: 15,
   },
 }

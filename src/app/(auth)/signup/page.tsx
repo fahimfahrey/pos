@@ -1,20 +1,17 @@
 'use client'
 
 import { useActionState } from 'react'
-import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { logInAction } from '@domains/auth/actions/log-in'
+import { signUpAction } from '@domains/auth/actions/sign-up'
 
-export default function LoginPage() {
-  const searchParams = useSearchParams()
-  const returnTo = searchParams.get('returnTo') || ''
-  const [state, action, pending] = useActionState(logInAction, {})
+export default function SignupPage() {
+  const [state, action, pending] = useActionState(signUpAction, {})
 
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h1 className="text-2xl font-bold">Sign In</h1>
-        <p className="text-gray-600">Enter your credentials to continue</p>
+        <h1 className="text-2xl font-bold">Create Account</h1>
+        <p className="text-gray-600">Sign up to get started</p>
       </div>
 
       <form action={action} className="space-y-4">
@@ -27,6 +24,22 @@ export default function LoginPage() {
             {state.error}
           </div>
         )}
+
+        <div>
+          <label htmlFor="username" className="block text-sm font-medium mb-2">
+            Username
+          </label>
+          <input
+            id="username"
+            name="username"
+            type="text"
+            placeholder="john_doe"
+            required
+            minLength={3}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-visible:outline-none"
+            disabled={pending}
+          />
+        </div>
 
         <div>
           <label htmlFor="email" className="block text-sm font-medium mb-2">
@@ -53,14 +66,11 @@ export default function LoginPage() {
             type="password"
             placeholder="••••••••"
             required
+            minLength={8}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-visible:outline-none"
             disabled={pending}
           />
         </div>
-
-        {returnTo && (
-          <input type="hidden" name="returnTo" value={returnTo} />
-        )}
 
         <button
           type="submit"
@@ -68,19 +78,14 @@ export default function LoginPage() {
           className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
           aria-busy={pending}
         >
-          {pending ? 'Signing in...' : 'Sign In'}
+          {pending ? 'Creating account...' : 'Sign Up'}
         </button>
       </form>
 
-      <div className="text-center text-sm space-y-2">
-        <p>
-          <span className="text-gray-600">Don't have an account? </span>
-          <Link href="/signup" className="text-blue-600 hover:underline">
-            Sign up
-          </Link>
-        </p>
-        <Link href="/" className="text-blue-600 hover:underline block">
-          Back to home
+      <div className="text-center text-sm">
+        <span className="text-gray-600">Already have an account? </span>
+        <Link href="/login" className="text-blue-600 hover:underline">
+          Sign in
         </Link>
       </div>
     </div>

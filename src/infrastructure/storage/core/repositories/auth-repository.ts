@@ -26,6 +26,10 @@ export class CoreAuthRepository implements AuthRepository {
     return this.userCollection.find((u) => u.username === username)
   }
 
+  async findUserByEmail(email: string): Promise<User | null> {
+    return this.userCollection.find((u) => u.email === email)
+  }
+
   async listUsers(): Promise<User[]> {
     return this.userCollection.getAll()
   }

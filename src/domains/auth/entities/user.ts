@@ -9,6 +9,7 @@ export interface User {
   roles: string[]
   createdAt: Date
   updatedAt: Date
+  pinHash?: string
 }
 
 export interface Session {
