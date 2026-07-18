@@ -38,3 +38,16 @@ export async function requireOwnerMembership(
   requireRole(membership.role, MembershipRole.OWNER)
   return membership
 }
+
+
+export async function requireAdminMembership(
+  orgRepo: OrganizationRepository,
+  orgId: string,
+  userId: string,
+): Promise<Membership> {
+  const membership = await orgRepo.findMembership(orgId, userId)
+  if (!membership) throw new ForbiddenError('No membership in this organization')
+  assertActive(membership)
+  requireRole(membership.role, MembershipRole.ADMIN)
+  return membership
+}

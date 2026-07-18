@@ -45,8 +45,11 @@ const V1_STORES_SPEC: Record<string, string> = {
  */
 export const COLLECTION_INDEXES: Record<CollectionName, string> = {
   // Catalog
-  categories: 'id, active',
-  catalogItems: 'id, sku, barcode, categoryId, active, createdAt',
+  categories: 'id, orgId, active',
+  catalogProducts: 'id, orgId, categoryId, active, name',
+  catalogProductVariants: 'id, orgId, productId, sku, barcode, active, [orgId+sku], [orgId+barcode]',
+  priceLists: 'id, orgId, active, effectiveFrom',
+  priceListEntries: 'id, priceListId, variantId, [priceListId+variantId]',
 
   // Inventory
   products: 'id, sku, createdAt, orgId, [orgId+branchId]',
@@ -123,5 +126,14 @@ export function buildVersionChain(db: Dexie): void {
   // Version 3: add systemEnumValues collection for org-level runtime enum extensibility
   db.version(3).stores({
     systemEnumValues: 'id, orgId, registryKey, [orgId+registryKey], value',
+  })
+  // Version 4: replace catalogItems with products/productVariants/priceLists/priceListEntries, add orgId to categories
+  db.version(4).stores({
+    catalogItems: null, // drop
+    categories: 'id, orgId, active', // re-index
+    catalogProducts: 'id, orgId, categoryId, active, name', // new
+    catalogProductVariants: 'id, orgId, productId, sku, barcode, active, [orgId+sku], [orgId+barcode]', // new
+    priceLists: 'id, orgId, active, effectiveFrom', // new
+    priceListEntries: 'id, priceListId, variantId, [priceListId+variantId]', // new
   })
 }

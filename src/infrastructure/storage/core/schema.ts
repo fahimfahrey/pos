@@ -3,7 +3,10 @@ import type { CollectionName } from './driver'
 export const COLLECTIONS: Record<CollectionName, string> = {
   // Catalog
   categories: 'catalog',
-  catalogItems: 'catalog',
+  catalogProducts: 'catalog',
+  catalogProductVariants: 'catalog',
+  priceLists: 'catalog',
+  priceListEntries: 'catalog',
   // Inventory
   products: 'inventory',
   stockMovements: 'inventory',
@@ -37,4 +40,4 @@ export const COLLECTIONS: Record<CollectionName, string> = {
   systemEnumValues: 'system-enums',
 }
 
-export const CURRENT_SCHEMA_VERSION = 3
+export const CURRENT_SCHEMA_VERSION = 4

@@ -31,4 +31,13 @@ export class Collection<T extends { id: string }> {
     const all = await this.getAll()
     return all.filter(pred)
   }
+
+  async findByIndex(index: string, key: unknown, fallbackPred: (v: T) => boolean): Promise<T | null> {
+    if (this.tx.getByIndex) {
+      const result = await this.tx.getByIndex<T>(this.name, index, key)
+      return result ?? null
+    }
+    const all = await this.getAll()
+    return all.find(fallbackPred) ?? null
+  }
 }

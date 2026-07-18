@@ -10,6 +10,7 @@ export interface DriverTransaction {
   getAll<T>(collection: CollectionName): Promise<T[]>
   put<T extends { id: string }>(collection: CollectionName, value: T): Promise<void>
   delete(collection: CollectionName, id: string): Promise<void>
+  getByIndex?<T>(collection: CollectionName, index: string, key: unknown): Promise<T | undefined>
 }
 
 export type TxMode = 'readonly' | 'readwrite'

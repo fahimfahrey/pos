@@ -56,6 +56,22 @@ class IndexedDBTransaction implements DriverTransaction {
       throw mapIndexedDbError(err)
     }
   }
+
+  async getByIndex<T>(
+    collection: CollectionName,
+    index: string,
+    key: unknown,
+  ): Promise<T | undefined> {
+    try {
+      return (await this.dexieTx
+        .table(collection)
+        .where(index)
+        .equals(key)
+        .first()) as T | undefined
+    } catch (err) {
+      throw mapIndexedDbError(err)
+    }
+  }
 }
 
 /**
