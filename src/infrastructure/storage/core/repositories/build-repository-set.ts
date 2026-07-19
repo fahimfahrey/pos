@@ -11,6 +11,7 @@ import { CoreOrganizationRepository } from './organization-repository'
 import { CoreAuthRepository } from './auth-repository'
 import { CoreAuditRepository } from './audit-repository'
 import { CoreSystemEnumValueRepository } from './system-enum-repository'
+import { CoreReportingRepository } from './reporting-repository'
 
 export function buildRepositorySet(tx: DriverTransaction): RepositorySet {
   return {
@@ -25,5 +26,6 @@ export function buildRepositorySet(tx: DriverTransaction): RepositorySet {
     auth: new CoreAuthRepository(tx),
     audit: new CoreAuditRepository(tx),
     systemEnums: new CoreSystemEnumValueRepository(tx),
+    reporting: new CoreReportingRepository(tx),
   }
 }

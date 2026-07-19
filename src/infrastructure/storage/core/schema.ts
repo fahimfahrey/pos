@@ -35,6 +35,8 @@ export const COLLECTIONS: Record<CollectionName, string> = {
   // Promotions
   promotions: 'promotions',
   promotionRedemptions: 'promotions',
+  // Reporting
+  zReports: 'reporting',
   // Organization
   organizations: 'organization',
   branches: 'organization',
@@ -51,4 +53,4 @@ export const COLLECTIONS: Record<CollectionName, string> = {
   systemEnumValues: 'system-enums',
 }
 
-export const CURRENT_SCHEMA_VERSION = 8
+export const CURRENT_SCHEMA_VERSION = 9

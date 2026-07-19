@@ -84,6 +84,43 @@ export const schemaSteps: SchemaStep[] = [
       await ctx.createCollection('stocktakeCounts' as CollectionName)
     },
   },
+  {
+    version: 6,
+    description: 'Replace orders/orderLines with sales/saleItems/shifts/parkedCarts/receiptCounters',
+    async migrate(ctx: MigrationContext) {
+      // New collections: sales, saleItems, shifts, parkedCarts, receiptCounters
+      await ctx.createCollection('sales' as CollectionName)
+      await ctx.createCollection('saleItems' as CollectionName)
+      await ctx.createCollection('shifts' as CollectionName)
+      await ctx.createCollection('parkedCarts' as CollectionName)
+      await ctx.createCollection('receiptCounters' as CollectionName)
+    },
+  },
+  {
+    version: 7,
+    description: 'Add payment status ledger, store credit ledger',
+    async migrate(ctx: MigrationContext) {
+      // New collections: paymentStatusEvents, storeCreditTransactions
+      await ctx.createCollection('paymentStatusEvents' as CollectionName)
+      await ctx.createCollection('storeCreditTransactions' as CollectionName)
+    },
+  },
+  {
+    version: 8,
+    description: 'Introduce loyaltyTransactions, promotionRedemptions, goodsReceipts collections',
+    async migrate(ctx: MigrationContext) {
+      await ctx.createCollection('loyaltyTransactions' as CollectionName)
+      await ctx.createCollection('promotionRedemptions' as CollectionName)
+      await ctx.createCollection('goodsReceipts' as CollectionName)
+    },
+  },
+  {
+    version: 9,
+    description: 'Introduce zReports collection for immutable shift Z-reports',
+    async migrate(ctx: MigrationContext) {
+      await ctx.createCollection('zReports' as CollectionName)
+    },
+  },
 ]
 
 export class SchemaVersioner {

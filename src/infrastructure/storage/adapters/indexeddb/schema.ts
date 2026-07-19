@@ -76,14 +76,20 @@ export const COLLECTION_INDEXES: Record<CollectionName, string> = {
   // Customers
   customers: 'id, email, phone, createdAt, orgId',
   storeCreditTransactions: 'id, customerId, createdAt',
+  loyaltyTransactions: 'id, customerId, createdAt',
 
   // Purchasing
   suppliers: 'id, active',
   purchaseOrders: 'id, supplierId, status, createdAt',
   purchaseOrderLines: 'id, purchaseOrderId',
+  goodsReceipts: 'id, orgId, branchId, purchaseOrderId, receivedAt',
 
   // Promotions
   promotions: 'id, code, active',
+  promotionRedemptions: 'id, promotionId, customerId, saleId, appliedAt',
+
+  // Reporting
+  zReports: 'id, orgId, branchId, shiftId, generatedAt',
 
   // Organization (v2)
   organizations: 'id, slug, status',
@@ -169,5 +175,15 @@ export function buildVersionChain(db: Dexie): void {
     storeCreditTransactions: 'id, customerId, createdAt', // new
     payments: 'id, saleId, status, createdAt, shiftId, gateway', // re-index (added gateway)
     refunds: 'id, paymentId, status, createdAt', // re-index (added status)
+  })
+  // Version 8: add loyalty ledger, promotion redemptions, goods receipts
+  db.version(8).stores({
+    loyaltyTransactions: 'id, customerId, createdAt', // new
+    promotionRedemptions: 'id, promotionId, customerId, saleId, appliedAt', // new
+    goodsReceipts: 'id, orgId, branchId, purchaseOrderId, receivedAt', // new
+  })
+  // Version 9: introduce zReports collection for immutable shift Z-reports
+  db.version(9).stores({
+    zReports: 'id, orgId, branchId, shiftId, generatedAt', // new
   })
 }
