@@ -62,11 +62,14 @@ export const COLLECTION_INDEXES: Record<CollectionName, string> = {
   stocktakeCounts: 'id, sessionId, variantId, [sessionId+variantId]',
 
   // Sales
-  orders: 'id, status, createdAt, orgId, shiftId, [orgId+branchId]',
-  orderLines: 'id, orderId',
+  sales: 'id, orgId, branchId, shiftId, status, receiptNumber, createdAt, [orgId+branchId]',
+  saleItems: 'id, saleId, variantId',
+  shifts: 'id, orgId, branchId, registerId, cashierUserId, status, [registerId+status]',
+  parkedCarts: 'id, orgId, branchId, registerId, createdAt',
+  receiptCounters: 'id, orgId, branchId',
 
   // Payments (orderId is the saleId per the card)
-  payments: 'id, orderId, status, createdAt, shiftId',
+  payments: 'id, saleId, status, createdAt, shiftId',
   refunds: 'id, paymentId, createdAt',
 
   // Customers
@@ -107,13 +110,6 @@ export function buildStoresSpec(): Record<string, string> {
     ...COLLECTION_INDEXES,
     [META_STORE]: 'id',
   }
-  // Version 5: update stockMovements indexes and add stock level/stocktake collections
-  db.version(5).stores({
-    stockMovements: 'id, orgId, branchId, variantId, movementType, createdAt, reference', // re-indexed
-    stockLevels: 'id, orgId, branchId, variantId, [branchId+variantId]', // new
-    stocktakeSessions: 'id, orgId, branchId, status', // new
-    stocktakeCounts: 'id, sessionId, variantId, [sessionId+variantId]', // new
-  })
 }
 
 /**
@@ -148,5 +144,21 @@ export function buildVersionChain(db: Dexie): void {
     catalogProductVariants: 'id, orgId, productId, sku, barcode, active, [orgId+sku], [orgId+barcode]', // new
     priceLists: 'id, orgId, active, effectiveFrom', // new
     priceListEntries: 'id, priceListId, variantId, [priceListId+variantId]', // new
+  })
+  // Version 5: add inventory stocktake collections (stocktakeSessions, stocktakeCounts)
+  db.version(5).stores({
+    stocktakeSessions: 'id, orgId, branchId, status', // new
+    stocktakeCounts: 'id, sessionId, variantId, [sessionId+variantId]', // new
+  })
+  // Version 6: replace orders/orderLines with sales/saleItems/shifts/parkedCarts/receiptCounters, update payments index
+  db.version(6).stores({
+    orders: null, // drop
+    orderLines: null, // drop
+    sales: 'id, orgId, branchId, shiftId, status, receiptNumber, createdAt, [orgId+branchId]', // new
+    saleItems: 'id, saleId, variantId', // new
+    shifts: 'id, orgId, branchId, registerId, cashierUserId, status, [registerId+status]', // new
+    parkedCarts: 'id, orgId, branchId, registerId, createdAt', // new
+    receiptCounters: 'id, orgId, branchId', // new
+    payments: 'id, saleId, status, createdAt, shiftId', // re-index (orderId → saleId)
   })
 }

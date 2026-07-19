@@ -14,8 +14,11 @@ export const COLLECTIONS: Record<CollectionName, string> = {
   stocktakeSessions: 'inventory',
   stocktakeCounts: 'inventory',
   // Sales
-  orders: 'sales',
-  orderLines: 'sales',
+  sales: 'sales',
+  saleItems: 'sales',
+  shifts: 'sales',
+  parkedCarts: 'sales',
+  receiptCounters: 'sales',
   // Payments
   payments: 'payments',
   refunds: 'payments',
@@ -43,4 +46,4 @@ export const COLLECTIONS: Record<CollectionName, string> = {
   systemEnumValues: 'system-enums',
 }
 
-export const CURRENT_SCHEMA_VERSION = 5
+export const CURRENT_SCHEMA_VERSION = 6

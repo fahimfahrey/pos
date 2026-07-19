@@ -22,8 +22,8 @@ export class CorePaymentsRepository implements PaymentsRepository {
     return (await this.paymentCollection.get(id)) ?? null
   }
 
-  async listPaymentsForOrder(orderId: string): Promise<Payment[]> {
-    return this.paymentCollection.filter((p) => p.orderId === orderId)
+  async listPaymentsForSale(saleId: string): Promise<Payment[]> {
+    return this.paymentCollection.filter((p) => p.saleId === saleId)
   }
 
   async saveRefund(refund: Refund): Promise<void> {

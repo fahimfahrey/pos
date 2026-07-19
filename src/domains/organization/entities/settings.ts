@@ -49,6 +49,11 @@ export interface SecuritySettings {
   authWindowMinutes: number
 }
 
+export interface DiscountLimits {
+  cashierMaxPercent: number
+  cashierMaxFixedAmount: number
+}
+
 export interface InventorySettings {
   allowOversell: boolean
 }
@@ -65,6 +70,7 @@ export interface ResolvedSettings {
   barcodeSymbology: BarcodeSymbology
   loyalty: LoyaltyRules
   security: SecuritySettings
+  discountLimits: DiscountLimits
   inventory: InventorySettings
 }
 
@@ -103,6 +109,10 @@ export const DEFAULT_SETTINGS: ResolvedSettings = {
     pinReauthTimeoutMinutes: 15,
     maxAuthAttempts: 5,
     authWindowMinutes: 15,
+  },
+  discountLimits: {
+    cashierMaxPercent: 10,
+    cashierMaxFixedAmount: 20,
   },
   inventory: {
     allowOversell: false,

@@ -2,7 +2,7 @@ export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'refunded'
 
 export interface Payment {
   id: string
-  orderId: string
+  saleId: string
   amount: number
   currency: string
   method: string
