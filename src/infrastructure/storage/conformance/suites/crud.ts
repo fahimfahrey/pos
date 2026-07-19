@@ -296,6 +296,24 @@ export function runCrudSuite(getProvider: () => StorageProvider): void {
           expect(all).toContainEqual(customer)
         })
       })
+
+      it('should save and list loyalty transactions', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const tx = fixtures.makeLoyaltyTransaction({ id: 'ltx1', customerId: 'cust1' })
+          await repos.customers.saveLoyaltyTransaction(tx)
+          const txs = await repos.customers.listLoyaltyTransactions('cust1')
+          expect(txs).toContainEqual(tx)
+        })
+      })
+
+      it('should save and list store credit transactions', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const tx = fixtures.makeStoreCreditTransaction({ id: 'stx1', customerId: 'cust1' })
+          await repos.customers.saveStoreCreditTransaction(tx)
+          const txs = await repos.customers.listStoreCreditTransactions('cust1')
+          expect(txs).toContainEqual(tx)
+        })
+      })
     })
 
     describe('purchasing', () => {
@@ -356,6 +374,42 @@ export function runCrudSuite(getProvider: () => StorageProvider): void {
           expect(found).not.toBeNull()
         })
       })
+
+      it('should save and find goods receipt by id', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const receipt = fixtures.makeGoodsReceipt({ id: 'receipt1' })
+          await repos.purchasing.saveGoodsReceipt(receipt)
+          const found = await repos.purchasing.findGoodsReceiptById('receipt1')
+          expect(found).toEqual(receipt)
+        })
+      })
+
+      it('should list goods receipts for purchase order', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const receipt = fixtures.makeGoodsReceipt({ id: 'receipt1', purchaseOrderId: 'po1' })
+          await repos.purchasing.saveGoodsReceipt(receipt)
+          const receipts = await repos.purchasing.listGoodsReceiptsForPurchaseOrder('po1')
+          expect(receipts).toContainEqual(receipt)
+        })
+      })
+
+      it('should list suppliers by org', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const supplier = fixtures.makeSupplier({ id: 'supp1', orgId: 'org1' })
+          await repos.purchasing.saveSupplier(supplier)
+          const suppliers = await repos.purchasing.listSuppliersByOrg('org1')
+          expect(suppliers).toContainEqual(supplier)
+        })
+      })
+
+      it('should list purchase orders by org', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const po = fixtures.makePurchaseOrder({ id: 'po1', orgId: 'org1' })
+          await repos.purchasing.savePurchaseOrder(po)
+          const pos = await repos.purchasing.listPurchaseOrdersByOrg('org1')
+          expect(pos).toContainEqual(po)
+        })
+      })
     })
 
     describe('promotions', () => {
@@ -403,6 +457,50 @@ export function runCrudSuite(getProvider: () => StorageProvider): void {
           const promo = fixtures.makePromotion({ id: 'promo1', active: true })
           await repos.promotions.save(promo)
           await repos.promotions.deactivate('promo1')
+        })
+      })
+
+      it('should save and count promotion redemptions', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const redemption = fixtures.makePromotionRedemption({ id: 'redemption1', promotionId: 'promo1' })
+          await repos.promotions.saveRedemption(redemption)
+          const count = await repos.promotions.countRedemptions('promo1')
+          expect(count).toBe(1)
+        })
+      })
+
+      it('should count redemptions for customer', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const redemption = fixtures.makePromotionRedemption({
+            id: 'redemption1',
+            promotionId: 'promo1',
+            customerId: 'cust1',
+          })
+          await repos.promotions.saveRedemption(redemption)
+          const count = await repos.promotions.countRedemptionsForCustomer('promo1', 'cust1')
+          expect(count).toBe(1)
+        })
+      })
+
+      it('should list active promotions for org', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const promo = fixtures.makePromotion({ id: 'promo1', active: true, orgId: 'org1' })
+          await repos.promotions.save(promo)
+          const active = await repos.promotions.listActiveForOrg('org1')
+          expect(active).toContainEqual(promo)
+        })
+      })
+
+      it('should find promotion by code for org', async () => {
+        await getProvider().withTransaction(async (repos) => {
+          const promo = fixtures.makePromotion({
+            id: 'promo1',
+            code: 'ORG-CODE',
+            orgId: 'org1',
+          })
+          await repos.promotions.save(promo)
+          const found = await repos.promotions.findByCodeForOrg('org1', 'ORG-CODE')
+          expect(found).toEqual(promo)
         })
       })
     })

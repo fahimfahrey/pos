@@ -10,6 +10,7 @@ export interface StockMovement {
   reason?: string
   reference?: string
   relatedMovementId?: string
+  unitCost?: number
   createdAt: Date
   createdBy: string
 }

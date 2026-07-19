@@ -27,6 +27,7 @@ export class InventoryService {
       reason?: string
       reference?: string
       relatedMovementId?: string
+      unitCost?: number
       createdBy: string
       allowOversell: boolean
     },
@@ -61,6 +62,7 @@ export class InventoryService {
       reason: input.reason,
       reference: input.reference,
       relatedMovementId: input.relatedMovementId,
+      unitCost: input.unitCost,
       createdAt: this.clock.now(),
       createdBy: input.createdBy,
     }
@@ -79,6 +81,7 @@ export class InventoryService {
       variantId: string
       quantity: number
       reference?: string
+      unitCost?: number
       createdBy: string
       allowOversell: boolean
     },

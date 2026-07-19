@@ -11,6 +11,7 @@ export interface SalesRepository {
   saveSale(sale: Sale): Promise<void>
   listSalesByBranch(branchId: string, limit?: number, offset?: number): Promise<Sale[]>
   listSalesByShift(shiftId: string): Promise<Sale[]>
+  listSalesByCustomer(customerId: string): Promise<Sale[]>
 
   // Sale Items
   findSaleItemById(itemId: string): Promise<SaleItem | null>

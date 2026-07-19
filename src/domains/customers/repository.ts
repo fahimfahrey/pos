@@ -1,5 +1,6 @@
 import type { Customer } from '@domains/customers/entities/customer'
 import type { StoreCreditTransaction } from '@domains/customers/entities/store-credit-transaction'
+import type { LoyaltyTransaction } from '@domains/customers/entities/loyalty-transaction'
 
 export interface CustomersRepository {
   save(customer: Customer): Promise<void>
@@ -10,4 +11,7 @@ export interface CustomersRepository {
   saveStoreCreditTransaction(tx: StoreCreditTransaction): Promise<void>
   listStoreCreditTransactions(customerId: string): Promise<StoreCreditTransaction[]>
   listAll(): Promise<Customer[]>
+  saveLoyaltyTransaction(tx: LoyaltyTransaction): Promise<void>
+  listLoyaltyTransactions(customerId: string): Promise<LoyaltyTransaction[]>
+  listByOrg(orgId: string): Promise<Customer[]>
 }

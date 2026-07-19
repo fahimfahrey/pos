@@ -11,6 +11,10 @@ import type { Customer } from '@domains/customers/entities/customer'
 import type { Supplier } from '@domains/purchasing/entities/supplier'
 import type { PurchaseOrder, PurchaseOrderLine } from '@domains/purchasing/entities/purchase-order'
 import type { Promotion } from '@domains/promotions/entities/promotion'
+import type { PromotionRedemption } from '@domains/promotions/entities/promotion-redemption'
+import type { LoyaltyTransaction } from '@domains/customers/entities/loyalty-transaction'
+import type { StoreCreditTransaction } from '@domains/customers/entities/store-credit-transaction'
+import type { GoodsReceipt, GoodsReceiptLine } from '@domains/purchasing/entities/goods-receipt'
 import type { Organization } from '@domains/organization/entities/organization'
 import type { Branch } from '@domains/organization/entities/branch'
 import type { Register } from '@domains/organization/entities/register'
@@ -289,6 +293,73 @@ export function makePromotion(overrides?: FixtureOverrides & Partial<Promotion>)
   }
 }
 
+export function makeLoyaltyTransaction(overrides?: FixtureOverrides & Partial<LoyaltyTransaction>): LoyaltyTransaction {
+  const id = overrides?.id ?? 'loyalty-tx-001'
+  const { id: _id, ...rest } = overrides ?? {}
+  return {
+    id,
+    customerId: 'customer-001',
+    type: 'accrual',
+    points: 10,
+    balanceAfter: 10,
+    createdAt: FIXED_DATE,
+    createdBy: 'admin',
+    ...rest,
+  }
+}
+
+export function makeStoreCreditTransaction(overrides?: FixtureOverrides & Partial<StoreCreditTransaction>): StoreCreditTransaction {
+  const id = overrides?.id ?? 'credit-tx-001'
+  const { id: _id, ...rest } = overrides ?? {}
+  return {
+    id,
+    customerId: 'customer-001',
+    type: 'issuance',
+    amount: 10,
+    balanceAfter: 10,
+    createdAt: FIXED_DATE,
+    createdBy: 'admin',
+    ...rest,
+  }
+}
+
+export function makePromotionRedemption(overrides?: FixtureOverrides & Partial<PromotionRedemption>): PromotionRedemption {
+  const id = overrides?.id ?? 'redemption-001'
+  const { id: _id, ...rest } = overrides ?? {}
+  return {
+    id,
+    orgId: 'org-001',
+    promotionId: 'promotion-001',
+    saleId: 'sale-001',
+    discountAmount: 10,
+    appliedAt: FIXED_DATE,
+    ...rest,
+  }
+}
+
+export function makeGoodsReceipt(overrides?: FixtureOverrides & Partial<GoodsReceipt>): GoodsReceipt {
+  const id = overrides?.id ?? 'receipt-001'
+  const { id: _id, ...rest } = overrides ?? {}
+  const line: GoodsReceiptLine = {
+    id: 'gr-line-001',
+    purchaseOrderLineId: 'po-line-001',
+    variantId: 'product-001',
+    quantityReceived: 50,
+    unitCost: 50.0,
+  }
+  return {
+    id,
+    orgId: 'org-001',
+    branchId: 'branch-001',
+    purchaseOrderId: 'po-001',
+    lines: [line],
+    receivedBy: 'admin',
+    receivedAt: FIXED_DATE,
+    createdAt: FIXED_DATE,
+    ...rest,
+  }
+}
+
 // Organization
 
 export function makeOrganization(overrides?: FixtureOverrides & Partial<Organization>): Organization {
@@ -493,13 +564,17 @@ export async function seedAll(repos: RepositorySet, opts?: { orgId?: string }): 
 
   // Customers
   await repos.customers.save(makeCustomer({ id: 'customer-001', orgId }))
+  await repos.customers.saveLoyaltyTransaction(makeLoyaltyTransaction({ id: 'loyalty-tx-001', orgId }))
+  await repos.customers.saveStoreCreditTransaction(makeStoreCreditTransaction({ id: 'credit-tx-001', orgId }))
 
   // Purchasing
   await repos.purchasing.saveSupplier(makeSupplier({ id: 'supplier-001', orgId }))
   await repos.purchasing.savePurchaseOrder(makePurchaseOrder({ id: 'po-001', supplierId: 'supplier-001', orgId }))
+  await repos.purchasing.saveGoodsReceipt(makeGoodsReceipt({ id: 'receipt-001', orgId }))
 
   // Promotions
   await repos.promotions.save(makePromotion({ id: 'promotion-001', orgId }))
+  await repos.promotions.saveRedemption(makePromotionRedemption({ id: 'redemption-001', orgId }))
 
   // Organization
   await repos.organization.saveOrganization(makeOrganization({ id: 'org-001', orgId }))

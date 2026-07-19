@@ -45,6 +45,9 @@ export class CoreSalesRepository implements SalesRepository {
   async listSalesByShift(shiftId: string): Promise<Sale[]> {
     return this.salesCollection.filter((s) => s.shiftId === shiftId)
   }
+  async listSalesByCustomer(customerId: string): Promise<Sale[]> {
+    return this.salesCollection.filter((s) => s.customerId === customerId)
+  }
 
   // Sale Items
   async findSaleItemById(itemId: string): Promise<SaleItem | null> {

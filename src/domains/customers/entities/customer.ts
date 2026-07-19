@@ -1,5 +1,6 @@
 export interface Customer {
   id: string
+  orgId: string
   email: string
   phone?: string
   firstName: string
@@ -9,6 +10,7 @@ export interface Customer {
   zipCode?: string
   country?: string
   storeCreditBalance: number
+  loyaltyPointsBalance: number
   createdAt: Date
   updatedAt: Date
 }

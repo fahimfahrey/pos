@@ -26,12 +26,15 @@ export const COLLECTIONS: Record<CollectionName, string> = {
   // Customers
   customers: 'customers',
   storeCreditTransactions: 'customers',
+  loyaltyTransactions: 'customers',
   // Purchasing
   suppliers: 'purchasing',
   purchaseOrders: 'purchasing',
   purchaseOrderLines: 'purchasing',
+  goodsReceipts: 'purchasing',
   // Promotions
   promotions: 'promotions',
+  promotionRedemptions: 'promotions',
   // Organization
   organizations: 'organization',
   branches: 'organization',
@@ -48,4 +51,4 @@ export const COLLECTIONS: Record<CollectionName, string> = {
   systemEnumValues: 'system-enums',
 }
 
-export const CURRENT_SCHEMA_VERSION = 7
+export const CURRENT_SCHEMA_VERSION = 8

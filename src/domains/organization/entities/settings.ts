@@ -40,6 +40,7 @@ export interface LoyaltyRules {
   enabled: boolean
   pointsPerDollar?: number
   rewardThreshold?: number
+  redemptionValuePerPoint?: number
 }
 
 export interface SecuritySettings {
@@ -103,6 +104,7 @@ export const DEFAULT_SETTINGS: ResolvedSettings = {
   barcodeSymbology: 'ean13',
   loyalty: {
     enabled: false,
+    redemptionValuePerPoint: 0.01,
   },
   security: {
     sessionTimeoutMinutes: 480,

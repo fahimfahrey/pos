@@ -10,7 +10,9 @@ export interface PurchaseOrderLine {
 
 export interface PurchaseOrder {
   id: string
+  orgId: string
   supplierId: string
+  branchId: string
   status: PurchaseOrderStatus
   lines: PurchaseOrderLine[]
   total: number
