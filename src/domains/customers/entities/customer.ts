@@ -8,6 +8,7 @@ export interface Customer {
   city?: string
   zipCode?: string
   country?: string
+  storeCreditBalance: number
   createdAt: Date
   updatedAt: Date
 }

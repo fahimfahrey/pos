@@ -2,14 +2,17 @@
 import type { CustomersRepository } from '@domains/customers/repository'
  
 import type { Customer } from '@domains/customers/entities/customer'
+import type { StoreCreditTransaction } from '@domains/customers/entities/store-credit-transaction'
 import { Collection } from '../collection'
 import type { DriverTransaction } from '../driver'
 
 export class CoreCustomersRepository implements CustomersRepository {
   private collection: Collection<Customer>
+  private storeCreditTransactionCollection: Collection<StoreCreditTransaction>
 
   constructor(tx: DriverTransaction) {
     this.collection = new Collection<Customer>(tx, 'customers')
+    this.storeCreditTransactionCollection = new Collection<StoreCreditTransaction>(tx, 'storeCreditTransactions')
   }
 
   async save(customer: Customer): Promise<void> {
@@ -39,5 +42,13 @@ export class CoreCustomersRepository implements CustomersRepository {
 
   async listAll(): Promise<Customer[]> {
     return this.collection.getAll()
+  }
+
+  async saveStoreCreditTransaction(tx: StoreCreditTransaction): Promise<void> {
+    await this.storeCreditTransactionCollection.put(tx)
+  }
+
+  async listStoreCreditTransactions(customerId: string): Promise<StoreCreditTransaction[]> {
+    return this.storeCreditTransactionCollection.filter((t) => t.customerId === customerId)
   }
 }

@@ -69,11 +69,13 @@ export const COLLECTION_INDEXES: Record<CollectionName, string> = {
   receiptCounters: 'id, orgId, branchId',
 
   // Payments (orderId is the saleId per the card)
-  payments: 'id, saleId, status, createdAt, shiftId',
-  refunds: 'id, paymentId, createdAt',
+  payments: 'id, saleId, status, createdAt, shiftId, gateway',
+  refunds: 'id, paymentId, status, createdAt',
+  paymentStatusEvents: 'id, paymentId, createdAt',
 
   // Customers
   customers: 'id, email, phone, createdAt, orgId',
+  storeCreditTransactions: 'id, customerId, createdAt',
 
   // Purchasing
   suppliers: 'id, active',
@@ -160,5 +162,12 @@ export function buildVersionChain(db: Dexie): void {
     parkedCarts: 'id, orgId, branchId, registerId, createdAt', // new
     receiptCounters: 'id, orgId, branchId', // new
     payments: 'id, saleId, status, createdAt, shiftId', // re-index (orderId → saleId)
+  })
+  // Version 7: payment status ledger, store credit ledger, gateway/status indexes on payments/refunds
+  db.version(7).stores({
+    paymentStatusEvents: 'id, paymentId, createdAt', // new
+    storeCreditTransactions: 'id, customerId, createdAt', // new
+    payments: 'id, saleId, status, createdAt, shiftId, gateway', // re-index (added gateway)
+    refunds: 'id, paymentId, status, createdAt', // re-index (added status)
   })
 }

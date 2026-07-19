@@ -2,6 +2,7 @@ export const PAYMENT_METHOD = {
   CASH: 'cash',
   CARD: 'card',
   CHECK: 'check',
+  STORE_CREDIT: 'store_credit',
   OTHER: 'other',
 } as const
 

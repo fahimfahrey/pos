@@ -19,6 +19,8 @@ import { ValidationError } from '@shared/errors'
 import type { Clock } from '@shared/ports/clock'
 import type { IdGenerator } from '@shared/ports/id-generator'
 import { STOCK_MOVEMENT_TYPE } from '@constants/enums'
+import { PaymentService } from '@domains/payments/services/payment-service'
+import type { PaymentMethod } from '@constants/enums'
 
 export interface FinalizeSaleInput {
   saleId: string

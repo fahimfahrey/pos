@@ -22,8 +22,10 @@ export const COLLECTIONS: Record<CollectionName, string> = {
   // Payments
   payments: 'payments',
   refunds: 'payments',
+  paymentStatusEvents: 'payments',
   // Customers
   customers: 'customers',
+  storeCreditTransactions: 'customers',
   // Purchasing
   suppliers: 'purchasing',
   purchaseOrders: 'purchasing',
@@ -46,4 +48,4 @@ export const COLLECTIONS: Record<CollectionName, string> = {
   systemEnumValues: 'system-enums',
 }
 
-export const CURRENT_SCHEMA_VERSION = 6
+export const CURRENT_SCHEMA_VERSION = 7
