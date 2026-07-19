@@ -8,6 +8,7 @@ export interface Organization {
   plan: OrganizationPlan
   status: OrganizationStatus
   settings: OrganizationSettings
+  logoUrl?: string
   createdAt: Date
   updatedAt: Date
 }
