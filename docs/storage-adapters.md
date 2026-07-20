@@ -265,6 +265,47 @@ All checks must pass.
 
 5. **Atomicity is mandatory.** `transaction()` must commit all writes or none. This is non-negotiable for correctness.
 
+6. **Transactions must not perform I/O unrelated to the transaction.** The `work` callback in `transaction<T>(collections, mode, work)` may only use methods on the provided `tx` parameter (`get`, `getAll`, `put`, `delete`). Performing external I/O (HTTP requests, file operations, or accessing other databases) within the callback breaks atomicity and consistency guarantees. If the transaction is rolled back, the external operation will have occurred anyway, creating inconsistency. Always perform external work outside the transaction.
+
+## Server-Only / Native-Dependency Adapters
+
+Adapters that depend on native modules (e.g., `better-sqlite3`, future Node.js database drivers) or that are only usable in server environments must be carefully isolated to prevent webpack's client compiler from attempting to bundle them.
+
+**The pattern:**
+
+1. **Create the adapter normally** in `src/infrastructure/storage/adapters/<engine>/` with registration in `index.ts`.
+
+2. **Never import the adapter in the shared** `src/infrastructure/storage/index.ts`. That file is reachable from client code and will cause the client webpack compiler to fail when it encounters the native module.
+
+3. **Create a server-only barrel** at `src/infrastructure/storage/server.ts`:
+   ```typescript
+   import 'server-only'  // ← Fails build if accidentally imported by client code
+   
+   // Import adapters that have native dependencies or are server-only
+   import './adapters/sqlite'   // Registration side-effect only
+   
+   // Re-export public API
+   export * from './core'
+   export * from './default-provider'
+   ```
+
+4. **Import the adapter only from server contexts:**
+   - Server actions
+   - API routes
+   - Migration scripts (running under Node.js)
+   - Tests that run under Node.js (Vitest, not browser mode)
+
+5. **Document the adapter's caveats** in its `README.md` about single-process limitations, if any.
+
+**Example: SQLite via better-sqlite3**
+
+SQLite using `better-sqlite3` is a Node.js native addon and cannot run in browsers. It also offers fully synchronous APIs that simplify transaction handling. For these reasons, it is registered only in the server-only module:
+
+- Application code uses it via server actions or future multi-process deployments.
+- The conformance test suite includes it (tests run under Node.js).
+- The migration script (`scripts/migrate-engine.ts`) imports from `storage/server.ts` to access it.
+- Browser-based data storage remains `indexeddb`; SQLite is a server-side tool.
+
 ## Checklist
 
 - [ ] Created `src/infrastructure/storage/adapters/<engine>/driver.ts` implementing `StorageDriver`.
@@ -279,15 +320,25 @@ All checks must pass.
 
 ## Environment Variable Reference
 
-**`NEXT_PUBLIC_STORAGE_ENGINE`** (default: `'indexeddb'`)
+**`NEXT_PUBLIC_STORAGE_ENGINE`** (default: `'indexeddb'`, client-only)
 
-Must be a registered engine name. In tests or server code, use:
+Specifies the storage engine to use in the browser. Must be a registered engine name that is safe for client code (currently `'memory'` or `'indexeddb'`). Do **not** use server-only engines like `'sqlite'` here.
+
+**`STORAGE_ENGINE`** (default: `'memory'`, server-only)
+
+Specifies the storage engine to use in Node.js server contexts (API routes, server actions, migration scripts). Can be any registered engine (including server-only ones like `'sqlite'`).
+
+**Why two vars?** The client and server may use different engines:
+- Browser always uses `indexeddb` or `memory` (via `NEXT_PUBLIC_STORAGE_ENGINE`).
+- Server may use `memory` (for ephemeral operations), `indexeddb` (via mocked fake-indexeddb for tests), or `sqlite` (for persistence, migrations, backups).
+
+**Programmatic override:**
 
 ```typescript
 const provider = await createStorageProvider({ engine: 'memory' })
 ```
 
-to override the env var.
+overrides the env var and uses the specified engine directly.
 
 ## Troubleshooting
 

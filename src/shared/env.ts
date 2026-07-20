@@ -6,6 +6,7 @@ const serverSchema = z.object({
     .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
     .default('info'),
   AUTH_SECRET: z.string().min(32).default('dev-secret-this-must-be-changed-in-production-12345'),
+  STORAGE_ENGINE: z.string().min(1).default('memory'),
 })
 const clientSchema = z.object({
   NEXT_PUBLIC_APP_NAME: z.string().min(1).default('POS'),

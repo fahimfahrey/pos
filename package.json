@@ -18,10 +18,13 @@
     "test:conformance": "vitest run src/infrastructure/storage/conformance",
     "test:conformance:node": "vitest run src/infrastructure/storage/conformance",
     "test:conformance:browser": "vitest run --config vitest.browser.config.ts",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "migrate:engine": "tsx scripts/migrate-engine.ts",
+    "audit": "npm audit --omit=dev --audit-level=high"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^9.2.2",
     "clsx": "^2.0.0",
     "dexie": "^3.2.4",
     "idb": "^7.1.1",
@@ -43,6 +46,7 @@
     "@testing-library/react": "^15.0.7",
     "@testing-library/user-event": "^14.6.1",
     "@types/bcryptjs": "^2.4.6",
+    "@types/better-sqlite3": "^7.6.8",
     "@types/node": "20.19.43",
     "@types/react": "19.2.17",
     "@types/react-dom": "^19.2.3",
@@ -59,6 +63,7 @@
     "prettier": "^3.9.5",
     "tailwindcss": "^4",
     "typescript": "5.9.3",
+    "tsx": "^4.7.0",
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^1.6.1"
   }
