@@ -31,4 +31,8 @@ export class CoreAuditRepository implements AuditRepository {
   async listByDateRange(from: Date, to: Date): Promise<AuditEntry[]> {
     return this.collection.filter((e) => e.createdAt >= from && e.createdAt <= to)
   }
+
+  async listByOrg(orgId: string): Promise<AuditEntry[]> {
+    return this.collection.filter((e) => e.orgId === orgId)
+  }
 }

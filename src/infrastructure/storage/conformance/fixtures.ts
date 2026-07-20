@@ -1,11 +1,13 @@
 import type { RepositorySet } from '@infra/storage'
-import type { Product } from '@domains/inventory/entities/product'
+import type { Product as InventoryProduct } from '@domains/inventory/entities/product'
 import type { StockLevel } from '@domains/inventory/entities/stock-level'
 import type { StockMovement } from '@domains/inventory/entities/stock-movement'
 import type { StocktakeSession } from '@domains/inventory/entities/stocktake-session'
 import type { StocktakeCount } from '@domains/inventory/entities/stocktake-count'
-import type { Order, OrderLine } from '@domains/sales/entities/order'
-import type { Category, CatalogItem } from '@domains/catalog/entities/catalog-item'
+import type { Sale, SaleItem } from '@domains/sales/entities/sale'
+import type { Category } from '@domains/catalog/entities/category'
+import type { Product } from '@domains/catalog/entities/product'
+import type { ProductVariant } from '@domains/catalog/entities/product-variant'
 import type { Payment, Refund } from '@domains/payments/entities/payment'
 import type { Customer } from '@domains/customers/entities/customer'
 import type { Supplier } from '@domains/purchasing/entities/supplier'
@@ -35,7 +37,7 @@ export interface FixtureOverrides {
 
 // Inventory
 
-export function makeProduct(overrides?: FixtureOverrides & Partial<Product>): Product {
+export function makeProduct(overrides?: FixtureOverrides & Partial<InventoryProduct>): InventoryProduct {
   const id = overrides?.id ?? 'product-001'
   const { id: _id, ...rest } = overrides ?? {}
   return {
@@ -116,34 +118,56 @@ export function makeStocktakeCount(overrides?: FixtureOverrides & Partial<Stockt
 
 // Sales
 
-export function makeOrder(overrides?: FixtureOverrides & Partial<Order>): Order {
-  const id = overrides?.id ?? 'order-001'
+export function makeSale(overrides?: FixtureOverrides & Partial<Sale>): Sale {
+  const id = overrides?.id ?? 'sale-001'
   const { id: _id, ...rest } = overrides ?? {}
-  const line: OrderLine = {
-    id: 'line-001',
-    productId: 'product-001',
-    quantity: 2,
-    unitPrice: { amount: 99.99, currency: 'USD' },
-    subtotal: { amount: 199.98, currency: 'USD' },
-  }
   return {
     id,
-    status: 'open',
-    lines: [line],
-    total: { amount: 199.98, currency: 'USD' },
+    orgId: overrides?.orgId ?? 'org-001',
+    branchId: 'branch-001',
+    shiftId: 'shift-001',
+    status: 'paid',
+    receiptNumber: 1,
+    customerId: undefined,
+    subtotal: 99.99,
+    discount: 0,
+    tax: 8.00,
+    total: 107.99,
     createdAt: FIXED_DATE,
-    updatedAt: FIXED_DATE,
+    createdBy: 'user-001',
+    ...rest,
+  }
+}
+
+export function makeSaleItem(overrides?: FixtureOverrides & Partial<SaleItem>): SaleItem {
+  const id = overrides?.id ?? 'sale-item-001'
+  const { id: _id, ...rest } = overrides ?? {}
+  return {
+    id,
+    saleId: 'sale-001',
+    variantId: 'variant-001',
+    quantity: 1,
+    unitPrice: 99.99,
+    discount: 0,
+    taxRate: 0.08,
+    taxAmount: 8.00,
+    subtotal: 99.99,
+    total: 107.99,
+    name: 'Test Product',
+    sku: 'SKU-001',
+    createdAt: FIXED_DATE,
     ...rest,
   }
 }
 
 // Catalog
 
-export function makeCategory(overrides?: FixtureOverrides & Partial<Category>): Category {
+export function makeCatalogCategory(overrides?: FixtureOverrides & Partial<Category>): Category {
   const id = overrides?.id ?? 'category-001'
   const { id: _id, ...rest } = overrides ?? {}
   return {
     id,
+    orgId: overrides?.orgId ?? 'org-001',
     name: 'Test Category',
     description: 'A test category',
     active: true,
@@ -153,17 +177,36 @@ export function makeCategory(overrides?: FixtureOverrides & Partial<Category>): 
   }
 }
 
-export function makeCatalogItem(overrides?: FixtureOverrides & Partial<CatalogItem>): CatalogItem {
-  const id = overrides?.id ?? 'catalog-item-001'
+export function makeCatalogProduct(overrides?: FixtureOverrides & Partial<Product>): Product {
+  const id = overrides?.id ?? 'product-001'
   const { id: _id, ...rest } = overrides ?? {}
   return {
     id,
-    productId: 'product-001',
-    categoryId: 'category-001',
-    sku: 'SKU-CAT-001',
+    orgId: overrides?.orgId ?? 'org-001',
+    categoryId: overrides?.categoryId ?? 'category-001',
+    name: 'Test Product',
+    description: 'A test product',
+    imageFileId: undefined,
+    active: true,
+    createdAt: FIXED_DATE,
+    updatedAt: FIXED_DATE,
+    ...rest,
+  }
+}
+
+export function makeProductVariant(overrides?: FixtureOverrides & Partial<ProductVariant>): ProductVariant {
+  const id = overrides?.id ?? 'variant-001'
+  const { id: _id, ...rest } = overrides ?? {}
+  return {
+    id,
+    orgId: overrides?.orgId ?? 'org-001',
+    productId: overrides?.productId ?? 'product-001',
+    sku: overrides?.sku ?? 'SKU-001',
     barcode: '1234567890123',
-    name: 'Catalog Item',
-    description: 'A test catalog item',
+    name: 'Test Variant',
+    unitOfMeasure: 'unit',
+    barcodeSymbology: 'EAN13',
+    isDecimalQuantity: false,
     active: true,
     createdAt: FIXED_DATE,
     updatedAt: FIXED_DATE,

@@ -1,9 +1,12 @@
 export interface AuditEntry {
   id: string
+  orgId: string
+  branchId?: string
+  actorId: string
+  action: string
   entityType: string
   entityId: string
-  action: string
-  actorId: string
-  changes?: Record<string, unknown>
+  before?: Record<string, unknown>
+  after?: Record<string, unknown>
   createdAt: Date
 }

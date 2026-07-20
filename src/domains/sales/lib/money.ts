@@ -7,6 +7,8 @@ import { DISCOUNT_TYPE } from '@constants/enums/discount-type'
 import type { TaxMode } from '@constants/enums/tax-mode'
 import { TAX_MODE } from '@constants/enums/tax-mode'
 
+export { DISCOUNT_TYPE, TAX_MODE }
+
 export type RoundingRule = 'nearest' | 'up' | 'down'
 
 const MINOR_UNIT_FACTOR = 100 // cents

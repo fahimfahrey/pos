@@ -28,7 +28,7 @@ export function generateUlid(clock?: () => number): string {
       bits = random[Math.floor(i * 10 / 16)]
       bitIndex = 8
     }
-    randomChars[i] = CROCKFORD_ALPHABET[(bits >>> (bitIndex - 5)) & 0x1f]
+    randomChars[i] = CROCKFORD_ALPHABET[(bits >>> (bitIndex - 5)) & 0x1f]!
     bitIndex -= 5
   }
 

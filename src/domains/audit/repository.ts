@@ -6,4 +6,5 @@ export interface AuditRepository {
   listByEntity(type: string, id: string): Promise<AuditEntry[]>
   listByActor(actorId: string): Promise<AuditEntry[]>
   listByDateRange(from: Date, to: Date): Promise<AuditEntry[]>
+  listByOrg(orgId: string): Promise<AuditEntry[]>
 }

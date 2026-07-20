@@ -17,3 +17,4 @@ export { STOCK_MOVEMENT_TYPE, type StockMovementType } from './stock-movement-ty
 export { SHIFT_STATUS, type ShiftStatus } from './shift-status'
 export { STOCKTAKE_STATUS, type StocktakeStatus } from './stocktake-status'
 export { ENUM_REGISTRY_KEY, STATIC_ENUM_VALUES, type EnumRegistryKey } from './registry'
+export { AUDIT_ACTION, type AuditAction } from './audit-action'

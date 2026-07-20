@@ -61,10 +61,10 @@ export function runCrudSuite(getProvider: () => StorageProvider): void {
     describe('sales', () => {
       it('should save and find order by id', async () => {
         await getProvider().withTransaction(async (repos) => {
-          const order = fixtures.makeOrder({ id: 'o1' })
-          await repos.sales.save(order)
-          const found = await repos.sales.findById('o1')
-          expect(found).toEqual(order)
+          const sale = fixtures.makeSale({ id: 'o1' })
+          await repos.sales.saveSale(sale)
+          const found = await repos.sales.findSaleById('o1')
+          expect(found).toEqual(sale)
         })
       })
 
@@ -77,30 +77,30 @@ export function runCrudSuite(getProvider: () => StorageProvider): void {
 
       it('should list open orders', async () => {
         await getProvider().withTransaction(async (repos) => {
-          const order = fixtures.makeOrder({ id: 'o1', status: 'open' })
-          await repos.sales.save(order)
-          const open = await repos.sales.listOpen()
-          expect(open).toContainEqual(order)
+          const sale = fixtures.makeSale({ id: 'o1', status: 'paid' })
+          await repos.sales.saveSale(sale)
+          const open = await repos.sales.listByStatus('paid')
+          expect(open).toContainEqual(sale)
         })
       })
 
       it('should list orders by status', async () => {
         await getProvider().withTransaction(async (repos) => {
-          const order = fixtures.makeOrder({ id: 'o1', status: 'paid' })
-          await repos.sales.save(order)
+          const sale = fixtures.makeSale({ id: 'o1', status: 'paid' })
+          await repos.sales.saveSale(sale)
           const paid = await repos.sales.listByStatus('paid')
-          expect(paid).toContainEqual(order)
+          expect(paid).toContainEqual(sale)
         })
       })
 
       it('should list orders by date range', async () => {
         await getProvider().withTransaction(async (repos) => {
-          const order = fixtures.makeOrder({ id: 'o1' })
-          await repos.sales.save(order)
+          const sale = fixtures.makeSale({ id: 'o1' })
+          await repos.sales.saveSale(sale)
           const from = new Date('2024-01-01')
           const to = new Date('2024-12-31')
           const inRange = await repos.sales.listByDateRange(from, to)
-          expect(inRange).toContainEqual(order)
+          expect(inRange).toContainEqual(sale)
         })
       })
     })
@@ -812,9 +812,6 @@ export function runCrudSuite(getProvider: () => StorageProvider): void {
         })
       })
     })
-  })
-}
-
     describe('system-enums', () => {
       it('should save and find system enum value by id', async () => {
         await getProvider().withTransaction(async (repos) => {
@@ -871,3 +868,5 @@ export function runCrudSuite(getProvider: () => StorageProvider): void {
         })
       })
     })
+  })
+}

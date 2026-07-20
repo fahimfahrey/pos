@@ -13,6 +13,17 @@ export default async function AdminLayout({
       <header className="bg-white border-b">
         <nav className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-xl font-bold">Admin Panel</h1>
+          <div className="flex gap-6 items-center">
+            <a href="/admin" className="text-gray-700 hover:text-gray-900">
+              Home
+            </a>
+            <a href="/admin/enum-values" className="text-gray-700 hover:text-gray-900">
+              Enum Values
+            </a>
+            <a href="/admin/audit" className="text-gray-700 hover:text-gray-900">
+              Audit Log
+            </a>
+          </div>
           <div className="flex gap-4 items-center">
             <a href="/app" className="text-blue-600 hover:underline">
               Back to Dashboard
