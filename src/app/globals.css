@@ -1,30 +1,103 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Raw palette */
+  --palette-ivory: #F5F4EF;
+  --palette-cream: #FAF9F5;
+  --palette-near-black: #20201C;
+  --palette-taupe-gray: #6B675E;
+  --palette-warm-gray: #E5E2D9;
+  --palette-terracotta: #CC785C;
+  --palette-sage: #9CAF88;
+  --palette-brick: #C24D4D;
+  --palette-amber: #D4B574;
+
+  /* Semantic aliases (light theme) */
+  --background: var(--palette-ivory);
+  --surface: var(--palette-cream);
+  --foreground: var(--palette-near-black);
+  --foreground-muted: var(--palette-taupe-gray);
+  --border: var(--palette-warm-gray);
+  --accent: var(--palette-terracotta);
+  --accent-foreground: var(--palette-near-black);
+  --accent-strong: #B85A3F;
+  --success: var(--palette-sage);
+  --danger: var(--palette-brick);
+  --warning: var(--palette-amber);
+
+  /* Typography */
+  --font-display: Fraunces, Georgia, "Times New Roman", serif;
+  --font-body: Inter, "Segoe UI", "Helvetica Neue", system-ui, sans-serif;
+  --font-bengali: "Hind Siliguri", "Segoe UI", "Noto Sans Bengali", sans-serif;
+
+  /* Shape */
+  --radius-card: 10px;
+  --radius-button: 10px;
+  --radius-input: 6px;
+
+  /* Shadows (warm-tinted, low-spread) */
+  --shadow-sm: 0 1px 2px rgba(32, 32, 28, 0.08);
+  --shadow-md: 0 4px 6px rgba(32, 32, 28, 0.12);
+
+  /* Motion */
+  --motion-fast: 150ms;
+  --motion-base: 300ms;
+  --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-strong: var(--accent-strong);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --radius-card: var(--radius-card);
+  --radius-button: var(--radius-button);
+  --radius-input: var(--radius-input);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Raw palette (dark) */
+    --palette-charcoal: #262624;
+    --palette-charcoal-deep: #1F1E1B;
+    --palette-off-white: #EDEAE0;
+    --palette-taupe-light: #BCBAB0;
+    --palette-warm-gray-dark: #3D3C39;
+    --palette-terracotta-dark: #D08968;
+    --palette-sage-dark: #B8D4A0;
+    --palette-brick-dark: #E07070;
+    --palette-amber-dark: #E5D4A1;
+
+    /* Semantic aliases (dark theme) */
+    --background: var(--palette-charcoal);
+    --surface: var(--palette-charcoal-deep);
+    --foreground: var(--palette-off-white);
+    --foreground-muted: var(--palette-taupe-light);
+    --border: var(--palette-warm-gray-dark);
+    --accent: var(--palette-terracotta-dark);
+    --accent-foreground: #FFFFFF;
+    --accent-strong: #C26648;
+    --success: var(--palette-sage-dark);
+    --danger: var(--palette-brick-dark);
+    --warning: var(--palette-amber-dark);
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
 }
 
 *:focus-visible {
-  outline: 2px solid #0066cc;
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
