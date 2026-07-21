@@ -1,0 +1,94 @@
+'use client'
+
+/**
+ * Minimal client-side pending-write queue for offline-first visibility.
+ * Does not persist across page reloads (kept in-memory).
+ * Future: integrate with actual sync engine when built.
+ */
+
+export interface OutboxEntry {
+  id: string
+  kind: 'finalize-sale' | 'hold-cart' | 'resume-cart'
+  payload: Record<string, unknown>
+  attemptedAt: number
+  resolved?: boolean
+}
+
+type OutboxListener = (entries: OutboxEntry[]) => void
+
+class RegisterOutbox {
+  private entries: OutboxEntry[] = []
+  private listeners: Set<OutboxListener> = new Set()
+  private nextId = 0
+
+  addEntry(kind: OutboxEntry['kind'], payload: Record<string, unknown>): OutboxEntry {
+    const entry: OutboxEntry = {
+      id: `outbox-${this.nextId++}`,
+      kind,
+      payload,
+      attemptedAt: Date.now(),
+    }
+
+    this.entries.push(entry)
+    this.notifyListeners()
+    return entry
+  }
+
+  markResolved(entryId: string): void {
+    const entry = this.entries.find((e) => e.id === entryId)
+    if (entry) {
+      entry.resolved = true
+      this.notifyListeners()
+    }
+  }
+
+  getPendingCount(): number {
+    return this.entries.filter((e) => !e.resolved).length
+  }
+
+  subscribe(listener: OutboxListener): () => void {
+    this.listeners.add(listener)
+    listener(this.getPendingEntries())
+
+    return () => {
+      this.listeners.delete(listener)
+    }
+  }
+
+  private getPendingEntries(): OutboxEntry[] {
+    return this.entries.filter((e) => !e.resolved)
+  }
+
+  private notifyListeners(): void {
+    const pending = this.getPendingEntries()
+    this.listeners.forEach((listener) => listener(pending))
+  }
+
+  // For testing
+  clear(): void {
+    this.entries = []
+    this.notifyListeners()
+  }
+}
+
+const outbox = new RegisterOutbox()
+
+export function useOutboxCount() {
+  const [count, setCount] = React.useState(0)
+
+  React.useEffect(() => {
+    const unsubscribe = outbox.subscribe((entries) => {
+      setCount(entries.length)
+    })
+    return unsubscribe
+  }, [])
+
+  return count
+}
+
+export function getOutbox() {
+  return outbox
+}
+
+// Make this work in 'use client' without needing to import React in this file
+import React from 'react'
