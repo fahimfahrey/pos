@@ -13,7 +13,8 @@ import { Badge } from '@shared/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@shared/components/ui/tabs'
 import { ChangeDisplay } from './payment-sheet/change-display'
 import { SplitPaymentList } from './payment-sheet/split-payment-list'
-import { formatMoney } from './_lib/format-money'
+import { formatMoney } from '../_lib/format-money'
+import { playFeedbackSound } from '../_lib/scan-sound'
 
 interface PaymentSheetProps {
   total: number
@@ -58,7 +59,10 @@ export function PaymentSheet({ total, open, onClose, onFinalize }: PaymentSheetP
     setLoading(true)
     try {
       await onFinalize(method, numAmountCents, method === 'cash' ? tenderedCents : undefined)
-      // Close will be handled by parent via callback
+      playFeedbackSound('payment-complete')
+    } catch (error) {
+      playFeedbackSound('error')
+      throw error
     } finally {
       setLoading(false)
     }

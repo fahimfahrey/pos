@@ -34,7 +34,7 @@ export function ScanFeedbackBanner({ feedback }: ScanFeedbackBannerProps) {
           : `${feedback.state}: ${feedback.itemName || feedback.barcode || ''}`
       }
       className={`
-        border-t border-b border-border px-4 py-3 transition-all duration-150
+        border-t border-b border-border px-4 py-3 transition-all duration-[var(--duration-fast)]
         ${classNameMap[feedback.state]}
       `}
     >

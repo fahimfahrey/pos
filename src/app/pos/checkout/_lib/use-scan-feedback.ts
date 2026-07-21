@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { createDefaultStorageProvider } from '@infra/storage'
-import { playScanSound } from './scan-sound'
+import { playFeedbackSound } from './scan-sound'
 
 export type ScanFeedbackState = 'idle' | 'success' | 'duplicate' | 'not-found'
 
@@ -42,7 +42,7 @@ export function useScanFeedback(onScan: (itemName: string) => void) {
             state: 'not-found',
             barcode,
           })
-          playScanSound('not-found')
+          playFeedbackSound('not-found')
           return
         }
 
@@ -57,7 +57,7 @@ export function useScanFeedback(onScan: (itemName: string) => void) {
             itemName: variant.name,
             barcode,
           })
-          playScanSound('duplicate')
+          playFeedbackSound('duplicate')
           return
         }
 
@@ -69,7 +69,7 @@ export function useScanFeedback(onScan: (itemName: string) => void) {
           barcode,
           isLineAdded: true,
         })
-        playScanSound('success')
+        playFeedbackSound('success')
         onScan(variant.name)
 
         // Measure latency
@@ -81,7 +81,7 @@ export function useScanFeedback(onScan: (itemName: string) => void) {
           state: 'not-found',
           barcode,
         })
-        playScanSound('not-found')
+        playFeedbackSound('not-found')
       }
     },
     [onScan]

@@ -1,5 +1,6 @@
 'use client'
 
+import { useReducedMotion } from '@shared/utils/motion'
 import type { CartLine } from '@domains/sales/entities/cart-line'
 import { CartRow } from './cart-row'
 
@@ -23,14 +24,18 @@ export function CartList({
     <div className="flex-1 overflow-y-auto border-b border-border">
       <div className="divide-y divide-border">
         {lines.map((line, index) => (
-          <CartRow
-            key={`${line.variantId}-${index}`}
-            index={index}
-            line={line}
-            onQtyChange={onQtyChange}
-            onRemove={onRemove}
-            onDiscountChange={onDiscountChange}
-          />
+          <div
+            key={line.variantId}
+            className="motion-pop-in"
+          >
+            <CartRow
+              index={index}
+              line={line}
+              onQtyChange={onQtyChange}
+              onRemove={onRemove}
+              onDiscountChange={onDiscountChange}
+            />
+          </div>
         ))}
       </div>
     </div>

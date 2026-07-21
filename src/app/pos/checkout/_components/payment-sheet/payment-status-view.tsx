@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import { Badge } from '@shared/components/ui/badge'
 import { Button } from '@shared/components/ui/button'
+import { Spinner } from '@shared/components/ui/spinner'
+import { useDelayedVisible } from '@shared/utils/motion'
 import type { Payment } from '@domains/payments/entities/payment'
 
 interface PaymentStatusViewProps {
@@ -19,6 +21,7 @@ export function PaymentStatusView({
   onCancel,
 }: PaymentStatusViewProps) {
   const [elapsedTime, setElapsedTime] = useState(0)
+  const showSpinner = useDelayedVisible(payment.status === 'PENDING')
 
   useEffect(() => {
     if (payment.status !== 'PENDING') return
@@ -45,7 +48,7 @@ export function PaymentStatusView({
         aria-label="Payment processing"
       >
         <div className="flex items-center gap-3 justify-center p-4">
-          <div className="w-4 h-4 border-2 border-warning border-r-transparent rounded-full animate-spin" />
+          {showSpinner && <Spinner size="sm" />}
           <span className="text-foreground font-semibold">Processing...</span>
         </div>
 

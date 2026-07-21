@@ -86,6 +86,33 @@ export function useOutboxCount() {
   return count
 }
 
+export function useOldestPendingAge(): number {
+  const [age, setAge] = React.useState(0)
+
+  React.useEffect(() => {
+    const unsubscribe = outbox.subscribe((entries) => {
+      if (entries.length === 0) {
+        setAge(0)
+        return
+      }
+
+      const oldest = entries[0]
+      const computeAge = () => {
+        setAge(Date.now() - oldest.attemptedAt)
+      }
+
+      computeAge()
+      const interval = setInterval(computeAge, 250)
+
+      return () => clearInterval(interval)
+    })
+
+    return unsubscribe
+  }, [])
+
+  return age
+}
+
 export function getOutbox() {
   return outbox
 }

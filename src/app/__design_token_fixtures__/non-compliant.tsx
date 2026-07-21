@@ -20,3 +20,7 @@ export function BadSpacing() {
 export function BadMixedSpacing() {
   return <div className="w-[123px] h-[456px] min-h-[789px]">More off-scale spacing</div>
 }
+
+export function BadDuration() {
+  return <div className="transition-all duration-150">Raw duration class</div>
+}

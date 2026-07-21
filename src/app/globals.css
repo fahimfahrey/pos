@@ -47,6 +47,7 @@
   /* Motion */
   --motion-fast: 150ms;
   --motion-base: 300ms;
+  --motion-slower: 500ms;
   --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Spacing scale (Tailwind v4 base multiplier) */
@@ -102,6 +103,7 @@
   --radius-input: var(--radius-input);
   --duration-fast: var(--motion-fast);
   --duration-base: var(--motion-base);
+  --duration-slower: var(--motion-slower);
   --ease-base: var(--motion-ease);
   --z-base: var(--z-base);
   --z-dropdown: var(--z-dropdown);
@@ -201,4 +203,169 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+@keyframes sheet-slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes sheet-slide-out-right {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes sheet-slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes sheet-slide-out-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes sheet-slide-in-top {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes sheet-slide-out-top {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes sheet-slide-in-bottom {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes sheet-slide-out-bottom {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes dialog-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-collapse-out {
+  from {
+    opacity: 1;
+    max-height: 1000px;
+  }
+  to {
+    opacity: 0;
+    max-height: 0;
+  }
+}
+
+/* Motion utility classes */
+.motion-sheet-right-enter {
+  animation: sheet-slide-in-right var(--duration-base) var(--ease-base) both;
+}
+
+.motion-sheet-right-exit {
+  animation: sheet-slide-out-right var(--duration-base) var(--ease-base) both;
+}
+
+.motion-sheet-left-enter {
+  animation: sheet-slide-in-left var(--duration-base) var(--ease-base) both;
+}
+
+.motion-sheet-left-exit {
+  animation: sheet-slide-out-left var(--duration-base) var(--ease-base) both;
+}
+
+.motion-sheet-top-enter {
+  animation: sheet-slide-in-top var(--duration-base) var(--ease-base) both;
+}
+
+.motion-sheet-top-exit {
+  animation: sheet-slide-out-top var(--duration-base) var(--ease-base) both;
+}
+
+.motion-sheet-bottom-enter {
+  animation: sheet-slide-in-bottom var(--duration-base) var(--ease-base) both;
+}
+
+.motion-sheet-bottom-exit {
+  animation: sheet-slide-out-bottom var(--duration-base) var(--ease-base) both;
+}
+
+.motion-dialog-enter {
+  animation: dialog-in var(--duration-base) var(--ease-base) both;
+}
+
+.motion-dialog-exit {
+  animation: dialog-out var(--duration-base) var(--ease-base) both;
+}
+
+.motion-pop-in {
+  animation: pop-in var(--duration-fast) var(--ease-base) both;
+}
+
+.motion-fade-collapse-out {
+  animation: fade-collapse-out var(--duration-fast) var(--ease-base) both;
 }

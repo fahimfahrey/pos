@@ -4,6 +4,7 @@ import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@shared/utils/cn'
 import { VisuallyHidden } from './visually-hidden'
+import { Spinner } from './spinner'
 
 const buttonVariants = cva(
   'inline-flex items-center justify-center gap-2 rounded-[var(--radius-button)] text-label font-medium transition-colors focus-visible:outline-offset-2 disabled:opacity-50 disabled:cursor-not-allowed',
@@ -53,7 +54,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {loading && (
-          <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" />
+          <Spinner size="sm" />
         )}
         {iconOnly ? (
           <>

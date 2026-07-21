@@ -1,9 +1,12 @@
 /**
- * Synthesized scan feedback tones using Web Audio API.
+ * Synthesized feedback tones using Web Audio API.
  * No binary asset required; works with prefers-reduced-motion.
  */
 
-type ScanSoundType = 'success' | 'duplicate' | 'not-found'
+import { prefersReducedMotion } from '@shared/utils/motion'
+import { isSoundMuted } from './use-sound-settings'
+
+type FeedbackSoundType = 'success' | 'duplicate' | 'not-found' | 'error' | 'payment-complete'
 
 let audioContextRef: AudioContext | null = null
 
@@ -19,19 +22,15 @@ function getAudioContext(): AudioContext | null {
   }
 }
 
-function shouldReduceMotion(): boolean {
-  if (typeof window === 'undefined') return true
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
-}
 
-export function playScanSound(type: ScanSoundType): void {
-  if (shouldReduceMotion()) return
+export function playFeedbackSound(type: FeedbackSoundType): void {
+  if (prefersReducedMotion() || isSoundMuted()) return
 
   const ctx = getAudioContext()
   if (!ctx) return
 
   const now = ctx.currentTime
-  const duration = 0.2
+  const duration = type === 'payment-complete' ? 0.35 : 0.2
 
   const osc = ctx.createOscillator()
   const gain = ctx.createGain()
@@ -44,25 +43,36 @@ export function playScanSound(type: ScanSoundType): void {
 
   switch (type) {
     case 'success': {
-      // Rising tone: 800Hz → 1200Hz
+      osc.type = 'sine'
       osc.frequency.setValueAtTime(800, now)
       osc.frequency.linearRampToValueAtTime(1200, now + duration)
       break
     }
     case 'duplicate': {
-      // Flat middle tone: 600Hz
+      osc.type = 'sine'
       osc.frequency.setValueAtTime(600, now)
       break
     }
     case 'not-found': {
-      // Falling tone: 300Hz → 200Hz
+      osc.type = 'sine'
       osc.frequency.setValueAtTime(300, now)
       osc.frequency.linearRampToValueAtTime(200, now + duration)
       break
     }
+    case 'error': {
+      osc.type = 'square'
+      osc.frequency.setValueAtTime(150, now)
+      break
+    }
+    case 'payment-complete': {
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(500, now)
+      osc.frequency.linearRampToValueAtTime(900, now + duration * 0.6)
+      osc.frequency.linearRampToValueAtTime(900, now + duration)
+      break
+    }
   }
 
-  osc.type = 'sine'
   osc.start(now)
   osc.stop(now + duration)
 }

@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Button } from '@shared/components/ui/button'
+import { useSoundSettings } from '../_lib/use-sound-settings'
 import { useOutboxCount } from '../_lib/register-outbox'
 
 interface RegisterHeaderProps {
@@ -20,6 +22,7 @@ export function RegisterHeader({
 }: RegisterHeaderProps) {
   const [elapsedTime, setElapsedTime] = useState<string>('')
   const outboxCount = useOutboxCount()
+  const { muted, toggleMuted } = useSoundSettings()
 
   useEffect(() => {
     const updateElapsedTime = () => {
@@ -56,10 +59,21 @@ export function RegisterHeader({
 
       <div className="flex items-center gap-4">
         {outboxCount > 0 && (
-          <div className="text-xs bg-warning/10 border border-warning text-foreground rounded px-2 py-1">
+          <div key={outboxCount > 0 ? 'visible' : 'hidden'} className="text-xs bg-warning/10 border border-warning text-foreground rounded px-2 py-1 motion-pop-in">
             {outboxCount} pending
           </div>
         )}
+
+        <Button
+          variant="secondary"
+          size="sm"
+          iconOnly
+          onClick={toggleMuted}
+          aria-pressed={muted}
+          aria-label={muted ? 'Unmute sound' : 'Mute sound'}
+        >
+          {muted ? '🔇' : '🔊'}
+        </Button>
 
         <div
           className={`text-xs font-semibold px-2 py-1 rounded ${

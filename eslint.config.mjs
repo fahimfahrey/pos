@@ -169,6 +169,23 @@ export default [
           selector: 'Property[key.name=/^(p|m|gap|w|h|min-w|min-h|max-w|max-h|inset|top|right|bottom|left|space-x|space-y)$/] MemberExpression[computed=true] Literal[value=/^\d+(px|rem)$/]',
           message: 'Avoid off-scale spacing values; use the design token spacing scale instead.',
         },
+        {
+          selector: 'Literal[value=/^duration-\\d/]',
+          message: 'Avoid raw Tailwind duration-N classes; use duration-[var(--duration-*)] token references instead.',
+        },
+      ],
+    },
+  },
+  {
+    files: ['src/shared/components/ui/**/*.{ts,tsx}'],
+    ignores: ['**/*.test.{ts,tsx}'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'Literal[value=/^duration-\\d/]',
+          message: 'Avoid raw Tailwind duration-N classes; use duration-[var(--duration-*)] token references instead.',
+        },
       ],
     },
   },
