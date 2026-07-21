@@ -20,6 +20,8 @@ export { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs'
 
 export { Badge, badgeVariants } from './badge'
 
+export { Checkbox } from './checkbox'
+
 // Layout & display
 export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './card'
 export { Skeleton } from './skeleton'
@@ -28,6 +30,12 @@ export { EmptyState } from './empty-state'
 export { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell } from './table'
 export { DataGrid } from './data-grid'
 export type { DataGridProps, Column } from './data-grid'
+
+export { DataTable } from './data-table'
+export type { DataTableProps, ColumnDef } from './data-table'
+
+export { StatCard } from './stat-card'
+export type { StatCardProps } from './stat-card'
 
 // Error & status
 export { RouteError } from './route-error'

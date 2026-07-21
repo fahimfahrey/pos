@@ -60,3 +60,18 @@ export async function requireUser(returnTo?: string): Promise<User> {
 
   return user
 }
+
+export async function getActiveBranch(): Promise<string | null> {
+  const cookieStore = await cookies()
+  return cookieStore.get('current-branch-id')?.value ?? null
+}
+
+export async function requireActiveBranch(): Promise<string> {
+  const branchId = await getActiveBranch()
+
+  if (!branchId) {
+    redirect('/app/select-branch')
+  }
+
+  return branchId
+}
