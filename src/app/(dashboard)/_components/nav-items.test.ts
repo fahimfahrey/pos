@@ -27,7 +27,7 @@ describe('getNavItems', () => {
       const items = getNavItems('manager')
       const ids = items.map((i) => i.id)
 
-      expect(ids).toEqual(['home', 'catalog', 'inventory', 'purchasing', 'customers', 'register', 'admin'])
+      expect(ids).toEqual(['home', 'catalog', 'inventory', 'purchasing', 'customers', 'reports', 'register', 'admin'])
     })
   })
 
@@ -36,7 +36,7 @@ describe('getNavItems', () => {
       const items = getNavItems('owner')
       const ids = items.map((i) => i.id)
 
-      expect(ids).toEqual(['home', 'catalog', 'inventory', 'purchasing', 'customers', 'register', 'admin'])
+      expect(ids).toEqual(['home', 'catalog', 'inventory', 'purchasing', 'customers', 'reports', 'register', 'admin'])
     })
   })
 
@@ -45,7 +45,7 @@ describe('getNavItems', () => {
       const items = getNavItems('auditor')
       const ids = items.map((i) => i.id)
 
-      expect(ids).toEqual(['home', 'catalog', 'inventory', 'purchasing', 'customers', 'admin'])
+      expect(ids).toEqual(['home', 'catalog', 'inventory', 'purchasing', 'customers', 'reports', 'admin'])
     })
 
     it('does not include register', () => {

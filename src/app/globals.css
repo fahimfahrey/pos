@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* Device-matrix variants — see docs/device-matrix.md.
+   short: compact viewports (small all-in-one POS terminals, phones in landscape).
+   mouse: fine pointer + hover (desktop keyboard/mouse register), never a touchscreen. */
+@custom-variant short (@media (max-height: 700px));
+@custom-variant mouse (@media (hover: hover) and (pointer: fine));
+
 :root {
   /* Raw palette */
   --palette-ivory: #F5F4EF;
@@ -78,6 +84,34 @@
 
   /* Overlay (non-text scrim for modals/drawers) */
   --overlay: rgba(32, 32, 28, 0.5);
+
+  /* ── Data-viz palette (light) ──
+     Categorical series identity — a colorblind-safe 8-hue set validated with the
+     dataviz skill's palette validator against the chart surface (#FAF9F5):
+     worst adjacent CVD ΔE 24.2 (well clear of the ≥12 target). Assigned in fixed
+     order, never cycled. Three slots sit below 3:1 on the warm surface, so charts
+     always pair a legend + direct labels + a figure table (the relief rule). */
+  --chart-1: #2A78D6; /* blue    */
+  --chart-2: #1BAF7A; /* aqua    */
+  --chart-3: #EDA100; /* yellow  */
+  --chart-4: #008300; /* green   */
+  --chart-5: #4A3AA7; /* violet  */
+  --chart-6: #E34948; /* red     */
+  --chart-7: #E87BA4; /* magenta */
+  --chart-8: #EB6834; /* orange  */
+
+  /* Sequential magnitude ramp (hourly heatmap) — single-hue terracotta, on-brand,
+     light→dark, monotone lightness. Step 0 recedes toward the surface (near-zero). */
+  --chart-seq-0: #F2E6DE;
+  --chart-seq-1: #E3BCA9;
+  --chart-seq-2: #D2957A;
+  --chart-seq-3: #BF6E4E;
+  --chart-seq-4: #A34A30;
+
+  /* Chart chrome — recessive grid + baseline, muted axis ink */
+  --chart-grid: #E5E2D9;
+  --chart-axis: #C9C5BA;
+  --chart-axis-ink: #8A867C;
 }
 
 @theme inline {
@@ -148,6 +182,28 @@
     --danger: var(--palette-brick-dark);
     --warning: var(--palette-amber-dark);
     --overlay: rgba(15, 15, 13, 0.65);
+
+    /* Data-viz palette (dark) — same 8 hues stepped for the dark surface (#1F1E1B),
+       all ≥ 3:1; worst adjacent CVD ΔE 10.3 (floor band, safe with the legend +
+       direct labels the charts always ship). */
+    --chart-1: #3987E5;
+    --chart-2: #199E70;
+    --chart-3: #C98500;
+    --chart-4: #008300;
+    --chart-5: #9085E9;
+    --chart-6: #E66767;
+    --chart-7: #D55181;
+    --chart-8: #D95926;
+
+    --chart-seq-0: #4A342B;
+    --chart-seq-1: #6E4736;
+    --chart-seq-2: #96583F;
+    --chart-seq-3: #C07E5D;
+    --chart-seq-4: #E0A886;
+
+    --chart-grid: #3D3C39;
+    --chart-axis: #4A4844;
+    --chart-axis-ink: #A6A297;
   }
 }
 
@@ -176,6 +232,26 @@
   --danger: var(--palette-brick-dark);
   --warning: var(--palette-amber-dark);
   --overlay: rgba(15, 15, 13, 0.65);
+
+  /* Data-viz palette (dark) — see the media-query block above for rationale */
+  --chart-1: #3987E5;
+  --chart-2: #199E70;
+  --chart-3: #C98500;
+  --chart-4: #008300;
+  --chart-5: #9085E9;
+  --chart-6: #E66767;
+  --chart-7: #D55181;
+  --chart-8: #D95926;
+
+  --chart-seq-0: #4A342B;
+  --chart-seq-1: #6E4736;
+  --chart-seq-2: #96583F;
+  --chart-seq-3: #C07E5D;
+  --chart-seq-4: #E0A886;
+
+  --chart-grid: #3D3C39;
+  --chart-axis: #4A4844;
+  --chart-axis-ink: #A6A297;
 }
 
 :root[data-theme='light'] {
@@ -368,4 +444,55 @@ body {
 
 .motion-fade-collapse-out {
   animation: fade-collapse-out var(--duration-fast) var(--ease-base) both;
+}
+
+/* ── Print: Z-report & end-of-day close documents ──
+   An audit-grade document prints as clean black-on-white on the paper plane.
+   Everything outside the printable document is dropped; the document forces its
+   own light-mode ink so a dark-mode screen still yields a legible page. */
+@media print {
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
+
+  /* Hide app chrome and anything explicitly marked no-print */
+  .print-hidden,
+  header,
+  aside,
+  nav {
+    display: none !important;
+  }
+
+  /* Only the printable document is shown, and it fills the sheet */
+  .print-document {
+    display: block !important;
+    color: #000000;
+    background: #ffffff;
+    box-shadow: none !important;
+    border: none !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .print-document * {
+    color: #000000 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .print-document hr,
+  .print-document .print-rule {
+    border-color: #000000 !important;
+  }
+
+  .print-avoid-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  @page {
+    margin: 14mm;
+  }
 }

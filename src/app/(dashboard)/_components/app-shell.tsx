@@ -32,6 +32,7 @@ const ICON_MAP: Record<string, string> = {
   package: '📫',
   truck: '🚚',
   users: '👥',
+  'bar-chart': '📊',
   'credit-card': '💳',
   settings: '⚙️',
 }
@@ -73,7 +74,7 @@ export function AppShell({
   )
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-dvh flex flex-col bg-background pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
       {/* Skip link */}
       <a
         href="#content"
@@ -83,8 +84,8 @@ export function AppShell({
       </a>
 
       {/* Header */}
-      <header className="bg-surface border-b border-border sticky top-0 z-40">
-        <div className="px-4 py-3 flex items-center justify-between gap-4">
+      <header className="bg-surface border-b border-border sticky top-0 z-40 pt-[env(safe-area-inset-top)]">
+        <div className="px-4 py-3 short:py-1.5 flex items-center justify-between gap-4">
           {/* Left: Mobile nav trigger + Brand */}
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>

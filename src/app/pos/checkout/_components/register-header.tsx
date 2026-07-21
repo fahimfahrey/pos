@@ -42,23 +42,23 @@ export function RegisterHeader({
   }, [shiftStartedAt])
 
   return (
-    <header className="h-14 bg-surface border-b border-border px-4 flex items-center justify-between">
-      <div className="flex items-center gap-6">
-        <div className="flex flex-col gap-1">
+    <header className="min-h-14 short:min-h-10 bg-surface border-b border-border px-4 short:px-2 flex items-center justify-between pt-[env(safe-area-inset-top)]">
+      <div className="flex items-center gap-6 short:gap-3">
+        <div className="flex flex-col gap-1 short:gap-0">
           <div className="font-semibold text-foreground">
             {registerName} #{registerNumber}
           </div>
-          <div className="text-xs text-foreground">
+          <div className="text-xs text-foreground short:hidden">
             {cashierName}
           </div>
         </div>
 
-        <div className="text-xs text-foreground">
+        <div className="text-xs text-foreground short:hidden">
           Shift: {elapsedTime}
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 short:gap-2">
         {outboxCount > 0 && (
           <div key={outboxCount > 0 ? 'visible' : 'hidden'} className="text-xs bg-warning/10 border border-warning text-foreground rounded px-2 py-1 motion-pop-in">
             {outboxCount} pending

@@ -16,8 +16,8 @@ const sheetVariants = cva(
       side: {
         top: 'inset-x-0 top-0 border-b data-[state=closed]:motion-sheet-top-exit data-[state=open]:motion-sheet-top-enter',
         bottom: 'inset-x-0 bottom-0 border-t data-[state=closed]:motion-sheet-bottom-exit data-[state=open]:motion-sheet-bottom-enter',
-        left: 'inset-y-0 left-0 h-full w-3/4 border-r data-[state=closed]:motion-sheet-left-exit data-[state=open]:motion-sheet-left-enter',
-        right: 'inset-y-0 right-0 h-full w-3/4 border-l data-[state=closed]:motion-sheet-right-exit data-[state=open]:motion-sheet-right-enter',
+        left: 'inset-y-0 left-0 h-dvh w-3/4 border-r data-[state=closed]:motion-sheet-left-exit data-[state=open]:motion-sheet-left-enter',
+        right: 'inset-y-0 right-0 h-dvh w-3/4 border-l data-[state=closed]:motion-sheet-right-exit data-[state=open]:motion-sheet-right-enter',
       },
     },
     defaultVariants: {

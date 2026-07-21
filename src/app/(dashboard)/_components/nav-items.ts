@@ -49,6 +49,12 @@ export function getNavItems(persona: Persona): NavItem[] {
       href: '/app/customers',
       icon: 'users',
     },
+    {
+      id: 'reports',
+      label: 'Reports',
+      href: '/app/reports',
+      icon: 'bar-chart',
+    },
   ]
 
   const registerItem: NavItem = {

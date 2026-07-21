@@ -48,7 +48,7 @@ export function QtyStepper({ value, onChange }: QtyStepperProps) {
     >
       <button
         onClick={() => onChange(Math.max(1, value - 1))}
-        className="h-10 w-10 min-h-10 min-w-10 flex items-center justify-center rounded-[var(--radius-input)] hover:bg-background transition-colors font-bold text-lg"
+        className="h-10 w-10 min-h-10 min-w-10 short:h-8 short:w-8 short:min-h-8 short:min-w-8 mouse:h-8 mouse:w-8 mouse:min-h-8 mouse:min-w-8 flex items-center justify-center rounded-[var(--radius-input)] hover:bg-background transition-colors font-bold text-lg"
         aria-label="Decrease quantity"
       >
         −
@@ -66,7 +66,7 @@ export function QtyStepper({ value, onChange }: QtyStepperProps) {
 
       <button
         onClick={() => onChange(value + 1)}
-        className="h-10 w-10 min-h-10 min-w-10 flex items-center justify-center rounded-[var(--radius-input)] hover:bg-background transition-colors font-bold text-lg"
+        className="h-10 w-10 min-h-10 min-w-10 short:h-8 short:w-8 short:min-h-8 short:min-w-8 mouse:h-8 mouse:w-8 mouse:min-h-8 mouse:min-w-8 flex items-center justify-center rounded-[var(--radius-input)] hover:bg-background transition-colors font-bold text-lg"
         aria-label="Increase quantity"
       >
         +

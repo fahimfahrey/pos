@@ -70,7 +70,10 @@ export function PaymentSheet({ total, open, onClose, onFinalize }: PaymentSheetP
 
   return (
     <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
+      <SheetContent
+        side="right"
+        className="w-full sm:max-w-lg overflow-y-auto pb-[env(safe-area-inset-bottom)]"
+      >
         <SheetHeader>
           <SheetTitle>Payment</SheetTitle>
           <SheetDescription>Enter payment details</SheetDescription>
@@ -103,6 +106,7 @@ export function PaymentSheet({ total, open, onClose, onFinalize }: PaymentSheetP
                 </label>
                 <input
                   type="number"
+                  inputMode="decimal"
                   value={tendered === 0 ? '' : tendered.toFixed(2)}
                   onChange={(e) => setTendered(parseFloat(e.target.value) || 0)}
                   step="0.01"
@@ -152,6 +156,7 @@ export function PaymentSheet({ total, open, onClose, onFinalize }: PaymentSheetP
                   </label>
                   <input
                     type="number"
+                    inputMode="decimal"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     step="0.01"

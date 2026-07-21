@@ -37,7 +37,7 @@ export function CartRow({
     : lineSubtotal
 
   return (
-    <div className="min-h-16 py-2 px-3 hover:bg-warm-gray/50 transition-colors">
+    <div className="min-h-16 short:min-h-12 py-2 short:py-1 px-3 hover:bg-warm-gray/50 transition-colors">
       <div className="flex gap-3 items-stretch">
         {/* Item name and details */}
         <div className="flex-1 flex flex-col justify-center min-w-0">
@@ -59,7 +59,7 @@ export function CartRow({
         <div className="relative">
           <button
             onClick={() => setShowDiscount(!showDiscount)}
-            className="h-10 w-10 min-h-10 min-w-10 rounded-[var(--radius-input)] border border-border bg-surface text-foreground hover:bg-background transition-colors text-xs font-semibold"
+            className="h-10 w-10 min-h-10 min-w-10 short:h-8 short:w-8 short:min-h-8 short:min-w-8 mouse:h-8 mouse:w-8 mouse:min-h-8 mouse:min-w-8 rounded-[var(--radius-input)] border border-border bg-surface text-foreground hover:bg-background transition-colors text-xs font-semibold"
             aria-label="Discount"
             data-scan-exempt
           >
@@ -98,7 +98,7 @@ export function CartRow({
         {/* Remove button */}
         <button
           onClick={() => onRemove(index)}
-          className="h-10 w-10 min-h-10 min-w-10 rounded-[var(--radius-input)] border border-border bg-surface text-danger hover:bg-danger/10 transition-colors text-lg font-bold"
+          className="h-10 w-10 min-h-10 min-w-10 short:h-8 short:w-8 short:min-h-8 short:min-w-8 mouse:h-8 mouse:w-8 mouse:min-h-8 mouse:min-w-8 rounded-[var(--radius-input)] border border-border bg-surface text-danger hover:bg-danger/10 transition-colors text-lg font-bold"
           aria-label="Remove item"
           data-scan-exempt
         >

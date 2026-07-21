@@ -11,7 +11,10 @@ export default function CheckoutLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="h-full overflow-hidden overscroll-none" role="application">
+    <div
+      className="h-dvh overflow-hidden overscroll-none pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]"
+      role="application"
+    >
       <div
         role="status"
         aria-live="polite"

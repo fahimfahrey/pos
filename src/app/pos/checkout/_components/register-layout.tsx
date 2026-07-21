@@ -279,11 +279,11 @@ export function RegisterLayout({
         )}
       </div>
 
-      <div className="border-t border-border p-4 flex gap-2">
+      <div className="border-t border-border p-4 short:p-2 pb-[max(1rem,env(safe-area-inset-bottom))] flex gap-2">
         <button
           onClick={handleHoldCart}
           disabled={state.lines.length === 0}
-          className="flex-1 h-14 px-4 font-semibold border border-border bg-surface text-foreground rounded-[var(--radius-button)] hover:bg-background disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex-1 h-14 mouse:h-11 px-4 font-semibold border border-border bg-surface text-foreground rounded-[var(--radius-button)] hover:bg-background disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           data-scan-exempt
         >
           Hold (F3)
@@ -292,7 +292,7 @@ export function RegisterLayout({
         <button
           onClick={handleVoidCart}
           disabled={state.lines.length === 0}
-          className="flex-1 h-14 px-4 font-semibold border border-border bg-surface text-foreground rounded-[var(--radius-button)] hover:bg-background disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex-1 h-14 mouse:h-11 px-4 font-semibold border border-border bg-surface text-foreground rounded-[var(--radius-button)] hover:bg-background disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           data-scan-exempt
         >
           Void (F6)
@@ -301,7 +301,7 @@ export function RegisterLayout({
         <button
           onClick={handlePayment}
           disabled={state.lines.length === 0}
-          className="flex-1 h-14 px-4 font-semibold font-bold bg-accent text-accent-foreground rounded-[var(--radius-button)] hover:bg-accent-strong disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-lg"
+          className="flex-1 h-14 mouse:h-11 px-4 font-semibold font-bold bg-accent text-accent-foreground rounded-[var(--radius-button)] hover:bg-accent-strong disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-lg"
           data-scan-exempt
         >
           Pay (F2)
