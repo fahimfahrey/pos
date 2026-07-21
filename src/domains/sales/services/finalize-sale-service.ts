@@ -1,5 +1,5 @@
-import { SALE_STATUS } from '@domains/sales/entities/sale'
-import type { Sale, SaleStatus } from '@domains/sales/entities/sale'
+import { SALE_STATUS, PAYMENT_STATUS } from '@constants/enums'
+import type { Sale } from '@domains/sales/entities/sale'
 import type { SaleItem } from '@domains/sales/entities/sale-item'
 // eslint-disable-next-line boundaries/no-unknown
 import type { SalesRepository } from '@domains/sales/repository'
@@ -18,13 +18,16 @@ import type { Payment } from '@domains/payments/entities/payment'
 import { ValidationError } from '@shared/errors'
 import type { Clock } from '@shared/ports/clock'
 import type { IdGenerator } from '@shared/ports/id-generator'
-import { STOCK_MOVEMENT_TYPE } from '@constants/enums'
 import { PaymentService } from '@domains/payments/services/payment-service'
 import type { PaymentMethod } from '@constants/enums'
+import { resolveGatewayForMethod } from '@domains/payments/lib/payment-method-gateway-map'
 
 export interface FinalizeSaleInput {
   saleId: string
   shiftId: string
+  orgId: string
+  branchId: string
+  createdBy: string
   lines: Array<{
     variantId: string
     quantity: number
@@ -33,8 +36,12 @@ export interface FinalizeSaleInput {
   cartDiscount?: DiscountSpec
   customerId?: string
   payments: Array<{
+    id: string
     amount: number
-    method: string
+    method: PaymentMethod
+    tendered?: number
+    customerId?: string
+    idempotencyKey?: string
   }>
   managerOverrideToken?: {
     approvedBy: string
@@ -43,9 +50,11 @@ export interface FinalizeSaleInput {
 }
 
 export interface FinalizeSaleResult {
-  sale: Sale
-  receiptNumber: string
-  alreadyFinalized: boolean
+  sale?: Sale
+  payments: Payment[]
+  outcome: 'paid' | 'declined'
+  receiptNumber?: string
+  alreadyFinalized?: boolean
 }
 
 export class FinalizeSaleService {
@@ -76,6 +85,8 @@ export class FinalizeSaleService {
         : 'UNKNOWN'
       return {
         sale: existing,
+        payments: [],
+        outcome: 'paid',
         receiptNumber,
         alreadyFinalized: true,
       }
@@ -93,7 +104,8 @@ export class FinalizeSaleService {
           ? await repos.catalog.findCategoryById(variant.categoryId)
           : null
 
-        const taxRate = resolveTaxRate(settings, category)
+        // Use resolved tax rate or fall back to first rule
+        const taxRate = resolveTaxRate(settings, category) ?? (settings.taxRules[0]?.rate || 0)
 
         return {
           variantId: line.variantId,
@@ -146,13 +158,45 @@ export class FinalizeSaleService {
       )
     }
 
+    // Process payments
+    const paymentService = new PaymentService(this.clock, this.ids)
+    const chargeRequests = input.payments.map((payment) => ({
+      id: payment.id,
+      amount: payment.amount,
+      method: payment.method,
+      gateway: resolveGatewayForMethod(payment.method),
+      tendered: payment.tendered,
+      customerId: payment.customerId,
+      idempotencyKey: payment.idempotencyKey,
+    }))
+
+    const chargedPayments = await paymentService.chargeSplitPayments(
+      repos,
+      { clock: this.clock, ids: this.ids },
+      {
+        saleId: input.saleId,
+        currency: settings.currency,
+        total: cartTotal.total,
+        requests: chargeRequests,
+      },
+    )
+
+    // Check if all payments are captured
+    const allCaptured = chargedPayments.every((p) => p.status === PAYMENT_STATUS.CAPTURED)
+    if (!allCaptured) {
+      return {
+        payments: chargedPayments,
+        outcome: 'declined',
+      }
+    }
+
     // Get or increment receipt counter
     let receiptCounter = await repos.sales.findReceiptCounter(settings.currency)
     if (!receiptCounter) {
       receiptCounter = {
-        id: this.ids.next(),
-        orgId: 'unknown', // Will be set by caller
-        branchId: 'unknown', // Will be set by caller
+        id: this.ids.generate(),
+        orgId: input.orgId,
+        branchId: input.branchId,
         nextNumber: 1,
         updatedAt: this.clock.now(),
       }
@@ -167,8 +211,8 @@ export class FinalizeSaleService {
     const now = this.clock.now()
     const sale: Sale = {
       id: input.saleId,
-      orgId: 'unknown', // Caller should provide
-      branchId: 'unknown', // Caller should provide
+      orgId: input.orgId,
+      branchId: input.branchId,
       shiftId: input.shiftId,
       status: SALE_STATUS.PAID,
       receiptNumber,
@@ -178,7 +222,7 @@ export class FinalizeSaleService {
       tax: cartTotal.tax,
       total: cartTotal.total,
       createdAt: now,
-      createdBy: 'unknown', // Caller should provide
+      createdBy: input.createdBy,
     }
     await repos.sales.saveSale(sale)
 
@@ -196,7 +240,7 @@ export class FinalizeSaleService {
         : 0
 
       const item: SaleItem = {
-        id: this.ids.next(),
+        id: this.ids.generate(),
         saleId: input.saleId,
         variantId: detail.variantId,
         quantity: detail.quantity,
@@ -214,33 +258,20 @@ export class FinalizeSaleService {
 
       // Record stock movement (decrement)
       await repos.inventory.recordSale(repos.inventory, {
-        orgId: sale.orgId,
-        branchId: sale.branchId,
+        orgId: input.orgId,
+        branchId: input.branchId,
         variantId: detail.variantId,
         quantity: detail.quantity,
         reference: input.saleId,
-        createdBy: sale.createdBy,
+        createdBy: input.createdBy,
         allowOversell: false,
       })
     }
 
-    // Create payments
-    for (const paymentInput of input.payments) {
-      const payment: Payment = {
-        id: this.ids.next(),
-        saleId: input.saleId,
-        amount: paymentInput.amount,
-        currency: settings.currency,
-        method: paymentInput.method,
-        status: 'completed',
-        createdAt: now,
-        updatedAt: now,
-      }
-      await repos.payments.savePayment(payment)
-    }
-
     return {
       sale,
+      payments: chargedPayments,
+      outcome: 'paid',
       receiptNumber: formatReceiptNumber('UNKNOWN', receiptNumber),
       alreadyFinalized: false,
     }

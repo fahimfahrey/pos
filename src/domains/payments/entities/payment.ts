@@ -14,6 +14,7 @@ export interface Payment {
   tendered?: number
   changeDue?: number
   customerId?: string
+  failureReason?: string
   createdAt: Date
   updatedAt: Date
 }

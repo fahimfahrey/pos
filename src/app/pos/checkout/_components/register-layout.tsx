@@ -19,7 +19,7 @@ import { ScanInput } from './scan-input'
 import { ScanFeedbackBanner } from './scan-feedback-banner'
 import { CartList } from './cart-list'
 import { RunningTotal } from './running-total'
-import { PaymentPanel } from './payment-panel'
+import { PaymentSheet } from './payment-sheet'
 import { VoidSaleModal } from './void-sale-modal'
 import { HoldResumeDrawer } from './hold-resume-drawer'
 import { EmptyCartState } from './empty-cart-state'
@@ -151,69 +151,64 @@ export function RegisterLayout({
     focusScanInput()
   }
 
-  const handleFinalizeSale = async (paymentMethod: string, amount: number) => {
+  const handleFinalizeSale = async (paymentMethod: string, amount: number, tendered?: number) => {
     if (!pricedCart) return
 
     try {
       const provider = createDefaultStorageProvider()
       const repos = await provider.getRepositorySet()
+      const { resolveSettings } = await import('@domains/organization/services/settings-resolver')
+      const { FinalizeSaleService } = await import('@domains/sales/services/finalize-sale-service')
       const clock = new SystemClock()
       const idGen = new UuidIdGenerator()
 
-      // Simplified sale creation (full service integration in future card)
-      const saleId = idGen.generate()
-      const now = clock.now()
+      // Resolve settings
+      const settings = await resolveSettings(repos, orgId, register.branchId || 'default')
 
-      const sale = {
-        id: saleId,
+      const saleId = idGen.generate()
+
+      // Build payment input
+      const paymentId = idGen.generate()
+      const payments = [
+        {
+          id: paymentId,
+          amount,
+          method: paymentMethod as any, // Cast from Tabs value to PaymentMethod
+          tendered,
+          idempotencyKey: paymentId,
+        },
+      ]
+
+      // Build sale input
+      const saleInput = {
+        saleId,
+        shiftId: shift.id,
         orgId,
         branchId: register.branchId || 'default',
-        shiftId: shift.id,
-        status: 'paid' as const,
-        receiptNumber: 1,
-        customerId: null,
-        subtotal: pricedCart.subtotal,
-        discount: pricedCart.discount,
-        tax: pricedCart.tax,
-        total: pricedCart.total,
-        createdAt: now,
         createdBy: cashierId,
-      }
-
-      await repos.sales.saveSale(sale)
-
-      // Save sale items
-      for (let i = 0; i < state.lines.length; i++) {
-        const line = state.lines[i]
-        const item = {
-          id: idGen.generate(),
-          saleId,
+        lines: state.lines.map((line) => ({
           variantId: line.variantId,
           quantity: line.quantity,
-          unitPrice: line.price,
-          discount: line.discount
-            ? line.discount.type === 'percentage'
-              ? Math.round((line.price * line.quantity * line.discount.amount) / 10000)
-              : line.discount.amount
-            : 0,
-          taxRate: 10,
-          taxAmount: Math.round((line.price * line.quantity * 10) / 1000),
-          subtotal: Math.round((line.price * line.quantity) / 100),
-          total: Math.round((line.price * line.quantity) / 100),
-          name: line.name,
-          sku: line.barcode,
-          createdAt: now,
-        }
-        await repos.sales.saveSaleItem(item)
+          discount: line.discount,
+        })),
+        cartDiscount: state.cartDiscount,
+        payments,
       }
 
-      // Mark outbox entry as resolved and redirect to receipt
-      getOutbox().markResolved(`sale-${saleId}`)
-      dispatch({ type: 'RESET' })
-      setPricedCart(null)
-      setShowPayment(false)
+      // Finalize sale
+      const service = new FinalizeSaleService(clock, idGen)
+      const result = await service.finalize(repos, settings, saleInput)
 
-      router.push(`/pos/receipt/${saleId}`)
+      if (result.outcome === 'paid' && result.sale) {
+        getOutbox().markResolved(`sale-${saleId}`)
+        dispatch({ type: 'RESET' })
+        setPricedCart(null)
+        setShowPayment(false)
+        router.push(`/pos/receipt/${saleId}`)
+      } else {
+        // Payment declined - keep sheet open
+        setShowPayment(true)
+      }
     } catch (error) {
       console.error('Failed to finalize sale:', error)
     }
@@ -314,9 +309,11 @@ export function RegisterLayout({
       </div>
 
       {/* Modals and drawers */}
-      {showPayment && pricedCart && (
-        <PaymentPanel
+      {/* Modals and drawers */}
+      {pricedCart && (
+        <PaymentSheet
           total={pricedCart.total}
+          open={showPayment}
           onClose={handleCloseModal}
           onFinalize={handleFinalizeSale}
         />

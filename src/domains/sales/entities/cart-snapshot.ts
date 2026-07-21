@@ -14,5 +14,6 @@ export interface CartSnapshot {
   discount: number
   tax: number
   total: number
+  status?: 'cart' | 'payment' | 'complete'
   updatedAt: string
 }

@@ -48,18 +48,27 @@ export class PaymentService {
       const gateway = resolvePaymentGateway(request.gateway)
       const idempotencyKey = request.idempotencyKey || request.id
 
-      const chargeResult = await gateway.charge(
-        {
-          saleId: input.saleId,
-          paymentId: request.id,
-          amount: request.amount,
-          currency: input.currency,
-          idempotencyKey,
-          tendered: request.tendered,
-          customerId: request.customerId,
-        },
-        { repos, clock: this.clock, ids: this.ids },
-      )
+      let chargeResult: Awaited<ReturnType<typeof gateway.charge>> | null = null
+      let failureReason: string | undefined
+
+      try {
+        chargeResult = await gateway.charge(
+          {
+            saleId: input.saleId,
+            paymentId: request.id,
+            amount: request.amount,
+            currency: input.currency,
+            idempotencyKey,
+            tendered: request.tendered,
+            customerId: request.customerId,
+          },
+          { repos, clock: this.clock, ids: this.ids },
+        )
+      } catch (error) {
+        // Convert gateway error to FAILED payment result
+        chargeResult = { status: PAYMENT_STATUS.FAILED }
+        failureReason = error instanceof Error ? error.message : String(error)
+      }
 
       const status = chargeResult.status || PAYMENT_STATUS.PENDING
 
@@ -76,6 +85,7 @@ export class PaymentService {
         tendered: request.tendered,
         changeDue: chargeResult.changeDue,
         customerId: request.customerId,
+        failureReason,
         createdAt: this.clock.now(),
         updatedAt: this.clock.now(),
       }
