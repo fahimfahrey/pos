@@ -19,6 +19,7 @@
 
 # production
 /build
+storybook-static/
 
 # misc
 .DS_Store
@@ -37,6 +38,7 @@ yarn-error.log*
 # playwright
 playwright-report/
 test-results/
+tests/visual/__screenshots__/
 
 # vercel
 .vercel

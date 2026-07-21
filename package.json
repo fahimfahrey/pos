@@ -20,7 +20,10 @@
     "test:conformance:browser": "vitest run --config vitest.browser.config.ts",
     "format": "prettier --write .",
     "migrate:engine": "tsx scripts/migrate-engine.ts",
-    "audit": "npm audit --omit=dev --audit-level=high"
+    "audit": "npm audit --omit=dev --audit-level=high",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "test:storybook-a11y": "test-storybook --url http://127.0.0.1:6006"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -65,6 +68,23 @@
     "typescript": "5.9.3",
     "tsx": "^4.7.0",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^1.6.1"
+    "vitest": "^1.6.1",
+    "@radix-ui/react-dialog": "^1.1.1",
+    "@radix-ui/react-select": "^2.0.0",
+    "@radix-ui/react-tabs": "^1.0.4",
+    "@radix-ui/react-tooltip": "^1.0.7",
+    "@radix-ui/react-toast": "^1.1.5",
+    "@radix-ui/react-label": "^2.0.2",
+    "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-popover": "^1.0.7",
+    "@radix-ui/react-visually-hidden": "^1.0.3",
+    "class-variance-authority": "^0.7.0",
+    "storybook": "^8.2.0",
+    "@storybook/nextjs": "^8.2.0",
+    "@storybook/addon-essentials": "^8.2.0",
+    "@storybook/addon-a11y": "^8.2.0",
+    "@storybook/test-runner": "^0.19.0",
+    "@axe-core/playwright": "^4.8.0",
+    "axe-playwright": "^1.2.3"
   }
 }

@@ -109,6 +109,7 @@ export default [
         { type: 'repositories', pattern: 'src/domains/*/repository.ts' },
         { type: 'entities', pattern: 'src/domains/*/entities/**' },
         { type: 'infrastructure', pattern: 'src/infrastructure/**' },
+        { type: 'ui', pattern: 'src/shared/components/ui/**' },
         { type: 'shared', pattern: 'src/shared/**' },
         { type: 'constants', pattern: 'src/constants/**' },
       ],

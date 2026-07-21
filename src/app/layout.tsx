@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Fraunces, Inter } from 'next/font/google'
+import { Fraunces, Inter, Hind_Siliguri } from 'next/font/google'
 import { cookies } from 'next/headers'
 import './globals.css'
 import { ServiceWorkerRegister } from './_components/service-worker-register'
@@ -20,6 +20,12 @@ const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-body',
+})
+
+const hindSiliguri = Hind_Siliguri({
+  subsets: ['bengali', 'latin'],
+  display: 'swap',
+  variable: '--font-bengali',
 })
 
 export const metadata: Metadata = {
@@ -65,7 +71,7 @@ export default async function RootLayout({
     <html
       lang="en"
       data-theme={theme.colorScheme === 'system' ? undefined : theme.colorScheme}
-      className={`${fraunces.variable} ${inter.variable} h-full antialiased`}
+      className={`${fraunces.variable} ${inter.variable} ${hindSiliguri.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <TenantThemeStyle colorScheme={theme.colorScheme} brandColor={theme.brandColor} derivedTokens={derivedTokens} />
