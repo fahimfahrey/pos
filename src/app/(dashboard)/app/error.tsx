@@ -2,7 +2,7 @@
 
 import { RouteError } from '@shared/components/ui/route-error'
 
-export default function Error({
+export default function DashboardError({
   error,
   reset,
 }: {
@@ -11,8 +11,8 @@ export default function Error({
 }) {
   return (
     <RouteError
-      title="Something went wrong"
-      message="An unexpected error occurred. Your data on this device is safe. Please try again."
+      title="Failed to load dashboard"
+      message="Unable to retrieve dashboard data. Your data on this device is safe. Please try again."
       kind="system"
       retry={reset}
       showAlert

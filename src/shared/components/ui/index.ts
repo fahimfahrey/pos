@@ -23,10 +23,15 @@ export { Badge, badgeVariants } from './badge'
 // Layout & display
 export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './card'
 export { Skeleton } from './skeleton'
+export { SkeletonRows } from './skeleton-rows'
 export { EmptyState } from './empty-state'
 export { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell } from './table'
 export { DataGrid } from './data-grid'
 export type { DataGridProps, Column } from './data-grid'
+
+// Error & status
+export { RouteError } from './route-error'
+export { OfflineBanner } from './offline-banner'
 
 // Dialogs & overlays
 export {

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Button } from '@shared/components/ui/button'
+import { OfflineBanner } from '@shared/components/ui/offline-banner'
 import { useSoundSettings } from '../_lib/use-sound-settings'
 import { useOutboxCount } from '../_lib/register-outbox'
 
@@ -75,15 +76,7 @@ export function RegisterHeader({
           {muted ? '🔇' : '🔊'}
         </Button>
 
-        <div
-          className={`text-xs font-semibold px-2 py-1 rounded ${
-            isOnline
-              ? 'bg-success/10 border border-success text-foreground'
-              : 'bg-danger/10 border border-danger text-foreground'
-          }`}
-        >
-          {isOnline ? '● Online' : '● Offline'}
-        </div>
+        <OfflineBanner isOnline={isOnline} pendingCount={outboxCount} compact />
       </div>
     </header>
   )

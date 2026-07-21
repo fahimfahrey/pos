@@ -1,15 +1,22 @@
+'use client'
+
 import Link from 'next/link'
+import { EmptyState } from '@shared/components/ui/empty-state'
+import { Button } from '@shared/components/ui/button'
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-2">404</h1>
-        <p className="text-gray-600 mb-6">Page not found</p>
-        <Link href="/" className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-          Go back home
-        </Link>
-      </div>
+    <div className="flex items-center justify-center min-h-screen p-4">
+      <EmptyState
+        icon="🔍"
+        title="Page not found"
+        description="The page you're looking for doesn't exist or has been moved."
+        action={
+          <Link href="/">
+            <Button>Go back home</Button>
+          </Link>
+        }
+      />
     </div>
   )
 }

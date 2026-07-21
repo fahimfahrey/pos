@@ -3,15 +3,20 @@
 import { useActionState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { RouteError } from '@shared/components/ui/route-error'
+import { OfflineBanner } from '@shared/components/ui/offline-banner'
+import { useOnlineStatus } from '@app/pos/checkout/_lib/use-online-status'
 import { logInAction } from '@domains/auth/actions/log-in'
 
 export default function LoginPage() {
   const searchParams = useSearchParams()
   const returnTo = searchParams.get('returnTo') || ''
   const [state, action, pending] = useActionState(logInAction, {})
+  const isOnline = useOnlineStatus()
 
   return (
     <div className="space-y-6">
+      <OfflineBanner isOnline={isOnline} />
       <div className="text-center">
         <h1 className="text-2xl font-bold">Sign In</h1>
         <p className="text-gray-600">Enter your credentials to continue</p>
@@ -19,13 +24,13 @@ export default function LoginPage() {
 
       <form action={action} className="space-y-4">
         {state.error && (
-          <div
-            role="alert"
-            aria-live="polite"
-            className="p-3 bg-red-100 text-red-700 rounded-lg text-sm"
-          >
-            {state.error}
-          </div>
+          <RouteError
+            title={state.errorKind === 'user' ? 'Sign in failed' : 'Something went wrong'}
+            message={state.error}
+            kind={state.errorKind || 'system'}
+            inline
+            showAlert={false}
+          />
         )}
 
         <div>

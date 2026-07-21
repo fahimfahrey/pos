@@ -13,7 +13,7 @@ import { getResolvedSettings } from '@domains/organization/services/settings-res
 export async function logInAction(
   _prevState: unknown,
   formData: FormData,
-): Promise<{ error?: string; returnTo?: string }> {
+): Promise<{ error?: string; errorKind?: 'user' | 'system'; returnTo?: string }> {
   try {
     const email = formData.get('email') as string | null
     const password = formData.get('password') as string | null
@@ -23,6 +23,7 @@ export async function logInAction(
     if (!validationResult.success) {
       return {
         error: validationResult.error.errors[0]?.message || 'Invalid input',
+        errorKind: 'user' as const,
         returnTo: returnTo || undefined,
       }
     }
@@ -52,6 +53,6 @@ export async function logInAction(
   } catch (error) {
     console.error('Log in error:', error)
     const message = error instanceof Error ? error.message : 'Log in failed'
-    return { error: message, returnTo: undefined }
+    return { error: message, errorKind: 'system' as const, returnTo: undefined }
   }
 }

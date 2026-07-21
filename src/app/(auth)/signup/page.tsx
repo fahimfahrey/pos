@@ -2,13 +2,18 @@
 
 import { useActionState } from 'react'
 import Link from 'next/link'
+import { RouteError } from '@shared/components/ui/route-error'
+import { OfflineBanner } from '@shared/components/ui/offline-banner'
+import { useOnlineStatus } from '@app/pos/checkout/_lib/use-online-status'
 import { signUpAction } from '@domains/auth/actions/sign-up'
 
 export default function SignupPage() {
   const [state, action, pending] = useActionState(signUpAction, {})
+  const isOnline = useOnlineStatus()
 
   return (
     <div className="space-y-6">
+      <OfflineBanner isOnline={isOnline} />
       <div className="text-center">
         <h1 className="text-2xl font-bold">Create Account</h1>
         <p className="text-gray-600">Sign up to get started</p>
@@ -16,13 +21,13 @@ export default function SignupPage() {
 
       <form action={action} className="space-y-4">
         {state.error && (
-          <div
-            role="alert"
-            aria-live="polite"
-            className="p-3 bg-red-100 text-red-700 rounded-lg text-sm"
-          >
-            {state.error}
-          </div>
+          <RouteError
+            title="Sign up failed"
+            message={state.error}
+            kind="system"
+            inline
+            showAlert={false}
+          />
         )}
 
         <div>
