@@ -48,6 +48,26 @@ export default [
     },
   },
   {
+    files: ['src/**/__design_token_fixtures__/**'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      'no-unused-vars': 'off',
+      'boundaries/element-types': 'off',
+      'boundaries/external': 'off',
+      'boundaries/no-unknown': 'off',
+      'no-restricted-globals': 'off',
+    },
+  },
+  {
     files: ['e2e/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}', '*.config.{ts,mts,mjs}'],
     languageOptions: {
       parser: tsParser,
@@ -129,6 +149,27 @@ export default [
   { // tests, e2e, config are exempt from boundary rules
     files: ['**/*.test.{ts,tsx}','**/*.spec.{ts,tsx}','e2e/**','vitest.setup.ts','*.config.{ts,mts,mjs}'],
     rules: { 'boundaries/element-types':'off','boundaries/external':'off','boundaries/no-unknown':'off','no-restricted-globals':'off' },
+  },
+  {
+    files: ['src/app/**/*.{ts,tsx}'],
+    ignores: ['**/*.test.{ts,tsx}'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'Literal[value=/^#[0-9a-fA-F]{6}$/]',
+          message: 'Avoid raw hex colors; use CSS custom properties from the design token system instead.',
+        },
+        {
+          selector: 'Literal[value=/^(rgb|hsl)/]',
+          message: 'Avoid raw rgb/hsl colors; use CSS custom properties from the design token system instead.',
+        },
+        {
+          selector: 'Property[key.name=/^(p|m|gap|w|h|min-w|min-h|max-w|max-h|inset|top|right|bottom|left|space-x|space-y)$/] MemberExpression[computed=true] Literal[value=/^\d+(px|rem)$/]',
+          message: 'Avoid off-scale spacing values; use the design token spacing scale instead.',
+        },
+      ],
+    },
   },
   prettier,
 ]

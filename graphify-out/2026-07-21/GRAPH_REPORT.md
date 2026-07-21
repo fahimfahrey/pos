@@ -1,16 +1,16 @@
-# Graph Report - pos  (2026-07-21)
+# Graph Report - pos  (2026-07-19)
 
 ## Corpus Check
-- 402 files · ~192,650 words
+- 358 files · ~134,189 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2646 nodes · 5604 edges · 158 communities (128 shown, 30 thin omitted)
-- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 24 edges (avg confidence: 0.8)
+- 2194 nodes · 4672 edges · 138 communities (94 shown, 44 thin omitted)
+- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 12 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `1caa72d8`
+- Built from commit: `e8684cb0`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -135,151 +135,127 @@
 - AGENTS.md
 - @testing-library/jest-dom
 - @testing-library/react
-- Printer
-- Engine-Specific Caveats
-- errors.ts
-- errors.ts
-- errors.ts
-- Design Direction
-- Token Reference
-- package.json
-- errors.ts
-- Branch
-- What Bends for the Register
-- Color System
-- Shape & Depth
-- tenant-theme-provider.tsx
-- Motion
-- Worked Examples
-- Typography
-- catalog-item.ts
-- eslint-import-resolver-typescript
-- tsx
 
 ## God Nodes (most connected - your core abstractions)
-1. `DriverTransaction` - 49 edges
-2. `InventoryRepository` - 45 edges
-3. `SalesRepository` - 44 edges
-4. `createDefaultStorageProvider()` - 42 edges
-5. `CollectionName` - 37 edges
-6. `CatalogRepository` - 36 edges
-7. `Collection` - 36 edges
-8. `ReportRange` - 35 edges
-9. `toErrorResponse()` - 35 edges
-10. `IdGenerator` - 35 edges
+1. `InventoryRepository` - 45 edges
+2. `DriverTransaction` - 42 edges
+3. `SalesRepository` - 40 edges
+4. `CatalogRepository` - 36 edges
+5. `IdGenerator` - 35 edges
+6. `Collection` - 34 edges
+7. `AppError` - 34 edges
+8. `CoreCatalogRepository` - 32 edges
+9. `CoreOrganizationRepository` - 32 edges
+10. `CollectionName` - 30 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `main()` --indirect_call--> `err()`  [INFERRED]
-  scripts/migrate-engine.ts → src/shared/utils/result.ts
 - `buildVersionChain()` --references--> `dexie`  [EXTRACTED]
   src/infrastructure/storage/adapters/indexeddb/schema.ts → package.json
-- `main()` --calls--> `createStorageProvider()`  [EXTRACTED]
-  scripts/migrate-engine.ts → src/infrastructure/storage/core/storage-provider.ts
 - `LoginPage()` --indirect_call--> `logInAction()`  [INFERRED]
   src/app/(auth)/login/page.tsx → src/domains/auth/actions/log-in.ts
 - `SignupPage()` --indirect_call--> `signUpAction()`  [INFERRED]
   src/app/(auth)/signup/page.tsx → src/domains/auth/actions/sign-up.ts
+- `revokeInvite()` --calls--> `createDefaultStorageProvider()`  [EXTRACTED]
+  src/domains/organization/actions/invite.ts → src/infrastructure/storage/default-provider.ts
+- `FinalizeSaleResult` --references--> `Sale`  [EXTRACTED]
+  src/domains/sales/services/finalize-sale-service.ts → src/domains/sales/entities/sale.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (158 total, 30 thin omitted)
+## Communities (138 total, 44 thin omitted)
 
 ### Community 0 - "CatalogRepository"
-Cohesion: 0.14
-Nodes (3): PriceListEntry, ProductVariant, CoreCatalogRepository
+Cohesion: 0.06
+Nodes (12): Category, PriceList, PriceListEntry, Product, ProductVariant, CatalogEvent, CatalogRepository, CatalogQueryService (+4 more)
 
 ### Community 1 - "CoreOrganizationRepository"
-Cohesion: 0.08
-Nodes (10): MembershipRole, MembershipStatus, CreateInviteInput, BranchAssignment, Invite, Membership, Organization, Register (+2 more)
+Cohesion: 0.05
+Nodes (27): BarcodeSymbology, MembershipRole, MembershipStatus, TaxMode, CreateInviteInput, BranchAssignment, Branch, Invite (+19 more)
 
 ### Community 2 - "fixtures.ts"
-Cohesion: 0.07
-Nodes (55): computeChecksum(), normalizeRecord(), verifyChecksum(), main(), defaultConformanceAdapters, FIXED_DATE, FixtureOverrides, makeAuditEntry() (+47 more)
+Cohesion: 0.08
+Nodes (48): CatalogItem, Category, InsufficientStockError, defaultConformanceAdapters, FIXED_DATE, FixtureOverrides, makeAuditEntry(), makeBranch() (+40 more)
 
 ### Community 3 - "settings.ts"
-Cohesion: 0.26
-Nodes (14): TAX_MODE, applyLineDiscount(), applyRounding(), calculateChangeDue(), CartLine, CartTotal, fromMinorUnits(), LineItem (+6 more)
+Cohesion: 0.18
+Nodes (20): TAX_MODE, applyLineDiscount(), applyRounding(), calculateChangeDue(), CartLine, CartTotal, DiscountSpec, fromMinorUnits() (+12 more)
 
 ### Community 4 - "dependencies"
-Cohesion: 0.07
-Nodes (27): bcryptjs, better-sqlite3, clsx, dexie, idb, jose, next, dependencies (+19 more)
+Cohesion: 0.04
+Nodes (44): bcryptjs, clsx, dexie, idb, jose, next, dependencies, bcryptjs (+36 more)
 
 ### Community 5 - "compilerOptions"
 Cohesion: 0.04
 Nodes (44): **/__boundary_fixtures__/**, dom, dom.iterable, e2e, esnext, **/*.mts, .next/dev/types/**/*.ts, next-env.d.ts (+36 more)
 
 ### Community 6 - "auth-service.ts"
-Cohesion: 0.17
-Nodes (5): Session, User, AuthRepository, CoreAuthRepository, RepositoryContext
+Cohesion: 0.12
+Nodes (7): SignupInput, Session, User, AuthRepository, pinReauthTtlSeconds(), sessionTtlSeconds(), CoreAuthRepository
 
 ### Community 7 - "SalesRepository"
-Cohesion: 0.05
-Nodes (13): PurchaseHistoryService, BuildReceiptDocumentInput, ZReportService, ParkedCart, ReceiptCounter, SaleItem, Sale, Shift (+5 more)
+Cohesion: 0.07
+Nodes (9): PurchaseHistoryService, ParkedCart, ReceiptCounter, SaleItem, Sale, Shift, SalesRepository, ShiftService (+1 more)
 
 ### Community 8 - "index.ts"
-Cohesion: 0.17
-Nodes (14): PAYMENT_STATUS, REFUND_STATUS, RefundStatus, REFUND_STATUS_LABELS, ChargeRequest, ChargeResult, PaymentGateway, PaymentGatewayContext (+6 more)
+Cohesion: 0.07
+Nodes (27): PAYMENT_STATUS, REFUND_STATUS, GatewayNotRegisteredError, InvalidPaymentStatusTransitionError, RefundExceedsPaymentError, PaymentEvent, ChargeRequest, ChargeResult (+19 more)
 
 ### Community 9 - "CorePurchasingRepository"
-Cohesion: 0.09
-Nodes (11): GoodsReceipt, GoodsReceiptLine, PurchaseOrder, PurchaseOrderLine, PurchaseOrderStatus, Supplier, PurchasingRepository, PurchasingService (+3 more)
-
-### Community 10 - "DriverTransaction"
-Cohesion: 0.14
-Nodes (5): Collection, DriverTransaction, InternalMigrationContext, MigrationContext, schemaSteps
+Cohesion: 0.05
+Nodes (24): InsufficientLoyaltyPointsError, InsufficientStoreCreditError, LoyaltyNotEnabledError, SplitPaymentTotalMismatchError, InvalidCouponCodeError, PromotionExpiredError, PromotionNotFoundError, PromotionUsageLimitExceededError (+16 more)
 
 ### Community 11 - "index.ts"
-Cohesion: 0.08
-Nodes (28): AUDIT_ACTION, AuditAction, BARCODE_SYMBOLOGY, BarcodeSymbology, INVITE_STATUS, InviteStatus, MEMBERSHIP_ROLE, ORGANIZATION_PLAN (+20 more)
+Cohesion: 0.15
+Nodes (13): BARCODE_SYMBOLOGY, INVITE_STATUS, InviteStatus, ORGANIZATION_PLAN, OrganizationPlan, ORGANIZATION_STATUS, OrganizationStatus, STOCKTAKE_STATUS (+5 more)
 
 ### Community 12 - "pin-reauth.ts"
-Cohesion: 0.11
-Nodes (27): LoginPage(), SignupPage(), logInAction(), logOutAction(), pinReauthAction(), signUpAction(), LoginInputSchema, PinReauthInput (+19 more)
+Cohesion: 0.12
+Nodes (26): LoginPage(), SignupPage(), logInAction(), logOutAction(), pinReauthAction(), signUpAction(), LoginInput, LoginInputSchema (+18 more)
 
 ### Community 13 - "SystemEnumValue"
-Cohesion: 0.20
-Nodes (5): EnumRegistryKey, SystemEnumValue, SystemEnumValueRepository, EnumRegistryService, CoreSystemEnumValueRepository
+Cohesion: 0.18
+Nodes (6): EnumRegistryKey, SystemEnumValue, SystemEnumValueRepository, EnumRegistryService, CoreSystemEnumValueRepository, ConflictError
 
 ### Community 14 - "verifyToken"
-Cohesion: 0.15
-Nodes (9): offlineCheckSession(), offlineGetSession(), sessionStore, SessionClaims, SessionInput, getSecret(), signToken(), JoseTokenSigner (+1 more)
+Cohesion: 0.13
+Nodes (15): AdminLayout(), DashboardLayout(), requireSession(), offlineCheckSession(), offlineGetSession(), sessionStore, SessionClaims, SessionInput (+7 more)
 
 ### Community 15 - "enum-values-table.tsx"
-Cohesion: 0.13
-Nodes (14): PaymentStatus, PAYMENT_STATUS_LABELS, RefundedItem, assertSplitPaymentsCoverTotal(), sumPaymentAmounts(), PaymentService, isValidPaymentStatusTransition(), RefundInput (+6 more)
+Cohesion: 0.18
+Nodes (14): EDITABLE_KEYS, REGISTRY_LABELS, EnumValuesTable(), LABEL_MAPS, REGISTRY_LABELS, ENUM_REGISTRY_KEY, DISCOUNT_TYPE_LABELS, MEMBERSHIP_ROLE_LABELS (+6 more)
 
 ### Community 16 - "Clock"
-Cohesion: 0.12
-Nodes (8): ORDER_STATUS, ListAuditEntriesFilter, RecordAuditEntryInput, SALE_STATUS, FinalizeSaleService, SalesService, Clock, IdGenerator
+Cohesion: 0.13
+Nodes (8): RefundedItem, PaymentService, RefundInput, RefundService, SalesService, resolvePaymentGateway(), Clock, IdGenerator
 
 ### Community 17 - "Payment"
-Cohesion: 0.13
-Nodes (5): Payment, Refund, PaymentStatusEvent, PaymentsRepository, CorePaymentsRepository
+Cohesion: 0.11
+Nodes (9): PaymentStatus, Payment, Refund, PaymentStatusEvent, assertSplitPaymentsCoverTotal(), sumPaymentAmounts(), PaymentsRepository, isValidPaymentStatusTransition() (+1 more)
 
 ### Community 18 - "driver.ts"
-Cohesion: 0.09
-Nodes (31): HourlyHeatmapRow, MarginRow, PaymentMethodRow, ReportFilter, ReportGranularity, ReportRange, SalesBranchRow, SalesCashierRow (+23 more)
+Cohesion: 0.20
+Nodes (10): exportBackupToFile(), importBackupFromFile(), exportAll(), importAll(), ImportMode, SerializationCodec, StorageExport, COLLECTIONS (+2 more)
 
 ### Community 19 - "createDefaultStorageProvider"
-Cohesion: 0.09
-Nodes (33): AuditPage(), CreateEnumValueForm(), EDITABLE_KEYS, REGISTRY_LABELS, EnumValuesTable(), LABEL_MAPS, REGISTRY_LABELS, EnumValuesPage() (+25 more)
+Cohesion: 0.11
+Nodes (26): CreateEnumValueForm(), EnumValuesPage(), getCurrentSession(), assertActive(), hasAtLeast(), requireAdminMembership(), requireOwnerMembership(), requireRole() (+18 more)
 
 ### Community 20 - "index.ts"
-Cohesion: 0.09
-Nodes (20): exportBackupToFile(), importBackupFromFile(), ephemeralDatabaseName(), resolveDatabaseName(), StorageCloneError, StorageQuotaError, StorageUnavailableError, StorageUpgradeBlockedError (+12 more)
+Cohesion: 0.12
+Nodes (13): ephemeralDatabaseName(), resolveDatabaseName(), StorageCloneError, StorageQuotaError, StorageUnavailableError, StorageUpgradeBlockedError, buildVersionChain(), COLLECTION_INDEXES (+5 more)
 
 ### Community 21 - "catalog.schema.ts"
 Cohesion: 0.15
 Nodes (17): Category, categorySchema, CsvRow, csvRowSchema, PriceList, PriceListEntry, priceListEntrySchema, priceListSchema (+9 more)
 
 ### Community 22 - "Promotion"
-Cohesion: 0.07
+Cohesion: 0.08
 Nodes (21): DiscountType, Promotion, PromotionComboLine, PromotionKind, PromotionTimeWindow, PromotionRedemption, AppliedPromotion, computeDiscount() (+13 more)
 
 ### Community 23 - "CollectionName"
-Cohesion: 0.19
-Nodes (6): InMemoryTransaction, MemoryStorageDriver, CollectionName, SchemaDescriptor, TxMode, EntityEnvelope
+Cohesion: 0.13
+Nodes (8): InMemoryTransaction, MemoryStorageDriver, CollectionName, SchemaDescriptor, TxMode, EntityEnvelope, InternalMigrationContext, MigrationContext
 
 ### Community 24 - "FileStore"
 Cohesion: 0.21
@@ -302,16 +278,16 @@ Cohesion: 0.10
 Nodes (9): Customer, LoyaltyTransaction, LoyaltyTransactionType, StoreCreditTransaction, StoreCreditTransactionType, CustomersRepository, LoyaltyService, StoreCreditService (+1 more)
 
 ### Community 29 - "InventoryRepository"
-Cohesion: 0.05
-Nodes (37): 1. Update Version, 2. Update CHANGELOG, 3. Test the Build, 4. Create Git Tag, 5. Deploy, 6. Smoke Test, Automated Backups (Recommended), Backup Procedure (+29 more)
+Cohesion: 0.18
+Nodes (4): InventoryRepository, InventoryService, DriftReport, ReconciliationService
 
 ### Community 30 - "AuditEntry"
-Cohesion: 0.17
-Nodes (5): AuditLogTable(), AuditLogTableProps, AuditEntry, AuditRepository, CoreAuditRepository
+Cohesion: 0.20
+Nodes (4): AuditEntry, AuditRepository, CoreAuditRepository, RepositoryContext
 
 ### Community 31 - "IndexedDBDriver"
-Cohesion: 0.16
-Nodes (7): IndexedDBDriver, IndexedDBTransaction, mapIndexedDbError(), buildVersionChain(), COLLECTION_INDEXES, V1_STORES_SPEC, COLLECTIONS
+Cohesion: 0.26
+Nodes (4): IndexedDBDriver, IndexedDBTransaction, mapIndexedDbError(), err()
 
 ### Community 32 - "session.ts"
 Cohesion: 0.14
@@ -319,35 +295,23 @@ Nodes (9): DisplayCartView(), DisplayCartViewProps, DisplayPage(), useCartBroadc
 
 ### Community 33 - "onboarding.ts"
 Cohesion: 0.10
-Nodes (25): OnboardingWizard(), Step, metadata, MEMBERSHIP_STATUS, ENUM_REGISTRY_KEY, acceptInvite(), AcceptInviteInput, createInvite() (+17 more)
+Nodes (22): OnboardingWizard(), Step, metadata, MEMBERSHIP_STATUS, getCurrentUser(), requireUser(), acceptInvite(), AcceptInviteInput (+14 more)
 
 ### Community 34 - "discount-policy.ts"
-Cohesion: 0.21
-Nodes (10): DISCOUNT_TYPE, DiscountType, OrderStatus, DiscountLimits, ParkedCartLine, CartDiscount, SaleStatus, DiscountPolicyInput (+2 more)
+Cohesion: 0.17
+Nodes (12): DISCOUNT_TYPE, DiscountType, ORDER_STATUS, OrderStatus, DiscountLimits, ParkedCartLine, CartDiscount, SaleStatus (+4 more)
 
 ### Community 35 - "complete-sale.ts"
 Cohesion: 0.06
 Nodes (35): Acceptance Checklist, Accessibility Considerations, Architecture Decisions, Create — constants (`src/constants/enums/` + `maps/`), Create — domain actions (`src/domains/organization/actions/`), Create — domain entities (`src/domains/organization/entities/`), Create — domain service (`src/domains/organization/services/`), Create — onboarding UI (`src/app/(onboarding)/`) (+27 more)
 
-### Community 36 - "inventory-service.ts"
-Cohesion: 0.06
-Nodes (33): 1. Scan-Input Focus Behavior, 2. Checkout Shortcut Keys, 3. Hold/Resume Flow, 4. Discount Permission Gates, Acceptance Checklist, Accessibility Considerations & Current State, Anti-Goal: "NOT casino-bright or skeuomorphic", Anti-Goal: "NOT cold or clinical" (+25 more)
-
-### Community 37 - "StockLevel"
-Cohesion: 0.05
-Nodes (13): Product, StockLevel, StockMovement, StocktakeCount, StocktakeSession, InventoryRepository, InventoryService, DriftReport (+5 more)
-
 ### Community 38 - "container.ts"
-Cohesion: 0.06
-Nodes (31): Adapter Implementation, Backup & Restore, Both Adapters Green in CI, Build & CI, CSP & Headers, Data Migration, Dependency Audit, Deployment & Infrastructure (+23 more)
+Cohesion: 0.16
+Nodes (6): clock, ids, inventoryRepository, salesRepository, db, DexieSalesRepository
 
 ### Community 39 - "repository.ts"
 Cohesion: 0.06
 Nodes (34): 10. `env.ts`, 11. Conformance suite (`tests/storage/conformance-suite.ts`), 12. `docs/storage-adapters.md`, 13. Typecheck & lint, 14. Verify (apply `verify` skill), 1. Relocate the two existing interfaces, 2. `eslint.config.mjs` — boundary element pattern, 3. Shared `Money` (+26 more)
-
-### Community 40 - "CoreInventoryRepository"
-Cohesion: 0.18
-Nodes (25): requireUser(), listProducts(), baseInputSchema, receiveGoods(), ReceiveGoodsInput, ReceiveGoodsResult, receiveGoodsWithProvider(), getHourlySalesHeatmap() (+17 more)
 
 ### Community 41 - "index.ts"
 Cohesion: 0.29
@@ -357,25 +321,17 @@ Nodes (7): assert(), invariant(), cn(), isErr(), isOk(), ok(), Result
 Cohesion: 0.29
 Nodes (5): DriverFactory, getRegisteredEngines(), registerEngine(), registry, runStorageConformance()
 
-### Community 43 - "StockMovement"
-Cohesion: 0.14
-Nodes (8): PaymentEvent, ReceiptEvent, SalesEvent, InProcessEventBus, paymentsEventBus, receiptsEventBus, salesEventBus, EventBus
-
 ### Community 44 - "StocktakeSession"
-Cohesion: 0.20
-Nodes (10): ReceiptView(), ReceiptDocument, ReceiptLineItem, ReceiptPaymentLine, ReceiptTaxBreakdownLine, BrowserPrintPrinter, escapeHtml(), renderReceiptHtml() (+2 more)
+Cohesion: 0.13
+Nodes (14): ReceiptView(), ReceiptDocument, ReceiptLineItem, ReceiptPaymentLine, ReceiptTaxBreakdownLine, BrowserPrintPrinter, escapeHtml(), renderReceiptHtml() (+6 more)
 
 ### Community 45 - "RateLimiter"
-Cohesion: 0.11
-Nodes (10): LoginInput, SignupInput, pinReauthTtlSeconds(), sessionTtlSeconds(), BcryptHasher, InMemoryRateLimiter, RateLimitEntry, Hasher (+2 more)
+Cohesion: 0.33
+Nodes (4): InMemoryRateLimiter, RateLimitEntry, RateLimiter, RateLimitResult
 
 ### Community 46 - "finalize-sale-service.ts"
-Cohesion: 0.18
-Nodes (8): InsufficientStockError, AppError, ERROR_CODES, ConflictError, ForbiddenError, NotFoundError, UnauthorizedError, ValidationError
-
-### Community 47 - "Hasher"
-Cohesion: 0.25
-Nodes (14): TenantThemeStyle(), TenantThemeStyleProps, deriveBrandTokens(), DerivedBrandTokens, isValidHex(), lightenHSL(), ResolvedTheme, resolveTenantTheme() (+6 more)
+Cohesion: 0.23
+Nodes (7): PaymentMethod, SALE_STATUS, formatReceiptNumber(), parseReceiptNumber(), FinalizeSaleResult, FinalizeSaleService, ValidationError
 
 ### Community 48 - "barcode-encoder.ts"
 Cohesion: 0.57
@@ -390,64 +346,32 @@ Cohesion: 0.33
 Nodes (5): arrowParens, printWidth, semi, singleQuote, trailingComma
 
 ### Community 51 - "layout.tsx"
+Cohesion: 0.40
+Nodes (3): ServiceWorkerRegister(), metadata, viewport
+
+### Community 52 - "shift-service.ts"
 Cohesion: 0.29
-Nodes (5): ServiceWorkerRegister(), fraunces, inter, metadata, viewport
+Nodes (5): MEMBERSHIP_ROLE, PAYMENT_METHOD, STATIC_ENUM_VALUES, SHIFT_STATUS, ShiftStatus
 
 ### Community 54 - "ENUM_REGISTRY_KEY"
-Cohesion: 0.25
-Nodes (5): resolveDatabasePath(), SqliteDriver, SqliteTransaction, mapSqliteError(), err()
+Cohesion: 0.50
+Nodes (3): registryKeys, SystemEnumValueInput, systemEnumValueInputSchema
 
 ### Community 55 - "store.ts"
 Cohesion: 0.50
 Nodes (3): OrganizationSetting, Register, Store
 
 ### Community 58 - "eslint"
-Cohesion: 0.07
-Nodes (29): eslint, @eslint/eslintrc, fake-indexeddb, devDependencies, eslint, @eslint/eslintrc, fake-indexeddb, postcss (+21 more)
-
-### Community 62 - "@eslint/eslintrc"
-Cohesion: 0.16
-Nodes (3): saveVariantAction(), CatalogRepository, CatalogQueryService
+Cohesion: 0.29
+Nodes (7): eslint, eslint-import-resolver-typescript, devDependencies, eslint, eslint-import-resolver-typescript, @testing-library/user-event, @testing-library/user-event
 
 ### Community 63 - "eslint-import-resolver-typescript"
 Cohesion: 0.07
 Nodes (29): Acceptance Checklist, Accessibility Considerations, Architecture Decisions, Catalog (minimal additive field for tax resolution), Conformance, Conformance suite updates, Constants / enums, e2e (`e2e/pos-scan-to-receipt.spec.ts`, Playwright) (+21 more)
 
-### Community 65 - "fake-indexeddb"
-Cohesion: 0.12
-Nodes (15): Acceptance Checklist, Accessibility Considerations, Architecture Decisions, Files To Create or Modify, Implementation Steps, Overview, Phase 0 — Stabilize the existing suite (prerequisite), Phase 1 — Audit domain (+7 more)
-
-### Community 69 - "postcss"
-Cohesion: 0.13
-Nodes (15): scripts, audit, build, dev, format, lint, lint:fix, migrate:engine (+7 more)
-
-### Community 71 - "tailwindcss"
-Cohesion: 0.14
-Nodes (13): Acceptance Checklist, Accessibility Considerations, Architecture Decisions, Create, Files To Create or Modify, Implementation Steps, Modify, Overview (+5 more)
-
 ### Community 73 - "@testing-library/user-event"
-Cohesion: 0.11
-Nodes (9): Navigator, SerialOptions, SerialPort, USBAlternateInterface, USBConfiguration, USBDevice, USBEndpoint, USBInterface (+1 more)
-
-### Community 76 - "@types/react"
-Cohesion: 0.24
-Nodes (9): ResolvedSettings, DiscountSpec, CartInput, CartLineInput, CartPricingService, PricedCart, PricedCartLine, FinalizeSaleInput (+1 more)
-
-### Community 78 - "typescript"
-Cohesion: 0.18
-Nodes (10): Acceptance Checklist, Accessibility Considerations, Architecture Decisions, Files To Create or Modify, Implementation Steps, Overview, Plan: Reporting domain — aggregate repository methods, role-scoped reports, Z-report, CSV export, Risks and Edge Cases (+2 more)
-
-### Community 79 - "vite-tsconfig-paths"
-Cohesion: 0.18
-Nodes (10): Acceptance Checklist, Accessibility Considerations, Architecture Decisions, Files To Create or Modify, Implementation Steps, Overview, Plan: SQLite storage adapter (payoff for the adapter contract) + production readiness, Risks and Edge Cases (+2 more)
-
-### Community 80 - "@vitejs/plugin-react"
-Cohesion: 0.18
-Nodes (10): Acceptance Checklist, Accessibility Considerations, Architecture Decisions, Files To Create or Modify, Implementation Steps, Overview, Plan — Design direction doc + seed design tokens, Risks and Edge Cases (+2 more)
-
-### Community 81 - "vitest"
-Cohesion: 0.18
-Nodes (10): Acceptance Checklist, Accessibility Considerations, Architecture Decisions, Files To Create or Modify, Implementation Steps, Overview, Plan — POS checkout screen design-direction adaptation doc, Risks and Edge Cases (+2 more)
+Cohesion: 0.09
+Nodes (11): Navigator, SerialOptions, SerialPort, USBAlternateInterface, USBConfiguration, USBEndpoint, USBInterface, USBOutTransferResult (+3 more)
 
 ### Community 104 - "schema.ts"
 Cohesion: 0.08
@@ -458,8 +382,8 @@ Cohesion: 0.08
 Nodes (25): Acceptance Checklist, Accessibility Considerations, Architecture Decisions, Create — adapter (`src/infrastructure/storage/adapters/indexeddb/`), Create — default binding + browser conformance harness, Explicitly NOT changed (out of scope), Files To Create or Modify, Implementation Plan — IndexedDB Storage Adapter (Dexie) (+17 more)
 
 ### Community 106 - "Files To Create or Modify"
-Cohesion: 0.18
-Nodes (10): Acceptance Checklist, Accessibility Considerations, Architecture Decisions, Files To Create or Modify, Implementation Steps, Overview, Plan: Customers, Promotions, Purchasing — close out contract (tests + infra completeness), Risks and Edge Cases (+2 more)
+Cohesion: 0.08
+Nodes (24): Acceptance Checklist, Accessibility Considerations, Actions (thin `'use server'` wrappers, one per capability, following `save-product.ts`/`complete-sale.ts`), Architecture Decisions, Commands to run before calling this done (implementation phase, not this plan), Conformance suite, Conformance suite (runs against both memory and IndexedDB adapters automatically), Entities (+16 more)
 
 ### Community 107 - "Authentication Guide"
 Cohesion: 0.09
@@ -515,7 +439,7 @@ Nodes (16): Acceptance Checklist, Accessibility Considerations, Architecture Dec
 
 ### Community 120 - "Storage Adapter Authoring Guide"
 Cohesion: 0.12
-Nodes (16): 1. Scaffold the Adapter, 2. Implement StorageDriver, 3. Register the Adapter, 4. Wire It Up (One Config Change), 5. Configure the App to Use It, Adapter Conformance, Checklist, Effort Estimate (+8 more)
+Nodes (15): 1. Scaffold the Adapter, 2. Implement StorageDriver, 3. Register the Adapter, 4. Wire It Up (One Config Change), 5. Configure the App to Use It, Adapter Conformance, Checklist, Effort Estimate (+7 more)
 
 ### Community 121 - "receipt-print-orchestrator.test.ts"
 Cohesion: 0.28
@@ -525,13 +449,9 @@ Nodes (8): ReceiptActions(), InProcessJobRunner, getRegisteredPrinters(), printR
 Cohesion: 0.13
 Nodes (14): A. The conformance suite (new directory — the card's deliverable), Acceptance Checklist, Accessibility Considerations, Architecture Decisions, B. Core extension (minimal, additive, backward-compatible), C. Consolidate the pre-existing driver-level conformance (avoid two suites), D. Package + CI wiring, Files To Create or Modify (+6 more)
 
-### Community 123 - "EscPosPrinter"
-Cohesion: 0.16
-Nodes (3): EscPosPrinter, WebSerialTransport, WebUsbTransport
-
 ### Community 124 - "printer-registry.ts"
-Cohesion: 0.21
-Nodes (7): PrinterNotRegisteredError, PrinterTransportError, PrinterUnavailableError, PrinterFactory, registerPrinter(), registry, resolvePrinter()
+Cohesion: 0.35
+Nodes (5): PrinterNotRegisteredError, PrinterFactory, registerPrinter(), registry, resolvePrinter()
 
 ### Community 125 - "escpos-encoder.ts"
 Cohesion: 0.38
@@ -541,109 +461,33 @@ Nodes (8): encodeReceipt(), encodeString(), formatDate(), formatPrice(), padCent
 Cohesion: 0.20
 Nodes (9): Architecture, Backups, Browser Support, Ephemeral vs. Production, Error Handling, IndexedDB Storage Adapter, Multi-Tab Behavior, Schema Versioning (+1 more)
 
-### Community 127 - "StocktakeCount"
-Cohesion: 0.18
-Nodes (10): Acceptance Checklist, Accessibility Considerations, Architecture Decisions, Files To Create or Modify, Implementation Steps, Overview, Plan — UI/interaction audit doc (`docs/ui-audit.md`), Risks and Edge Cases (+2 more)
-
 ### Community 128 - "page.tsx"
-Cohesion: 0.12
-Nodes (20): ReceiptPage(), ReceiptPageProps, TaxMode, BranchSettings, BusinessHours, DayHours, DEFAULT_SETTINGS, InventorySettings (+12 more)
+Cohesion: 0.60
+Nodes (4): ReceiptPage(), ReceiptPageProps, resolveSettings(), buildReceiptDocument()
 
 ### Community 130 - "README.md"
 Cohesion: 0.50
 Nodes (3): Deploy on Vercel, Getting Started, Learn More
 
-### Community 131 - "RefundStatus"
-Cohesion: 0.20
-Nodes (3): PriceList, CatalogEvent, CatalogService
-
-### Community 132 - "STOCK_MOVEMENT_TYPE"
-Cohesion: 0.20
-Nodes (10): Accessibility & Contrast Summary, Design Direction: POS Checkout Register, Implementation Guidance for a Later Card, Known Risks (Design System Drift), Layout Budget (Detailed), Purpose & Relationship to the Base Direction, Reviewer Checklist: "Does This Still Read as the Same Product?", Source of Truth & Maintenance (+2 more)
-
-### Community 133 - "USBDevice"
-Cohesion: 0.20
-Nodes (10): Dashboard Calm, Dashboard Calm, Dashboard Calm, Example 1: Buttons, Example 2: Running Total, Example 3: Cart Row, Register Adapted, Register Adapted (+2 more)
-
-### Community 138 - "Printer"
-Cohesion: 0.20
-Nodes (4): MockPrinter, Printer, PrinterCapabilities, NOTE: This port lives in shared but must not import @domains/* per boundaries ru
-
-### Community 139 - "Engine-Specific Caveats"
-Cohesion: 0.20
-Nodes (9): Dates and Serialization, Engine-Specific Caveats, Ephemeral Mode, Pragmas, Server-Only Execution, SQLite Storage Adapter, Storage Schema, Testing (+1 more)
-
-### Community 140 - "errors.ts"
-Cohesion: 0.22
-Nodes (4): GatewayNotRegisteredError, InvalidPaymentStatusTransitionError, RefundExceedsPaymentError, SplitPaymentTotalMismatchError
-
-### Community 141 - "errors.ts"
-Cohesion: 0.22
-Nodes (4): InvalidCouponCodeError, PromotionExpiredError, PromotionNotFoundError, PromotionUsageLimitExceededError
-
-### Community 142 - "errors.ts"
-Cohesion: 0.22
-Nodes (4): InvalidPurchaseOrderStatusError, OverReceiptError, PurchaseOrderNotFoundError, SupplierNotFoundError
-
-### Community 143 - "Design Direction"
-Cohesion: 0.25
-Nodes (6): Acceptance Notes, Aesthetic Character, Anti-Goals, Design Direction, Implementation Notes, Mood / Inspiration Board
-
-### Community 144 - "Token Reference"
-Cohesion: 0.29
-Nodes (7): Colors (Dark Theme `@media (prefers-color-scheme: dark)`), Colors (Light Theme `:root`), Motion, Shadows, Shape, Token Reference, Typography
-
-### Community 145 - "package.json"
-Cohesion: 0.29
-Nodes (6): engines, node, name, private, type, version
-
-### Community 146 - "errors.ts"
-Cohesion: 0.29
-Nodes (3): InsufficientLoyaltyPointsError, InsufficientStoreCreditError, LoyaltyNotEnabledError
-
-### Community 148 - "What Bends for the Register"
-Cohesion: 0.33
-Nodes (6): 1. Contrast Floor: No Muted Text on the Register, 2. Density: Compact Layout Budget, 3. Hit Targets: 56px for All Primary Controls, 4. Running Total: Inverted Block, the Single Highest-Contrast Element, 5. Accent Scarcity: Coral Only for the Pay Button, What Bends for the Register
-
-### Community 149 - "Color System"
-Cohesion: 0.40
-Nodes (5): Color System, Dark Theme, Light Theme, Semantic Aliases (Dark), Semantic Aliases (Light)
-
-### Community 150 - "Shape & Depth"
-Cohesion: 0.40
-Nodes (5): Depth Strategy, Radii, Shadows, Shape & Depth, Spacing & Whitespace
-
-### Community 152 - "Motion"
-Cohesion: 0.50
-Nodes (4): Easing, Motion, Rules, Timing
-
-### Community 153 - "Worked Examples"
-Cohesion: 0.50
-Nodes (4): Example 1: Dashboard Card (Stat Card), Example 2: Data Table Row (Receipt Line Item), Example 3: Button Set (Action Buttons), Worked Examples
-
-### Community 154 - "Typography"
-Cohesion: 0.50
-Nodes (4): Font Pairing, Font Stacks, Typographic Rules, Typography
-
 ## Knowledge Gaps
-- **857 isolated node(s):** `semi`, `singleQuote`, `trailingComma`, `printWidth`, `arrowParens` (+852 more)
+- **643 isolated node(s):** `semi`, `singleQuote`, `trailingComma`, `printWidth`, `arrowParens` (+638 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **30 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **44 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `buildVersionChain()` connect `IndexedDBDriver` to `dependencies`?**
-  _High betweenness centrality (0.045) - this node is a cross-community bridge._
-- **Why does `dexie` connect `dependencies` to `IndexedDBDriver`?**
-  _High betweenness centrality (0.045) - this node is a cross-community bridge._
-- **Why does `dependencies` connect `dependencies` to `package.json`?**
-  _High betweenness centrality (0.045) - this node is a cross-community bridge._
+- **Why does `buildVersionChain()` connect `index.ts` to `dependencies`, `IndexedDBDriver`?**
+  _High betweenness centrality (0.053) - this node is a cross-community bridge._
+- **Why does `dexie` connect `dependencies` to `index.ts`?**
+  _High betweenness centrality (0.053) - this node is a cross-community bridge._
 - **What connects `semi`, `singleQuote`, `trailingComma` to the rest of the system?**
-  _857 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _643 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `CatalogRepository` be split into smaller, more focused modules?**
-  _Cohesion score 0.13852813852813853 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.060350877192982454 - nodes in this community are weakly interconnected._
 - **Should `CoreOrganizationRepository` be split into smaller, more focused modules?**
-  _Cohesion score 0.07910014513788098 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05220883534136546 - nodes in this community are weakly interconnected._
 - **Should `fixtures.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.0711484593837535 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08210526315789474 - nodes in this community are weakly interconnected._
+- **Should `dependencies` be split into smaller, more focused modules?**
+  _Cohesion score 0.044444444444444446 - nodes in this community are weakly interconnected._

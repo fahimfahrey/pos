@@ -24,6 +24,11 @@
   --success: var(--palette-sage);
   --danger: var(--palette-brick);
   --warning: var(--palette-amber);
+  --muted: var(--foreground-muted);
+  --on-surface: var(--foreground);
+  --primary: var(--accent);
+  --primary-foreground: var(--accent-foreground);
+  --primary-strong: var(--accent-strong);
 
   /* Typography */
   --font-display: Fraunces, Georgia, "Times New Roman", serif;
@@ -43,6 +48,35 @@
   --motion-fast: 150ms;
   --motion-base: 300ms;
   --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Spacing scale (Tailwind v4 base multiplier) */
+  --spacing: 0.25rem;
+
+  /* Typographic scale (semantic aliases over Tailwind defaults) */
+  --text-display-2xl: var(--text-7xl);
+  --text-display-xl: var(--text-6xl);
+  --text-display-lg: var(--text-5xl);
+  --text-body: var(--text-base);
+  --text-label: var(--text-sm);
+  --text-caption: var(--text-xs);
+
+  /* Z-index layers (plain custom properties, not Tailwind-generated utilities) */
+  --z-base: 0;
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-overlay: 30;
+  --z-modal: 40;
+  --z-popover: 50;
+  --z-toast: 60;
+
+  /* Focus ring */
+  --focus-ring-width: 2px;
+  --focus-ring-style: solid;
+  --focus-ring-color: var(--accent);
+  --focus-ring-offset: 2px;
+
+  /* Overlay (non-text scrim for modals/drawers) */
+  --overlay: rgba(32, 32, 28, 0.5);
 }
 
 @theme inline {
@@ -57,13 +91,37 @@
   --color-success: var(--success);
   --color-danger: var(--danger);
   --color-warning: var(--warning);
+  --color-muted: var(--muted);
+  --color-on-surface: var(--on-surface);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-strong: var(--primary-strong);
+  --color-overlay: var(--overlay);
   --radius-card: var(--radius-card);
   --radius-button: var(--radius-button);
   --radius-input: var(--radius-input);
+  --duration-fast: var(--motion-fast);
+  --duration-base: var(--motion-base);
+  --ease-base: var(--motion-ease);
+  --z-base: var(--z-base);
+  --z-dropdown: var(--z-dropdown);
+  --z-sticky: var(--z-sticky);
+  --z-overlay: var(--z-overlay);
+  --z-modal: var(--z-modal);
+  --z-popover: var(--z-popover);
+  --z-toast: var(--z-toast);
+  --shadow-card: var(--shadow-sm);
+  --shadow-elevated: var(--shadow-md);
+  --text-display-2xl: var(--text-display-2xl);
+  --text-display-xl: var(--text-display-xl);
+  --text-display-lg: var(--text-display-lg);
+  --text-body: var(--text-body);
+  --text-label: var(--text-label);
+  --text-caption: var(--text-caption);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+:root:not([data-theme='light']) {
+  @media (prefers-color-scheme: dark) {
     /* Raw palette (dark) */
     --palette-charcoal: #262624;
     --palette-charcoal-deep: #1F1E1B;
@@ -87,7 +145,40 @@
     --success: var(--palette-sage-dark);
     --danger: var(--palette-brick-dark);
     --warning: var(--palette-amber-dark);
+    --overlay: rgba(15, 15, 13, 0.65);
   }
+}
+
+:root[data-theme='dark'] {
+  /* Raw palette (dark) */
+  --palette-charcoal: #262624;
+  --palette-charcoal-deep: #1F1E1B;
+  --palette-off-white: #EDEAE0;
+  --palette-taupe-light: #BCBAB0;
+  --palette-warm-gray-dark: #3D3C39;
+  --palette-terracotta-dark: #D08968;
+  --palette-sage-dark: #B8D4A0;
+  --palette-brick-dark: #E07070;
+  --palette-amber-dark: #E5D4A1;
+
+  /* Semantic aliases (dark theme) */
+  --background: var(--palette-charcoal);
+  --surface: var(--palette-charcoal-deep);
+  --foreground: var(--palette-off-white);
+  --foreground-muted: var(--palette-taupe-light);
+  --border: var(--palette-warm-gray-dark);
+  --accent: var(--palette-terracotta-dark);
+  --accent-foreground: #FFFFFF;
+  --accent-strong: #C26648;
+  --success: var(--palette-sage-dark);
+  --danger: var(--palette-brick-dark);
+  --warning: var(--palette-amber-dark);
+  --overlay: rgba(15, 15, 13, 0.65);
+}
+
+:root[data-theme='light'] {
+  /* Force light mode: all light-theme values already in :root {} above */
+  /* No override needed */
 }
 
 body {
@@ -97,8 +188,8 @@ body {
 }
 
 *:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }
 
 @media (prefers-reduced-motion: reduce) {

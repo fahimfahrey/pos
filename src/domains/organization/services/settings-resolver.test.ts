@@ -82,4 +82,26 @@ describe('settingsResolver', () => {
     expect(resolved).toHaveProperty('barcodeSymbology')
     expect(resolved).toHaveProperty('loyalty')
   })
+
+  it('shallow merge: branch theme wholly replaces org theme', () => {
+    const org = {
+      settings: {
+        theme: {
+          colorScheme: 'light' as const,
+          brandColor: '#2E6F40',
+        },
+      },
+    }
+    const branch = {
+      settings: {
+        theme: {
+          colorScheme: 'dark' as const,
+        },
+      },
+    }
+    const resolved = resolveSettings(org, branch)
+    // Branch theme object replaces org's entirely, not merged field-by-field
+    expect(resolved.theme).toEqual({ colorScheme: 'dark' })
+    expect(resolved.theme.brandColor).toBeUndefined()
+  })
 })

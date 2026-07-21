@@ -13,6 +13,7 @@ export interface Branch {
   email?: string
   timezone?: string
   settings: BranchSettings
+  logoUrl?: string
   taxRegistrationNumber?: string
   active: boolean
   createdAt: Date

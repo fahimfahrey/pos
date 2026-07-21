@@ -53,6 +53,8 @@ This system feels like a well-run independent café's receipt printed on cream p
 | `--success` | `#9CAF88` | Success indicator | `--background` | 4.8:1 | ✅ |
 | `--danger` | `#C24D4D` | Destructive/error indicator | `--background` | 5.0:1 | ✅ |
 | `--warning` | `#D4B574` | Warning indicator | `--background` | 5.6:1 | ✅ |
+|| `--muted` | `#6B675E` | Muted/secondary text (alias of `--foreground-muted`) | `--background` | 4.7:1 | ✅ |
+|| `--overlay` | `rgba(32, 32, 28, 0.5)` | Non-text scrim (modals, drawers, 45–65% opacity) | (visual, not text) | — | — |
 
 ### Dark Theme
 
@@ -83,6 +85,8 @@ This system feels like a well-run independent café's receipt printed on cream p
 | `--success` | `#B8D4A0` | Success indicator | `--background` | 5.2:1 | ✅ |
 | `--danger` | `#E07070` | Destructive/error indicator | `--background` | 4.9:1 | ✅ |
 | `--warning` | `#E5D4A1` | Warning indicator | `--background` | 4.4:1 | ✅ |
+|| `--muted` | `#BCBAB0` | Muted/secondary text (alias of `--foreground-muted`) | `--background` | 5.4:1 | ✅ |
+|| `--overlay` | `rgba(15, 15, 13, 0.65)` | Non-text scrim (modals, drawers, 65% opacity warm-black) | (visual, not text) | — | — |
 
 **Note on contrast:** All text pairings meet WCAG AA at 4.5:1 (normal text) or 3:1 (large text/UI components). The dark-mode accent (`--accent-foreground: white`) achieves 3.8:1 on the accent background, passing AA for large text; small running text on accent backgrounds should be avoided in dark mode — reserve accent backgrounds for buttons, badges, and large call-outs.
 
@@ -257,6 +261,56 @@ Complete token set wired into Tailwind via `@theme inline` in `src/app/globals.c
 --motion-base: 300ms;
 --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
 ```
+
+### Z-Index Layers
+
+```css
+--z-base: 0;
+--z-dropdown: 10;
+--z-sticky: 20;
+--z-overlay: 30;
+--z-modal: 40;
+--z-popover: 50;
+--z-toast: 60;
+```
+
+### Elevation (Shadows via Tailwind)
+
+Shadows are declared as motion-aware custom properties mapped into Tailwind utilities:
+
+```css
+--shadow-card: 0 1px 2px rgba(32, 32, 28, 0.08);
+--shadow-elevated: 0 4px 6px rgba(32, 32, 28, 0.12);
+```
+
+Use `shadow-card` for subtle elevation (inputs, small components) and `shadow-elevated` for standard elevation (cards, panels). Generated Tailwind utilities: `.shadow-card`, `.shadow-elevated`.
+
+### Focus Ring
+
+```css
+--focus-ring-width: 2px;
+--focus-ring-style: solid;
+--focus-ring-color: var(--accent);
+--focus-ring-offset: 2px;
+```
+
+Applied automatically to all focusable elements via `*:focus-visible` in `globals.css`; the ring color swaps with tenant brand color at runtime. The focus ring requires AA contrast against its background — this is tested as `background/accent` pairing in the design-tokens sweep.
+
+### Typographic Scale (Semantic Aliases)
+
+All typographic tokens are semantic aliases over Tailwind's default font-size scale, consumed via Tailwind utilities:
+
+```css
+--text-display-2xl: var(--text-7xl);   /* .text-display-2xl */
+--text-display-xl: var(--text-6xl);    /* .text-display-xl */
+--text-display-lg: var(--text-5xl);    /* .text-display-lg */
+--text-body: var(--text-base);         /* .text-body */
+--text-label: var(--text-sm);          /* .text-label */
+--text-caption: var(--text-xs);        /* .text-caption */
+```
+
+Use `.text-display-*` for headings and large numerals (prices, totals); `.text-body` for running text; `.text-label` for form labels and secondary UI; `.text-caption` for metadata and small UI hints.
+
 
 ## Worked Examples
 

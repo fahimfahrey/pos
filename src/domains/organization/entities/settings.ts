@@ -1,5 +1,10 @@
 import type { TaxMode, BarcodeSymbology } from '@constants/enums'
 
+export interface ThemeSettings {
+  colorScheme: 'light' | 'dark' | 'system'
+  brandColor?: string
+}
+
 
 export interface TaxRule {
   id: string
@@ -73,6 +78,7 @@ export interface ResolvedSettings {
   security: SecuritySettings
   discountLimits: DiscountLimits
   inventory: InventorySettings
+  theme: ThemeSettings
 }
 
 export type OrganizationSettings = Partial<ResolvedSettings>
@@ -118,5 +124,8 @@ export const DEFAULT_SETTINGS: ResolvedSettings = {
   },
   inventory: {
     allowOversell: false,
+  },
+  theme: {
+    colorScheme: 'system',
   },
 }
