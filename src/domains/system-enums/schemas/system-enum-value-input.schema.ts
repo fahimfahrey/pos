@@ -1,7 +1,7 @@
 import { z } from 'zod'
-import { ENUM_REGISTRY_KEY } from '@constants/enums'
+import { ENUM_REGISTRY_KEY, type EnumRegistryKey } from '@constants/enums'
 
-const registryKeys = Object.values(ENUM_REGISTRY_KEY) as [string, ...string[]]
+const registryKeys = Object.values(ENUM_REGISTRY_KEY) as [EnumRegistryKey, ...EnumRegistryKey[]]
 
 export const systemEnumValueInputSchema = z.object({
   orgId: z.string().min(1),

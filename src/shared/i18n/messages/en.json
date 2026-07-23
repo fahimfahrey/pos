@@ -1,0 +1,148 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "close": "Close",
+    "apply": "Apply",
+    "save": "Save",
+    "skipToContent": "Skip to content"
+  },
+  "localeSwitcher": {
+    "label": "Language",
+    "en-US": "English",
+    "bn-BD": "বাংলা (Bengali)"
+  },
+  "checkout": {
+    "header": {
+      "shiftLabel": "Shift: {time}",
+      "shiftDuration": "{hours}h {minutes}m",
+      "pendingCount": "{count} pending",
+      "muteSound": "Mute sound",
+      "unmuteSound": "Unmute sound"
+    },
+    "cartRow": {
+      "pricePerUnit": "{price} ea",
+      "discountAria": "Discount for {name}",
+      "removeAria": "Remove {name}"
+    },
+    "holdResume": {
+      "title": "Held Carts",
+      "closeAria": "Close held carts",
+      "loading": "Loading…",
+      "empty": "No held carts",
+      "itemsCount": {
+        "one": "{count} item",
+        "other": "{count} items"
+      },
+      "resume": "Resume",
+      "delete": "Delete",
+      "deleteAria": {
+        "one": "Delete held cart with {count} item",
+        "other": "Delete held cart with {count} items"
+      }
+    },
+    "keyboardShortcuts": {
+      "title": "Keyboard Shortcuts",
+      "closeAria": "Close keyboard shortcuts",
+      "close": "Close"
+    },
+    "shortcuts": {
+      "submit_scan": {
+        "label": "Submit Scan",
+        "description": "Submit scanned barcode"
+      },
+      "open_payment": {
+        "label": "Payment",
+        "description": "Open payment panel"
+      },
+      "hold_cart": {
+        "label": "Hold Cart",
+        "description": "Hold current cart for later"
+      },
+      "show_held": {
+        "label": "Show Held",
+        "description": "Show held carts"
+      },
+      "void_sale": {
+        "label": "Void Sale",
+        "description": "Void current sale"
+      },
+      "cart_discount": {
+        "label": "Discount",
+        "description": "Apply cart discount"
+      },
+      "undo_scan": {
+        "label": "Undo",
+        "description": "Undo last scan"
+      },
+      "close_modal": {
+        "label": "Close",
+        "description": "Close open modal"
+      },
+      "show_help": {
+        "label": "Help",
+        "description": "Show keyboard shortcuts"
+      }
+    },
+    "lineDiscount": {
+      "dialogAria": "Line discount",
+      "typeGroupAria": "Discount type",
+      "percentage": "Percentage",
+      "fixedAmount": "Fixed amount",
+      "amountLabel": "Discount amount",
+      "discountLabel": "Discount:",
+      "newTotalLabel": "New total:",
+      "cancel": "Cancel",
+      "apply": "Apply"
+    },
+    "managerOverride": {
+      "title": "Manager Override",
+      "description": "This action requires manager approval. Please enter your manager credentials.",
+      "emailLabel": "Manager Email",
+      "emailPlaceholder": "manager@store.com",
+      "pinLabel": "Manager PIN",
+      "genericError": "Override failed",
+      "cancel": "Cancel",
+      "approve": "Approve",
+      "verifying": "Verifying…"
+    },
+    "openShift": {
+      "welcome": "Welcome, {name}",
+      "floatLabel": "Opening Float Amount",
+      "floatHelp": "This is your starting cash float for this shift",
+      "openShift": "Open Shift",
+      "openingShift": "Opening Shift…",
+      "genericError": "Failed to open shift"
+    },
+    "syncProgress": {
+      "syncing": "Syncing…",
+      "synced": "Sync completed"
+    },
+    "voidSale": {
+      "title": "Void Sale",
+      "description": "Please select a reason for voiding this sale:",
+      "reasonGroupAria": "Void reason",
+      "reasons": {
+        "customer_changed_mind": "Customer changed mind",
+        "duplicate_order": "Duplicate order",
+        "wrong_item": "Wrong item scanned",
+        "technical_error": "Technical error",
+        "other": "Other"
+      },
+      "otherReasonAria": "Explain reason",
+      "otherReasonPlaceholder": "Explain reason…",
+      "cancel": "Cancel",
+      "confirm": "Void Sale"
+    }
+  },
+  "catalog": {
+    "title": "Catalog",
+    "subtitle": "Manage your product catalog",
+    "columnProduct": "Product Name",
+    "columnSku": "SKU",
+    "columnStatus": "Status",
+    "empty": "No products in catalog",
+    "statusActive": "Active",
+    "errorTitle": "Failed to load catalog",
+    "errorMessage": "Unable to retrieve catalog data. Your data on this device is safe."
+  }
+}

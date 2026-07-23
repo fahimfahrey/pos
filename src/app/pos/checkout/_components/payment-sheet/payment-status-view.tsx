@@ -6,6 +6,7 @@ import { Button } from '@shared/components/ui/button'
 import { Spinner } from '@shared/components/ui/spinner'
 import { useDelayedVisible } from '@shared/utils/motion'
 import type { Payment } from '@domains/payments/entities/payment'
+import { PAYMENT_STATUS } from '@constants/enums'
 
 interface PaymentStatusViewProps {
   payment: Payment
@@ -21,10 +22,10 @@ export function PaymentStatusView({
   onCancel,
 }: PaymentStatusViewProps) {
   const [elapsedTime, setElapsedTime] = useState(0)
-  const showSpinner = useDelayedVisible(payment.status === 'PENDING')
+  const showSpinner = useDelayedVisible(payment.status === PAYMENT_STATUS.PENDING)
 
   useEffect(() => {
-    if (payment.status !== 'PENDING') return
+    if (payment.status !== PAYMENT_STATUS.PENDING) return
 
     const interval = setInterval(() => {
       setElapsedTime((t) => t + 1)
@@ -39,7 +40,7 @@ export function PaymentStatusView({
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
-  if (payment.status === 'PENDING') {
+  if (payment.status === PAYMENT_STATUS.PENDING) {
     return (
       <div
         className="space-y-4"
@@ -63,7 +64,7 @@ export function PaymentStatusView({
     )
   }
 
-  if (payment.status === 'FAILED') {
+  if (payment.status === PAYMENT_STATUS.FAILED) {
     return (
       <div
         className="space-y-4"
@@ -94,7 +95,7 @@ export function PaymentStatusView({
     )
   }
 
-  if (payment.status === 'CAPTURED') {
+  if (payment.status === PAYMENT_STATUS.CAPTURED) {
     return (
       <div
         className="space-y-4"

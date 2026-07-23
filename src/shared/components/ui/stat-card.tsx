@@ -43,8 +43,8 @@ const StatCard = React.forwardRef<HTMLDivElement, StatCardProps>(
               <div
                 className={cn(
                   'text-caption px-2 py-1 rounded font-semibold',
-                  delta.variant === 'positive' && 'bg-success text-white',
-                  delta.variant === 'negative' && 'bg-danger text-white',
+                  delta.variant === 'positive' && 'bg-success text-[var(--on-success)]',
+                  delta.variant === 'negative' && 'bg-danger text-[var(--on-danger)]',
                   delta.variant === 'neutral' && 'bg-border text-foreground-muted'
                 )}
               >

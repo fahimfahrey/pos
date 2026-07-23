@@ -1,7 +1,7 @@
 'use server'
 
 import { getCurrentSession } from '@domains/auth/actions/session'
-import { createDefaultStorageProvider } from '@infra/storage'
+import { getServerStorageProvider } from '@infra/auth/server-storage-provider'
 import { SystemClock } from '@infra/adapters/system-clock'
 import type { ThemeSettings } from '../entities/settings'
 import { MEMBERSHIP_ROLE } from '@constants/enums'
@@ -38,56 +38,52 @@ export async function updateTheme(input: UpdateThemeInput): Promise<UpdateThemeR
     return { success: false, error: 'Invalid branch brand color format. Use #RRGGBB' }
   }
 
-  const provider = await createDefaultStorageProvider()
+  const provider = await getServerStorageProvider()
   const clock = new SystemClock()
 
-  try {
-    const result = await provider.withTransaction(async (repos) => {
-      // Check membership role - OWNER/ADMIN only
-      const membership = await repos.organization.findMembership(session.orgId!, session.sub)
-      if (!membership || (membership.role !== MEMBERSHIP_ROLE.OWNER && membership.role !== MEMBERSHIP_ROLE.ADMIN)) {
-        return { success: false, error: 'Insufficient permissions' }
+  const result = await provider.withTransaction(async (repos) => {
+    // Check membership role - OWNER/ADMIN only
+    const membership = await repos.organization.findMembership(session.orgId!, session.sub)
+    if (!membership || (membership.role !== MEMBERSHIP_ROLE.OWNER && membership.role !== MEMBERSHIP_ROLE.ADMIN)) {
+      return { success: false, error: 'Insufficient permissions' }
+    }
+
+    // Load and update organization
+    const org = await repos.organization.findOrganizationById(session.orgId!)
+    if (!org) {
+      return { success: false, error: 'Organization not found' }
+    }
+
+    if (input.theme || input.logoUrl) {
+      if (input.theme) {
+        org.settings.theme = input.theme
+      }
+      if (input.logoUrl) {
+        org.logoUrl = input.logoUrl
+      }
+      org.updatedAt = clock.now()
+      await repos.organization.saveOrganization(org)
+    }
+
+    // Load and update branch if provided
+    if (input.branchId && (input.branchTheme || input.branchLogoUrl)) {
+      const branch = await repos.organization.findBranchById(input.branchId)
+      if (!branch) {
+        return { success: false, error: 'Branch not found' }
       }
 
-      // Load and update organization
-      const org = await repos.organization.findOrganizationById(session.orgId!)
-      if (!org) {
-        return { success: false, error: 'Organization not found' }
+      if (input.branchTheme) {
+        branch.settings.theme = input.branchTheme
       }
-
-      if (input.theme || input.logoUrl) {
-        if (input.theme) {
-          org.settings.theme = input.theme
-        }
-        if (input.logoUrl) {
-          org.logoUrl = input.logoUrl
-        }
-        org.updatedAt = clock.now()
-        await repos.organization.saveOrganization(org)
+      if (input.branchLogoUrl) {
+        branch.logoUrl = input.branchLogoUrl
       }
+      branch.updatedAt = clock.now()
+      await repos.organization.saveBranch(branch)
+    }
 
-      // Load and update branch if provided
-      if (input.branchId && (input.branchTheme || input.branchLogoUrl)) {
-        const branch = await repos.organization.findBranchById(input.branchId)
-        if (!branch) {
-          return { success: false, error: 'Branch not found' }
-        }
+    return { success: true }
+  })
 
-        if (input.branchTheme) {
-          branch.settings.theme = input.branchTheme
-        }
-        if (input.branchLogoUrl) {
-          branch.logoUrl = input.branchLogoUrl
-        }
-        branch.updatedAt = clock.now()
-        await repos.organization.saveBranch(branch)
-      }
-
-      return { success: true }
-    })
-
-    return result
-  } finally {
-    await provider.close()
-  }
+  return result
 }

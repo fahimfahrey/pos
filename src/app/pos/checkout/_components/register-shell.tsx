@@ -20,7 +20,7 @@ export function RegisterShell({
   cashierName,
   branchId,
 }: RegisterShellProps) {
-  const session = useRegisterSession(orgId, branchId)
+  const session = useRegisterSession(orgId, branchId, cashierId)
 
   if (session.status === 'loading') {
     return (

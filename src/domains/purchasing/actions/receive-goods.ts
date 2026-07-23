@@ -1,7 +1,7 @@
 'use server'
 
 import { z } from 'zod'
-import { createDefaultStorageProvider } from '@infra/storage/default-provider'
+import { getServerStorageProvider } from '@infra/auth/server-storage-provider'
 import { UuidIdGenerator } from '@infra/adapters/uuid-id-generator'
 import { SystemClock } from '@infra/adapters/system-clock'
 import { requireUser } from '@domains/auth/actions/session'
@@ -39,37 +39,33 @@ export async function receiveGoods(input: unknown): Promise<ReceiveGoodsResult> 
   try {
     const parsed = baseInputSchema.parse(input)
     const user = await requireUser()
-    const provider = await createDefaultStorageProvider()
+    const provider = await getServerStorageProvider()
     const idGen = new UuidIdGenerator()
     const clock = new SystemClock()
 
-    try {
-      const result = await provider.withTransaction(async (repos) => {
-        const purchasingService = new PurchasingService(
-          clock,
-          idGen,
-          new InventoryService(clock, idGen),
-        )
+    const result = await provider.withTransaction(async (repos) => {
+      const purchasingService = new PurchasingService(
+        clock,
+        idGen,
+        new InventoryService(clock, idGen),
+      )
 
-        return purchasingService.receiveGoods(
-          {
-            purchasing: repos.purchasing,
-            inventory: repos.inventory,
-          },
-          {
-            orgId: parsed.orgId,
-            branchId: parsed.branchId,
-            purchaseOrderId: parsed.purchaseOrderId,
-            lines: parsed.lines,
-            receivedBy: parsed.receivedBy,
-            allowOverReceipt: parsed.allowOverReceipt,
-          },
-        )
-      })
-      return { ok: true, data: result }
-    } finally {
-      await provider.close()
-    }
+      return purchasingService.receiveGoods(
+        {
+          purchasing: repos.purchasing,
+          inventory: repos.inventory,
+        },
+        {
+          orgId: parsed.orgId,
+          branchId: parsed.branchId,
+          purchaseOrderId: parsed.purchaseOrderId,
+          lines: parsed.lines,
+          receivedBy: parsed.receivedBy,
+          allowOverReceipt: parsed.allowOverReceipt,
+        },
+      )
+    })
+    return { ok: true, data: result }
   } catch (error) {
     return { ok: false, error: toErrorResponse(error) }
   }

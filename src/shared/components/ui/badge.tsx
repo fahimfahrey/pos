@@ -10,9 +10,9 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default: 'bg-accent text-accent-foreground',
-        success: 'bg-success text-white',
-        danger: 'bg-danger text-white',
-        warning: 'bg-warning text-foreground',
+        success: 'bg-success text-[var(--on-success)]',
+        danger: 'bg-danger text-[var(--on-danger)]',
+        warning: 'bg-warning text-[var(--on-warning)]',
         secondary: 'bg-surface border border-border text-foreground',
       },
       shape: {

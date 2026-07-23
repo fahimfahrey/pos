@@ -6,7 +6,7 @@ import { AuthService } from '@domains/auth/services/auth-service'
 import { PinReauthInputSchema } from '@domains/auth/entities/credentials'
 import { SystemClock } from '@infra/adapters/system-clock'
 import { UuidIdGenerator } from '@infra/adapters/uuid-id-generator'
-import { getResolvedSettings } from '@domains/organization/services/settings-resolver'
+import { DEFAULT_SETTINGS } from '@domains/organization/entities/settings'
 import { verifyToken } from '@domains/auth/services/token'
 import { env } from '@shared/env'
 
@@ -37,12 +37,11 @@ export async function pinReauthAction(
 
     const input = validationResult.data
     const provider = await getServerStorageProvider()
-    const settings = getResolvedSettings({})
+    const settings = DEFAULT_SETTINGS
     const clock = new SystemClock()
     const ids = new UuidIdGenerator()
 
-    const result = await provider.withTransaction(async (tx) => {
-      const repos = await provider.getRepositorySet(tx)
+    const result = await provider.withTransaction(async (repos) => {
       const authService = new AuthService(repos.auth, hasher, tokenSigner, clock, ids, authRateLimiter)
       return authService.reauthWithPin(claims.sub, input.pin, settings)
     })

@@ -1,5 +1,5 @@
 import type { StorageProvider } from '@infra/storage'
-import { createDefaultStorageProvider } from '@infra/storage/default-provider'
+import { getServerStorageProvider } from '@infra/auth/server-storage-provider'
 import { UuidIdGenerator } from '@infra/adapters/uuid-id-generator'
 import { SystemClock } from '@infra/adapters/system-clock'
 import type { Invite } from '../entities/invite'
@@ -27,37 +27,33 @@ export interface AcceptInviteInput {
  * Returns the invite object with the token.
  */
 export async function createInvite(input: CreateInviteInput): Promise<Invite> {
-  const provider = await createDefaultStorageProvider()
+  const provider = await getServerStorageProvider()
   const idGen = new UuidIdGenerator()
   const clock = new SystemClock()
 
-  try {
-    const invite = await provider.withTransaction(async (repos) => {
-      const inviteId = idGen.next()
-      const token = idGen.next()
+  const invite = await provider.withTransaction(async (repos) => {
+    const inviteId = idGen.next()
+    const token = idGen.next()
 
-      const newInvite: Invite = {
-        id: inviteId,
-        orgId: input.orgId,
-        email: input.email,
-        role: input.role,
-        branchIds: input.branchIds,
-        token,
-        status: INVITE_STATUS.PENDING,
-        invitedBy: input.invitedBy,
-        expiresAt: input.expiresAt,
-        createdAt: clock.now(),
-        updatedAt: clock.now(),
-      }
+    const newInvite: Invite = {
+      id: inviteId,
+      orgId: input.orgId,
+      email: input.email,
+      role: input.role,
+      branchIds: input.branchIds,
+      token,
+      status: INVITE_STATUS.PENDING,
+      invitedBy: input.invitedBy,
+      expiresAt: input.expiresAt,
+      createdAt: clock.now(),
+      updatedAt: clock.now(),
+    }
 
-      await repos.organization.saveInvite(newInvite)
-      return newInvite
-    })
+    await repos.organization.saveInvite(newInvite)
+    return newInvite
+  })
 
-    return invite
-  } finally {
-    await provider.close()
-  }
+  return invite
 }
 
 /**
@@ -66,87 +62,79 @@ export async function createInvite(input: CreateInviteInput): Promise<Invite> {
  * Throws if the token is invalid, expired, or already used.
  */
 export async function acceptInvite(input: AcceptInviteInput): Promise<string> {
-  const provider = await createDefaultStorageProvider()
+  const provider = await getServerStorageProvider()
   const idGen = new UuidIdGenerator()
   const clock = new SystemClock()
   const now = clock.now()
 
-  try {
-    const membershipId = await provider.withTransaction(async (repos) => {
-      // Find the invite by token
-      const invite = await repos.organization.findInviteByToken(input.token)
+  const membershipId = await provider.withTransaction(async (repos) => {
+    // Find the invite by token
+    const invite = await repos.organization.findInviteByToken(input.token)
 
-      if (!invite) {
-        throw new Error('Invite token not found')
-      }
+    if (!invite) {
+      throw new Error('Invite token not found')
+    }
 
-      if (invite.status !== INVITE_STATUS.PENDING) {
-        throw new Error(`Invite is already ${invite.status}`)
-      }
+    if (invite.status !== INVITE_STATUS.PENDING) {
+      throw new Error(`Invite is already ${invite.status}`)
+    }
 
-      if (now > invite.expiresAt) {
-        throw new Error('Invite has expired')
-      }
+    if (now > invite.expiresAt) {
+      throw new Error('Invite has expired')
+    }
 
-      // Create the membership
-      const mId = idGen.next()
-      const membership: Membership = {
-        id: mId,
+    // Create the membership
+    const mId = idGen.next()
+    const membership: Membership = {
+      id: mId,
+      orgId: invite.orgId,
+      userId: input.userId,
+      role: invite.role,
+      status: MEMBERSHIP_STATUS.ACTIVE,
+      createdAt: now,
+      updatedAt: now,
+    }
+    await repos.organization.saveMembership(membership)
+
+    // Create branch assignments
+    for (const branchId of invite.branchIds) {
+      const assignmentId = idGen.next()
+      const assignment: BranchAssignment = {
+        id: assignmentId,
         orgId: invite.orgId,
-        userId: input.userId,
-        role: invite.role,
-        status: MEMBERSHIP_STATUS.ACTIVE,
+        membershipId: mId,
+        branchId,
         createdAt: now,
-        updatedAt: now,
       }
-      await repos.organization.saveMembership(membership)
+      await repos.organization.saveBranchAssignment(assignment)
+    }
 
-      // Create branch assignments
-      for (const branchId of invite.branchIds) {
-        const assignmentId = idGen.next()
-        const assignment: BranchAssignment = {
-          id: assignmentId,
-          orgId: invite.orgId,
-          membershipId: mId,
-          branchId,
-          createdAt: now,
-        }
-        await repos.organization.saveBranchAssignment(assignment)
-      }
+    // Mark invite as accepted
+    const updatedInvite: Invite = {
+      ...invite,
+      status: INVITE_STATUS.ACCEPTED,
+      acceptedAt: now,
+      updatedAt: now,
+    }
+    await repos.organization.saveInvite(updatedInvite)
 
-      // Mark invite as accepted
-      const updatedInvite: Invite = {
-        ...invite,
-        status: INVITE_STATUS.ACCEPTED,
-        acceptedAt: now,
-        updatedAt: now,
-      }
-      await repos.organization.saveInvite(updatedInvite)
+    return mId
+  })
 
-      return mId
-    })
-
-    return membershipId
-  } finally {
-    await provider.close()
-  }
+  return membershipId
 }
 
 /**
  * Revoke an invite by ID (sets status to REVOKED).
  */
 export async function revokeInvite(inviteId: string): Promise<void> {
-  const provider = await createDefaultStorageProvider()
+  const provider = await getServerStorageProvider()
   const clock = new SystemClock()
 
-  try {
-    await provider.withTransaction(async (repos) => {
-      // Find the invite by ID via listInvitesForOrg (no findInviteById yet)
-      // For now, we'd need to enhance the repo or fetch all invites
-      // Simplified: just mark as revoked if we had findInviteById
-      // This is a limitation noted in the plan (out of scope)
-    })
-  } finally {
-    await provider.close()
-  }
+  await provider.withTransaction(async (repos) => {
+    // Find the invite by ID via listInvitesForOrg (no findInviteById yet)
+    // For now, we'd need to enhance the repo or fetch all invites
+    // Simplified: just mark as revoked if we had findInviteById
+    // This is a limitation noted in the plan (out of scope)
+  })
 }

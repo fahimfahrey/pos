@@ -1,4 +1,5 @@
 import { SHIFT_STATUS } from '@constants/enums/shift-status'
+import { PAYMENT_STATUS } from '@constants/enums'
 import type { Shift } from '@domains/sales/entities/shift'
 // eslint-disable-next-line boundaries/no-unknown
 import type { SalesRepository } from '@domains/sales/repository'
@@ -75,7 +76,7 @@ export class ShiftService {
     let expectedCashAmount = shift.floatAmount
     for (const { payments: paymentList } of payments) {
       for (const payment of paymentList) {
-        if (payment.method === 'cash' && payment.status === 'completed') {
+        if (payment.method === 'cash' && payment.status === PAYMENT_STATUS.CAPTURED) {
           expectedCashAmount += payment.amount
         }
       }

@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { RouteError } from '@shared/components/ui/route-error'
 import { OfflineBanner } from '@shared/components/ui/offline-banner'
-import { useOnlineStatus } from '@app/pos/checkout/_lib/use-online-status'
+import { useOnlineStatus } from '@/app/pos/checkout/_lib/use-online-status'
 import { logInAction } from '@domains/auth/actions/log-in'
 
 export default function LoginPage() {

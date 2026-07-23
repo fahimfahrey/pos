@@ -1,6 +1,6 @@
 import { requireActiveBranch, requireSession } from '@domains/auth/actions/session'
 import { resolveRoleContext } from '@domains/auth/services/role-context'
-import { createDefaultStorageProvider } from '@infra/storage/default-provider'
+import { getServerStorageProvider } from '@infra/auth/server-storage-provider'
 import { Badge } from '@shared/components/ui/badge'
 import { RouteError } from '@shared/components/ui/route-error'
 
@@ -9,10 +9,9 @@ export default async function InventoryPage() {
   const branchId = await requireActiveBranch()
 
   try {
-    const provider = await createDefaultStorageProvider()
+    const provider = await getServerStorageProvider()
 
-    const { stockLevels, roleContext } = await provider.withTransaction(async (tx) => {
-      const repos = await provider.getRepositorySet(tx)
+    const { stockLevels, roleContext } = await provider.withTransaction(async (repos) => {
 
       // Check role
       const membership = await repos.organization.findMembership(session.orgId!, session.sub)
@@ -31,8 +30,6 @@ export default async function InventoryPage() {
         roleContext,
       }
     })
-
-    await provider.close()
 
     return (
       <div className="space-y-6">

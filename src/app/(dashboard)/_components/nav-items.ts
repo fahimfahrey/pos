@@ -77,7 +77,7 @@ export function getNavItems(persona: Persona): NavItem[] {
     case 'manager':
       return [...baseItems, ...backOfficeItems, registerItem, adminItem]
     case 'cashier':
-      return [baseItems[0], registerItem] // Only Home + Register
+      return [baseItems[0]!, registerItem] // Only Home + Register
     case 'auditor':
       return [...baseItems, ...backOfficeItems, adminItem]
     default:

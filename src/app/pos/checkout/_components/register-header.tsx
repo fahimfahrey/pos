@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import { Button } from '@shared/components/ui/button'
 import { OfflineBanner } from '@shared/components/ui/offline-banner'
+import { LocaleSwitcher } from '@shared/components/ui/locale-switcher'
+import { useTranslations, useFormatters } from '@shared/i18n'
 import { useSoundSettings } from '../_lib/use-sound-settings'
 import { useOutboxCount } from '../_lib/register-outbox'
 
@@ -21,18 +23,20 @@ export function RegisterHeader({
   shiftStartedAt,
   isOnline,
 }: RegisterHeaderProps) {
-  const [elapsedTime, setElapsedTime] = useState<string>('')
+  const [elapsed, setElapsed] = useState({ hours: 0, minutes: 0 })
   const outboxCount = useOutboxCount()
   const { muted, toggleMuted } = useSoundSettings()
+  const t = useTranslations()
+  const { number } = useFormatters()
 
   useEffect(() => {
     const updateElapsedTime = () => {
       const now = new Date()
-      const elapsed = now.getTime() - shiftStartedAt.getTime()
-      const hours = Math.floor(elapsed / (1000 * 60 * 60))
-      const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60))
+      const elapsedMs = now.getTime() - shiftStartedAt.getTime()
+      const hours = Math.floor(elapsedMs / (1000 * 60 * 60))
+      const minutes = Math.floor((elapsedMs % (1000 * 60 * 60)) / (1000 * 60))
 
-      setElapsedTime(`${hours}h ${minutes}m`)
+      setElapsed({ hours, minutes })
     }
 
     updateElapsedTime()
@@ -40,6 +44,11 @@ export function RegisterHeader({
 
     return () => clearInterval(interval)
   }, [shiftStartedAt])
+
+  const shiftDuration = t('checkout.header.shiftDuration', {
+    hours: number(elapsed.hours),
+    minutes: number(elapsed.minutes),
+  })
 
   return (
     <header className="min-h-14 short:min-h-10 bg-surface border-b border-border px-4 short:px-2 flex items-center justify-between pt-[env(safe-area-inset-top)]">
@@ -54,16 +63,18 @@ export function RegisterHeader({
         </div>
 
         <div className="text-xs text-foreground short:hidden">
-          Shift: {elapsedTime}
+          {t('checkout.header.shiftLabel', { time: shiftDuration })}
         </div>
       </div>
 
       <div className="flex items-center gap-4 short:gap-2">
         {outboxCount > 0 && (
           <div key={outboxCount > 0 ? 'visible' : 'hidden'} className="text-xs bg-warning/10 border border-warning text-foreground rounded px-2 py-1 motion-pop-in">
-            {outboxCount} pending
+            {t('checkout.header.pendingCount', { count: number(outboxCount) })}
           </div>
         )}
+
+        <LocaleSwitcher compact />
 
         <Button
           variant="secondary"
@@ -71,7 +82,7 @@ export function RegisterHeader({
           iconOnly
           onClick={toggleMuted}
           aria-pressed={muted}
-          aria-label={muted ? 'Unmute sound' : 'Mute sound'}
+          aria-label={muted ? t('checkout.header.unmuteSound') : t('checkout.header.muteSound')}
         >
           {muted ? '🔇' : '🔊'}
         </Button>

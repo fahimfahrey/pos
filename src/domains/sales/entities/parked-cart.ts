@@ -2,6 +2,9 @@ import type { CartDiscount } from './sale'
 
 export interface ParkedCartLine {
   variantId: string
+  name: string
+  barcode?: string
+  price: number
   quantity: number
   discount?: CartDiscount
 }

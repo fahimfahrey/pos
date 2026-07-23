@@ -42,8 +42,7 @@ export async function getCurrentUser(): Promise<User | null> {
   }
 
   const provider = await getServerStorageProvider()
-  const user = await provider.withTransaction(async (tx) => {
-    const repos = await provider.getRepositorySet(tx)
+  const user = await provider.withTransaction(async (repos) => {
     return repos.auth.findUserById(session.sub)
   })
 

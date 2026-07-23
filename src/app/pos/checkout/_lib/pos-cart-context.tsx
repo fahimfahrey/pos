@@ -65,13 +65,13 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
         // Increment existing line
         const updated = [...state.lines]
         updated[existingIndex] = {
-          ...updated[existingIndex],
-          quantity: updated[existingIndex].quantity + action.line.quantity,
+          ...updated[existingIndex]!,
+          quantity: updated[existingIndex]!.quantity + action.line.quantity,
         }
         return {
           ...state,
           lines: updated,
-          lastScannedCode: action.line.barcode,
+          lastScannedCode: action.line.barcode ?? null,
           lastScanTime: Date.now(),
           undoStack: [state.lines, ...state.undoStack.slice(0, 9)],
         }
@@ -81,7 +81,7 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
       return {
         ...state,
         lines: [...state.lines, action.line],
-        lastScannedCode: action.line.barcode,
+        lastScannedCode: action.line.barcode ?? null,
         lastScanTime: Date.now(),
         undoStack: [state.lines, ...state.undoStack.slice(0, 9)],
       }
@@ -94,7 +94,7 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
 
       const updated = [...state.lines]
       updated[action.lineIndex] = {
-        ...updated[action.lineIndex],
+        ...updated[action.lineIndex]!,
         quantity: action.quantity,
       }
       return {
@@ -113,7 +113,7 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
     case 'SET_LINE_DISCOUNT': {
       const updated = [...state.lines]
       updated[action.lineIndex] = {
-        ...updated[action.lineIndex],
+        ...updated[action.lineIndex]!,
         discount: action.discount,
       }
       return {
@@ -125,8 +125,8 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
     case 'CLEAR_LINE_DISCOUNT': {
       const updated = [...state.lines]
       updated[action.lineIndex] = {
-        ...updated[action.lineIndex],
-        discount: null,
+        ...updated[action.lineIndex]!,
+        discount: undefined,
       }
       return {
         ...state,
@@ -156,7 +156,7 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
       const [previousLines, ...rest] = state.undoStack
       return {
         ...state,
-        lines: previousLines,
+        lines: previousLines!,
         undoStack: rest,
       }
     }

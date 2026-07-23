@@ -10,7 +10,7 @@ export function parseReceiptNumber(formatted: string): { branchCode: string; num
   const match = formatted.match(/^(.+)-(\d+)$/)
   if (!match) return null
   return {
-    branchCode: match[1],
-    number: parseInt(match[2], 10),
+    branchCode: match[1]!,
+    number: parseInt(match[2]!, 10),
   }
 }

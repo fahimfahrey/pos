@@ -3,8 +3,8 @@ import type { ReportingRepository } from '../repository'
 import type { SalesRepository } from '@domains/sales/repository'
 import type { PaymentsRepository } from '@domains/payments/repository'
 import type { ShiftService } from '@domains/sales/services/shift-service'
-import type { IdGenerator } from '@shared/adapters/id-generator'
-import type { Clock } from '@shared/adapters/clock'
+import type { IdGenerator } from '@shared/ports/id-generator'
+import type { Clock } from '@shared/ports/clock'
 import { ConflictError } from '@shared/errors'
 
 export interface RepositoriesForZReport {

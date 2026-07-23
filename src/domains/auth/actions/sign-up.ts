@@ -1,6 +1,6 @@
 'use server'
 
-import { redirect } from 'next/navigation'
+import { redirect, unstable_rethrow } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getServerStorageProvider } from '@infra/auth/server-storage-provider'
 import { hasher, tokenSigner, authRateLimiter, cookieSessionStore } from '@infra/auth/auth-container'
@@ -8,7 +8,7 @@ import { AuthService } from '@domains/auth/services/auth-service'
 import { SignupInputSchema } from '@domains/auth/entities/credentials'
 import { SystemClock } from '@infra/adapters/system-clock'
 import { UuidIdGenerator } from '@infra/adapters/uuid-id-generator'
-import { getResolvedSettings } from '@domains/organization/services/settings-resolver'
+import { DEFAULT_SETTINGS } from '@domains/organization/entities/settings'
 
 export async function signUpAction(
   _prevState: unknown,
@@ -28,12 +28,11 @@ export async function signUpAction(
 
     const input = validationResult.data
     const provider = await getServerStorageProvider()
-    const settings = getResolvedSettings({})
+    const settings = DEFAULT_SETTINGS
     const clock = new SystemClock()
     const ids = new UuidIdGenerator()
 
-    const result = await provider.withTransaction(async (tx) => {
-      const repos = await provider.getRepositorySet(tx)
+    const result = await provider.withTransaction(async (repos) => {
       const authService = new AuthService(repos.auth, hasher, tokenSigner, clock, ids, authRateLimiter)
       return authService.signUp(input, settings)
     })
@@ -45,9 +44,10 @@ export async function signUpAction(
     revalidatePath('/app')
     revalidatePath('/login')
 
-    // Redirect to the app
-    redirect('/app')
+    // A brand-new account has no organization yet — send them to onboarding to create one
+    redirect('/onboarding')
   } catch (error) {
+    unstable_rethrow(error)
     console.error('Sign up error:', error)
     const message = error instanceof Error ? error.message : 'Sign up failed'
     return { error: message }

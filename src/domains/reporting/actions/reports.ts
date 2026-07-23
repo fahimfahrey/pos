@@ -2,7 +2,7 @@
 
 import type { ReportRange, ReportGranularity } from '../entities/report-rows'
 import { ReportingService } from '../services/reporting-service'
-import { createDefaultStorageProvider } from '@infra/storage/default-provider'
+import { getServerStorageProvider } from '@infra/auth/server-storage-provider'
 import { requireUser } from '@domains/auth/actions/session'
 import { toErrorResponse } from '@shared/errors'
 
@@ -24,10 +24,9 @@ export async function getSalesByPeriod(input: GetSalesReportInput) {
     const user = await requireUser()
     if (!user) return { ok: false, error: 'Unauthorized' }
 
-    const provider = await createDefaultStorageProvider()
+    const provider = await getServerStorageProvider()
 
-    try {
-      const result = await provider.withTransaction(async (repos: any) => {
+    const result = await provider.withTransaction(async (repos: any) => {
         const membership = user.membership
         const reportingService = new ReportingService(repos.reporting, {
           organization: repos.organization,
@@ -48,10 +47,7 @@ export async function getSalesByPeriod(input: GetSalesReportInput) {
           { branchId: input.branchId, shiftId: input.shiftId },
         )
       })
-      return { ok: true, data: result }
-    } finally {
-      await provider.close()
-    }
+    return { ok: true, data: result }
   } catch (error) {
     return { ok: false, error: toErrorResponse(error) }
   }
@@ -62,10 +58,9 @@ export async function getSalesByBranch(input: GetSalesReportInput) {
     const user = await requireUser()
     if (!user) return { ok: false, error: 'Unauthorized' }
 
-    const provider = await createDefaultStorageProvider()
+    const provider = await getServerStorageProvider()
 
-    try {
-      const result = await provider.withTransaction(async (repos: any) => {
+    const result = await provider.withTransaction(async (repos: any) => {
         const membership = user.membership
         const reportingService = new ReportingService(repos.reporting, {
           organization: repos.organization,
@@ -82,10 +77,7 @@ export async function getSalesByBranch(input: GetSalesReportInput) {
           shiftId: input.shiftId,
         })
       })
-      return { ok: true, data: result }
-    } finally {
-      await provider.close()
-    }
+    return { ok: true, data: result }
   } catch (error) {
     return { ok: false, error: toErrorResponse(error) }
   }
@@ -96,10 +88,9 @@ export async function getSalesByCashier(input: GetSalesReportInput) {
     const user = await requireUser()
     if (!user) return { ok: false, error: 'Unauthorized' }
 
-    const provider = await createDefaultStorageProvider()
+    const provider = await getServerStorageProvider()
 
-    try {
-      const result = await provider.withTransaction(async (repos: any) => {
+    const result = await provider.withTransaction(async (repos: any) => {
         const membership = user.membership
         const reportingService = new ReportingService(repos.reporting, {
           organization: repos.organization,
@@ -116,10 +107,7 @@ export async function getSalesByCashier(input: GetSalesReportInput) {
           shiftId: input.shiftId,
         })
       })
-      return { ok: true, data: result }
-    } finally {
-      await provider.close()
-    }
+    return { ok: true, data: result }
   } catch (error) {
     return { ok: false, error: toErrorResponse(error) }
   }
@@ -130,10 +118,9 @@ export async function getSalesByCategory(input: GetSalesReportInput) {
     const user = await requireUser()
     if (!user) return { ok: false, error: 'Unauthorized' }
 
-    const provider = await createDefaultStorageProvider()
+    const provider = await getServerStorageProvider()
 
-    try {
-      const result = await provider.withTransaction(async (repos: any) => {
+    const result = await provider.withTransaction(async (repos: any) => {
         const membership = user.membership
         const reportingService = new ReportingService(repos.reporting, {
           organization: repos.organization,
@@ -150,10 +137,7 @@ export async function getSalesByCategory(input: GetSalesReportInput) {
           shiftId: input.shiftId,
         })
       })
-      return { ok: true, data: result }
-    } finally {
-      await provider.close()
-    }
+    return { ok: true, data: result }
   } catch (error) {
     return { ok: false, error: toErrorResponse(error) }
   }
@@ -164,10 +148,9 @@ export async function getSalesByProduct(input: GetSalesReportInput) {
     const user = await requireUser()
     if (!user) return { ok: false, error: 'Unauthorized' }
 
-    const provider = await createDefaultStorageProvider()
+    const provider = await getServerStorageProvider()
 
-    try {
-      const result = await provider.withTransaction(async (repos: any) => {
+    const result = await provider.withTransaction(async (repos: any) => {
         const membership = user.membership
         const reportingService = new ReportingService(repos.reporting, {
           organization: repos.organization,
@@ -184,10 +167,7 @@ export async function getSalesByProduct(input: GetSalesReportInput) {
           shiftId: input.shiftId,
         })
       })
-      return { ok: true, data: result }
-    } finally {
-      await provider.close()
-    }
+    return { ok: true, data: result }
   } catch (error) {
     return { ok: false, error: toErrorResponse(error) }
   }
@@ -198,10 +178,9 @@ export async function getMarginByProduct(input: GetSalesReportInput) {
     const user = await requireUser()
     if (!user) return { ok: false, error: 'Unauthorized' }
 
-    const provider = await createDefaultStorageProvider()
+    const provider = await getServerStorageProvider()
 
-    try {
-      const result = await provider.withTransaction(async (repos: any) => {
+    const result = await provider.withTransaction(async (repos: any) => {
         const membership = user.membership
         const reportingService = new ReportingService(repos.reporting, {
           organization: repos.organization,
@@ -218,10 +197,7 @@ export async function getMarginByProduct(input: GetSalesReportInput) {
           shiftId: input.shiftId,
         })
       })
-      return { ok: true, data: result }
-    } finally {
-      await provider.close()
-    }
+    return { ok: true, data: result }
   } catch (error) {
     return { ok: false, error: toErrorResponse(error) }
   }
@@ -232,10 +208,9 @@ export async function getTaxCollectedByRate(input: GetSalesReportInput) {
     const user = await requireUser()
     if (!user) return { ok: false, error: 'Unauthorized' }
 
-    const provider = await createDefaultStorageProvider()
+    const provider = await getServerStorageProvider()
 
-    try {
-      const result = await provider.withTransaction(async (repos: any) => {
+    const result = await provider.withTransaction(async (repos: any) => {
         const membership = user.membership
         const reportingService = new ReportingService(repos.reporting, {
           organization: repos.organization,
@@ -252,10 +227,7 @@ export async function getTaxCollectedByRate(input: GetSalesReportInput) {
           shiftId: input.shiftId,
         })
       })
-      return { ok: true, data: result }
-    } finally {
-      await provider.close()
-    }
+    return { ok: true, data: result }
   } catch (error) {
     return { ok: false, error: toErrorResponse(error) }
   }
@@ -266,10 +238,9 @@ export async function getPaymentMethodBreakdown(input: GetSalesReportInput) {
     const user = await requireUser()
     if (!user) return { ok: false, error: 'Unauthorized' }
 
-    const provider = await createDefaultStorageProvider()
+    const provider = await getServerStorageProvider()
 
-    try {
-      const result = await provider.withTransaction(async (repos: any) => {
+    const result = await provider.withTransaction(async (repos: any) => {
         const membership = user.membership
         const reportingService = new ReportingService(repos.reporting, {
           organization: repos.organization,
@@ -286,10 +257,7 @@ export async function getPaymentMethodBreakdown(input: GetSalesReportInput) {
           shiftId: input.shiftId,
         })
       })
-      return { ok: true, data: result }
-    } finally {
-      await provider.close()
-    }
+    return { ok: true, data: result }
   } catch (error) {
     return { ok: false, error: toErrorResponse(error) }
   }
@@ -300,10 +268,9 @@ export async function getHourlySalesHeatmap(input: GetSalesReportInput) {
     const user = await requireUser()
     if (!user) return { ok: false, error: 'Unauthorized' }
 
-    const provider = await createDefaultStorageProvider()
+    const provider = await getServerStorageProvider()
 
-    try {
-      const result = await provider.withTransaction(async (repos: any) => {
+    const result = await provider.withTransaction(async (repos: any) => {
         const membership = user.membership
         const reportingService = new ReportingService(repos.reporting, {
           organization: repos.organization,
@@ -320,10 +287,7 @@ export async function getHourlySalesHeatmap(input: GetSalesReportInput) {
           shiftId: input.shiftId,
         })
       })
-      return { ok: true, data: result }
-    } finally {
-      await provider.close()
-    }
+    return { ok: true, data: result }
   } catch (error) {
     return { ok: false, error: toErrorResponse(error) }
   }

@@ -1,7 +1,8 @@
 import { PAYMENT_STATUS, type PaymentMethod, type PaymentStatus } from '@constants/enums'
 import type { Payment } from '@domains/payments/entities/payment'
 import type { PaymentsRepository } from '@domains/payments/repository'
-import type { CustomersRepository } from '@domains/customers/repository'
+// eslint-disable-next-line boundaries/element-types
+import type { RepositorySet } from '@infra/storage'
 import type { Clock } from '@shared/ports/clock'
 import type { IdGenerator } from '@shared/ports/id-generator'
 import { resolvePaymentGateway } from '@infra/payments'
@@ -16,7 +17,7 @@ export class PaymentService {
   ) {}
 
   async chargeSplitPayments(
-    repos: { payments: PaymentsRepository; customers: CustomersRepository },
+    repos: RepositorySet,
     ctx: { clock: Clock; ids: IdGenerator },
     input: {
       saleId: string
@@ -92,7 +93,7 @@ export class PaymentService {
 
       await repos.payments.savePayment(payment)
       await repos.payments.appendStatusEvent({
-        id: this.ids.generate(),
+        id: this.ids.next(),
         paymentId: payment.id,
         fromStatus: null,
         toStatus: status,
@@ -130,7 +131,7 @@ export class PaymentService {
 
     await repos.payments.savePayment(updated)
     await repos.payments.appendStatusEvent({
-      id: this.ids.generate(),
+      id: this.ids.next(),
       paymentId: payment.id,
       fromStatus: payment.status,
       toStatus,

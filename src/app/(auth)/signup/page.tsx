@@ -4,7 +4,7 @@ import { useActionState } from 'react'
 import Link from 'next/link'
 import { RouteError } from '@shared/components/ui/route-error'
 import { OfflineBanner } from '@shared/components/ui/offline-banner'
-import { useOnlineStatus } from '@app/pos/checkout/_lib/use-online-status'
+import { useOnlineStatus } from '@/app/pos/checkout/_lib/use-online-status'
 import { signUpAction } from '@domains/auth/actions/sign-up'
 
 export default function SignupPage() {

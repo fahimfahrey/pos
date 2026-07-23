@@ -81,24 +81,26 @@ function DataGrid<T>({
             <TableHead
               key={col.id}
               className={col.className}
-              onClick={() => col.sortable && onSort?.(col.id)}
+              aria-sort={
+                col.sortable
+                  ? sortColumn === col.id
+                    ? sortDirection === 'asc'
+                      ? 'ascending'
+                      : 'descending'
+                    : 'none'
+                  : undefined
+              }
             >
               {col.sortable ? (
                 <Button
                   variant="ghost"
                   size="sm"
                   className="gap-1 px-0"
-                  aria-sort={
-                    sortColumn === col.id
-                      ? sortDirection === 'asc'
-                        ? 'ascending'
-                        : 'descending'
-                      : 'none'
-                  }
+                  onClick={() => onSort?.(col.id)}
                 >
                   {col.header}
                   {sortColumn === col.id && (
-                    <span>{sortDirection === 'asc' ? '▲' : '▼'}</span>
+                    <span aria-hidden="true">{sortDirection === 'asc' ? '▲' : '▼'}</span>
                   )}
                 </Button>
               ) : (

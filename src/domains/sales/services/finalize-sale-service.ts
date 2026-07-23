@@ -9,6 +9,8 @@ import type { PaymentsRepository } from '@domains/payments/repository'
 import type { InventoryRepository } from '@domains/inventory/repository'
 // eslint-disable-next-line boundaries/no-unknown
 import type { CatalogRepository } from '@domains/catalog/repository'
+// eslint-disable-next-line boundaries/no-unknown
+import type { CustomersRepository } from '@domains/customers/repository'
 import type { ResolvedSettings } from '@domains/organization/entities/settings'
 import { priceCart, type CartLine, type DiscountSpec } from '@domains/sales/lib/money'
 import { formatReceiptNumber } from '@domains/sales/lib/receipt-number'
@@ -19,6 +21,8 @@ import { ValidationError } from '@shared/errors'
 import type { Clock } from '@shared/ports/clock'
 import type { IdGenerator } from '@shared/ports/id-generator'
 import { PaymentService } from '@domains/payments/services/payment-service'
+// eslint-disable-next-line boundaries/no-unknown
+import { InventoryService } from '@domains/inventory/services/inventory-service'
 import type { PaymentMethod } from '@constants/enums'
 import { resolveGatewayForMethod } from '@domains/payments/lib/payment-method-gateway-map'
 
@@ -73,6 +77,7 @@ export class FinalizeSaleService {
       payments: PaymentsRepository
       inventory: InventoryRepository
       catalog: CatalogRepository
+      customers: CustomersRepository
     },
     settings: ResolvedSettings,
     input: FinalizeSaleInput,
@@ -81,7 +86,7 @@ export class FinalizeSaleService {
     const existing = await repos.sales.findSaleById(input.saleId)
     if (existing && existing.status === SALE_STATUS.PAID) {
       const receiptNumber = existing.receiptNumber
-        ? formatReceiptNumber('UNKNOWN', existing.receiptNumber)
+        ? formatReceiptNumber(existing.branchId, existing.receiptNumber)
         : 'UNKNOWN'
       return {
         sale: existing,
@@ -100,18 +105,24 @@ export class FinalizeSaleService {
           throw new ValidationError(`Variant ${line.variantId} not found`)
         }
 
-        const category = variant.categoryId
-          ? await repos.catalog.findCategoryById(variant.categoryId)
+        const product = await repos.catalog.findProductById(variant.productId)
+        const category = product?.categoryId
+          ? await repos.catalog.findCategoryById(product.categoryId)
           : null
 
-        // Use resolved tax rate or fall back to first rule
-        const taxRate = resolveTaxRate(settings, category) ?? (settings.taxRules[0]?.rate || 0)
+        const priceEntry = await repos.catalog.findEffectivePrice(
+          input.orgId,
+          line.variantId,
+          this.clock.now(),
+        )
+
+        const taxRate = resolveTaxRate(settings, category)
 
         return {
           variantId: line.variantId,
           quantity: line.quantity,
-          unitPrice: variant.sellingPrice ?? 0,
-          name: variant.name,
+          unitPrice: priceEntry?.price ?? 0,
+          name: variant.name ?? variant.sku,
           sku: variant.sku,
           taxRate,
           discount: line.discount,
@@ -191,10 +202,10 @@ export class FinalizeSaleService {
     }
 
     // Get or increment receipt counter
-    let receiptCounter = await repos.sales.findReceiptCounter(settings.currency)
+    let receiptCounter = await repos.sales.findReceiptCounter(input.branchId)
     if (!receiptCounter) {
       receiptCounter = {
-        id: this.ids.generate(),
+        id: this.ids.next(),
         orgId: input.orgId,
         branchId: input.branchId,
         nextNumber: 1,
@@ -227,9 +238,11 @@ export class FinalizeSaleService {
     await repos.sales.saveSale(sale)
 
     // Create sale items
+    const inventoryService = new InventoryService(this.clock, this.ids)
+
     for (let i = 0; i < variantDetails.length; i++) {
-      const detail = variantDetails[i]
-      const cartLine = cartLines[i]
+      const detail = variantDetails[i]!
+      const cartLine = cartLines[i]!
 
       // Re-price this line to get exact amounts
       const linePricing = priceCart([cartLine], undefined, settings.taxMode)
@@ -240,7 +253,7 @@ export class FinalizeSaleService {
         : 0
 
       const item: SaleItem = {
-        id: this.ids.generate(),
+        id: this.ids.next(),
         saleId: input.saleId,
         variantId: detail.variantId,
         quantity: detail.quantity,
@@ -257,22 +270,25 @@ export class FinalizeSaleService {
       await repos.sales.saveSaleItem(item)
 
       // Record stock movement (decrement)
-      await repos.inventory.recordSale(repos.inventory, {
-        orgId: input.orgId,
-        branchId: input.branchId,
-        variantId: detail.variantId,
-        quantity: detail.quantity,
-        reference: input.saleId,
-        createdBy: input.createdBy,
-        allowOversell: false,
-      })
+      await inventoryService.recordSale(
+        { inventory: repos.inventory },
+        {
+          orgId: input.orgId,
+          branchId: input.branchId,
+          variantId: detail.variantId,
+          quantity: detail.quantity,
+          reference: input.saleId,
+          createdBy: input.createdBy,
+          allowOversell: false,
+        },
+      )
     }
 
     return {
       sale,
       payments: chargedPayments,
       outcome: 'paid',
-      receiptNumber: formatReceiptNumber('UNKNOWN', receiptNumber),
+      receiptNumber: formatReceiptNumber(input.branchId, receiptNumber),
       alreadyFinalized: false,
     }
   }

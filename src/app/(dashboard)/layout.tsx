@@ -14,8 +14,7 @@ export default async function DashboardLayout({
   const provider = await getServerStorageProvider()
 
   const { roleContext, branches, currentBranchId, openShift } = await provider.withTransaction(
-    async (tx) => {
-      const repos = await provider.getRepositorySet(tx)
+    async (repos) => {
 
       // Get the membership to resolve role context
       const membership = await repos.organization.findMembership(session.orgId!, session.sub)
@@ -61,14 +60,6 @@ export default async function DashboardLayout({
       }
     }
   )
-
-  await provider.close()
-
-  // If no current branch selected, redirect to branch picker
-  if (!currentBranchId) {
-    const { redirect } = await import('next/navigation')
-    redirect('/app/select-branch')
-  }
 
   const navItems = getNavItems(roleContext.persona)
 

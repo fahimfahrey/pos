@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source not "../../docs";
 
 /* Device-matrix variants — see docs/device-matrix.md.
    short: compact viewports (small all-in-one POS terminals, phones in landscape).
@@ -30,6 +31,10 @@
   --success: var(--palette-sage);
   --danger: var(--palette-brick);
   --warning: var(--palette-amber);
+  /* Fixed contrast-safe text colors for status surfaces (WCAG 2.2 AA, 4.5:1) */
+  --on-success: var(--palette-near-black);
+  --on-danger: #FFFFFF;
+  --on-warning: var(--palette-near-black);
   --muted: var(--foreground-muted);
   --on-surface: var(--foreground);
   --primary: var(--accent);
@@ -79,7 +84,7 @@
   /* Focus ring */
   --focus-ring-width: 2px;
   --focus-ring-style: solid;
-  --focus-ring-color: var(--accent);
+  --focus-ring-color: var(--accent-strong);
   --focus-ring-offset: 2px;
 
   /* Overlay (non-text scrim for modals/drawers) */
@@ -176,11 +181,15 @@
     --foreground-muted: var(--palette-taupe-light);
     --border: var(--palette-warm-gray-dark);
     --accent: var(--palette-terracotta-dark);
-    --accent-foreground: #FFFFFF;
+    --accent-foreground: var(--palette-near-black);
     --accent-strong: #C26648;
     --success: var(--palette-sage-dark);
     --danger: var(--palette-brick-dark);
     --warning: var(--palette-amber-dark);
+    /* Fixed contrast-safe text colors for status surfaces (WCAG 2.2 AA, 4.5:1) */
+    --on-success: var(--palette-near-black);
+    --on-danger: var(--palette-near-black);
+    --on-warning: var(--palette-near-black);
     --overlay: rgba(15, 15, 13, 0.65);
 
     /* Data-viz palette (dark) — same 8 hues stepped for the dark surface (#1F1E1B),
@@ -226,11 +235,15 @@
   --foreground-muted: var(--palette-taupe-light);
   --border: var(--palette-warm-gray-dark);
   --accent: var(--palette-terracotta-dark);
-  --accent-foreground: #FFFFFF;
+  --accent-foreground: var(--palette-near-black);
   --accent-strong: #C26648;
   --success: var(--palette-sage-dark);
   --danger: var(--palette-brick-dark);
   --warning: var(--palette-amber-dark);
+  /* Fixed contrast-safe text colors for status surfaces (WCAG 2.2 AA, 4.5:1) */
+  --on-success: var(--palette-near-black);
+  --on-danger: var(--palette-near-black);
+  --on-warning: var(--palette-near-black);
   --overlay: rgba(15, 15, 13, 0.65);
 
   /* Data-viz palette (dark) — see the media-query block above for rationale */
@@ -263,6 +276,14 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-body);
+}
+
+/* Bengali content switches the body typeface to Hind Siliguri, which pairs
+   with Inter and stays legible at register sizes. Matches on the `lang`
+   attribute rather than a class so it follows the active LocaleProvider
+   locale (see src/shared/i18n) everywhere, including server-rendered text. */
+html:lang(bn) body {
+  font-family: var(--font-bengali);
 }
 
 *:focus-visible {

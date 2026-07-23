@@ -68,7 +68,7 @@ export default [
     },
   },
   {
-    files: ['e2e/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}', '*.config.{ts,mts,mjs}'],
+    files: ['e2e/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}', '**/*.test.{ts,tsx}', '*.config.{ts,mts,mjs}'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -77,6 +77,15 @@ export default [
       },
       globals: {
         ...globals.node,
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        vi: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
       },
     },
     rules: {
@@ -171,7 +180,7 @@ export default [
         },
         {
           selector: 'Literal[value=/^duration-\\d/]',
-          message: 'Avoid raw Tailwind duration-N classes; use duration-[var(--duration-*)] token references instead.',
+          message: 'Avoid raw Tailwind duration-N classes; use duration-[var(--duration-token)] token references instead.',
         },
       ],
     },
@@ -184,7 +193,7 @@ export default [
         'error',
         {
           selector: 'Literal[value=/^duration-\\d/]',
-          message: 'Avoid raw Tailwind duration-N classes; use duration-[var(--duration-*)] token references instead.',
+          message: 'Avoid raw Tailwind duration-N classes; use duration-[var(--duration-token)] token references instead.',
         },
       ],
     },

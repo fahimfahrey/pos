@@ -3,6 +3,7 @@
     "target": "ES2022",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
+    "types": ["vitest/globals"],
     "skipLibCheck": true,
     "strict": true,
     "noUncheckedIndexedAccess": true,

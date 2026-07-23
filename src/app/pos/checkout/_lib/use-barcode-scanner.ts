@@ -45,7 +45,7 @@ export function useBarcodeScanner(options: BarcodeScannerOptions) {
     }
 
     // Check if focused element is inside an exempt container
-    const exemptContainer = exemptSelectors.some((selector) =>
+    const exemptContainer = exemptSelectorsRef.current.some((selector: string) =>
       focused.closest(selector)
     )
 

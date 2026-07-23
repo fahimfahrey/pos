@@ -5,6 +5,7 @@ import { getServerStorageProvider } from '@infra/auth/server-storage-provider'
 import { Card, CardContent } from '@shared/components/ui/card'
 import { EmptyState } from '@shared/components/ui/empty-state'
 import { Button } from '@shared/components/ui/button'
+import Link from 'next/link'
 import { switchBranch } from '@domains/organization/actions/switch-branch'
 
 export default async function SelectBranchPage() {
@@ -12,8 +13,7 @@ export default async function SelectBranchPage() {
 
   const provider = await getServerStorageProvider()
 
-  const { branches, roleContext } = await provider.withTransaction(async (tx) => {
-    const repos = await provider.getRepositorySet(tx)
+  const { branches, roleContext } = await provider.withTransaction(async (repos) => {
 
     // Get membership and resolve role context
     const membership = await repos.organization.findMembership(session.orgId!, session.sub)
@@ -41,24 +41,38 @@ export default async function SelectBranchPage() {
     }
   })
 
-  await provider.close()
-
   // If exactly one branch, auto-select it
   if (branches.length === 1) {
-    await switchBranch(branches[0].id)
+    await switchBranch(branches[0]!.id)
     redirect('/app')
   }
 
   // If no branches, show empty state
   if (branches.length === 0) {
+    const hasOrganization = Boolean(session.orgId)
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-background px-4">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6">
             <EmptyState
-              title="No branch access"
-              description="Contact your organization owner to grant you access to a branch."
+              title={hasOrganization ? 'No branch access' : 'No organization yet'}
+              description={
+                hasOrganization
+                  ? 'Contact your organization owner to grant you access to a branch.'
+                  : "You haven't set up a store yet. Create your organization, branch, and register to get started."
+              }
               headingLevel="h1"
+              action={
+                !hasOrganization && (
+                  <Link
+                    href="/onboarding"
+                    className="inline-flex items-center justify-center gap-2 rounded-[var(--radius-button)] text-label font-medium transition-colors h-10 px-4 bg-accent text-accent-foreground hover:bg-accent-strong"
+                  >
+                    Set up your store
+                  </Link>
+                )
+              }
             />
           </CardContent>
         </Card>
@@ -86,7 +100,7 @@ export default async function SelectBranchPage() {
               }}>
                 <Button
                   type="submit"
-                  variant="outline"
+                  variant="secondary"
                   className="w-full justify-start text-left text-body py-3"
                 >
                   <span>{branch.name || branch.id}</span>

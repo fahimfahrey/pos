@@ -1,6 +1,6 @@
 import { requireActiveBranch, requireSession } from '@domains/auth/actions/session'
 import { resolveRoleContext } from '@domains/auth/services/role-context'
-import { createDefaultStorageProvider } from '@infra/storage/default-provider'
+import { getServerStorageProvider } from '@infra/auth/server-storage-provider'
 import { RouteError } from '@shared/components/ui/route-error'
 import { EmptyState } from '@shared/components/ui/empty-state'
 import { ReportingService } from '@domains/reporting/services/reporting-service'
@@ -18,10 +18,9 @@ export default async function ReportsPage() {
   const branchId = await requireActiveBranch()
 
   try {
-    const provider = await createDefaultStorageProvider()
+    const provider = await getServerStorageProvider()
 
-    const result = await provider.withTransaction(async (tx) => {
-      const repos = await provider.getRepositorySet(tx)
+    const result = await provider.withTransaction(async (repos) => {
 
       const membership = await repos.organization.findMembership(session.orgId!, session.sub)
       const roleContext = resolveRoleContext(session, membership)
@@ -88,8 +87,6 @@ export default async function ReportsPage() {
 
       return { restricted: false as const, data }
     })
-
-    await provider.close()
 
     if (result.restricted) {
       return (

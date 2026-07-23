@@ -11,9 +11,9 @@ const toastVariants = cva(
     variants: {
       variant: {
         default: 'bg-surface border-border text-foreground',
-        success: 'bg-success border-success text-white',
-        danger: 'bg-danger border-danger text-white',
-        warning: 'bg-warning border-warning text-foreground',
+        success: 'bg-success border-success text-[var(--on-success)]',
+        danger: 'bg-danger border-danger text-[var(--on-danger)]',
+        warning: 'bg-warning border-warning text-[var(--on-warning)]',
       },
     },
     defaultVariants: {

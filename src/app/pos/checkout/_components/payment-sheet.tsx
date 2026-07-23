@@ -120,7 +120,7 @@ export function PaymentSheet({ total, open, onClose, onFinalize }: PaymentSheetP
                   <Button
                     key={denom.value}
                     onClick={() => handleAddDenomination(denom.value)}
-                    variant="outline"
+                    variant="secondary"
                     size="register"
                     disabled={loading}
                     aria-label={`Add ${denom.label}`}

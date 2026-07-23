@@ -13,7 +13,7 @@ export default async function ReceiptPage({ params }: ReceiptPageProps) {
   const { saleId } = await params
 
   // Initialize storage provider
-  const provider = createStorageProvider({ engine: 'indexeddb' })
+  const provider = await createStorageProvider({ engine: 'indexeddb' })
 
   // Load sale and related data
   let sale
@@ -46,7 +46,7 @@ export default async function ReceiptPage({ params }: ReceiptPageProps) {
       }
 
       // Resolve settings
-      settings = await resolveSettings(repos, sale.orgId, sale.branchId)
+      settings = resolveSettings({ settings: org.settings }, { settings: branch.settings })
     })
   } catch (error) {
     console.error('Failed to load receipt data:', error)

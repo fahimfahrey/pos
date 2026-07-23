@@ -1,6 +1,6 @@
 'use server'
 
-import { redirect } from 'next/navigation'
+import { redirect, unstable_rethrow } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getServerStorageProvider } from '@infra/auth/server-storage-provider'
 import { hasher, tokenSigner, authRateLimiter, cookieSessionStore } from '@infra/auth/auth-container'
@@ -8,7 +8,8 @@ import { AuthService } from '@domains/auth/services/auth-service'
 import { LoginInputSchema } from '@domains/auth/entities/credentials'
 import { SystemClock } from '@infra/adapters/system-clock'
 import { UuidIdGenerator } from '@infra/adapters/uuid-id-generator'
-import { getResolvedSettings } from '@domains/organization/services/settings-resolver'
+import { DEFAULT_SETTINGS } from '@domains/organization/entities/settings'
+import { sessionTtlSeconds } from '@domains/auth/services/session-timeout'
 
 export async function logInAction(
   _prevState: unknown,
@@ -30,14 +31,39 @@ export async function logInAction(
 
     const input = validationResult.data
     const provider = await getServerStorageProvider()
-    const settings = getResolvedSettings({})
+    const settings = DEFAULT_SETTINGS
     const clock = new SystemClock()
     const ids = new UuidIdGenerator()
 
-    const result = await provider.withTransaction(async (tx) => {
-      const repos = await provider.getRepositorySet(tx)
+    const result = await provider.withTransaction(async (repos) => {
       const authService = new AuthService(repos.auth, hasher, tokenSigner, clock, ids, authRateLimiter)
-      return authService.logIn(input, settings)
+      const signInResult = await authService.logIn(input, settings)
+
+      // The token AuthService issues has no orgId — look up the user's organization
+      // and re-issue a token that includes it, so /app resolves the right persona
+      // instead of silently falling back to the most restrictive one.
+      const memberships = await repos.organization.listMembershipsForUser(signInResult.user.id)
+      const orgId = memberships[0]?.orgId
+      if (!orgId) {
+        return signInResult
+      }
+
+      const newSessionId = ids.next()
+      const ttlSeconds = sessionTtlSeconds(settings)
+      const expiresAt = new Date(clock.now().getTime() + ttlSeconds * 1000)
+      const newToken = await tokenSigner.sign(
+        { sub: signInResult.user.id, sessionId: newSessionId, orgId, roles: signInResult.user.roles },
+        { ttlSeconds },
+      )
+      await repos.auth.saveSession({
+        id: newSessionId,
+        userId: signInResult.user.id,
+        token: newToken,
+        expiresAt,
+        createdAt: clock.now(),
+      })
+
+      return { ...signInResult, token: newToken, session: { ...signInResult.session, expiresAt } }
     })
 
     // Set the session cookie
@@ -51,6 +77,7 @@ export async function logInAction(
     const redirectTo = returnTo && returnTo.startsWith('/') ? returnTo : '/app'
     redirect(redirectTo)
   } catch (error) {
+    unstable_rethrow(error)
     console.error('Log in error:', error)
     const message = error instanceof Error ? error.message : 'Log in failed'
     return { error: message, errorKind: 'system' as const, returnTo: undefined }

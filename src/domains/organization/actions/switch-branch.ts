@@ -21,8 +21,7 @@ export async function switchBranch(branchId: string): Promise<void> {
   const provider = await getServerStorageProvider()
 
   // Validate the branch exists and the user can access it
-  const permitted = await provider.withTransaction(async (tx) => {
-    const repos = await provider.getRepositorySet(tx)
+  const permitted = await provider.withTransaction(async (repos) => {
 
     // Check if branch exists
     const branch = await repos.organization.findBranchById(branchId)

@@ -1,0 +1,148 @@
+{
+  "common": {
+    "cancel": "বাতিল",
+    "close": "বন্ধ করুন",
+    "apply": "প্রয়োগ করুন",
+    "save": "সংরক্ষণ করুন",
+    "skipToContent": "মূল বিষয়বস্তুতে যান"
+  },
+  "localeSwitcher": {
+    "label": "ভাষা",
+    "en-US": "English (ইংরেজি)",
+    "bn-BD": "বাংলা"
+  },
+  "checkout": {
+    "header": {
+      "shiftLabel": "শিফট: {time}",
+      "shiftDuration": "{hours}ঘ {minutes}মি",
+      "pendingCount": "{count}টি অমীমাংসিত",
+      "muteSound": "শব্দ বন্ধ করুন",
+      "unmuteSound": "শব্দ চালু করুন"
+    },
+    "cartRow": {
+      "pricePerUnit": "{price} প্রতিটি",
+      "discountAria": "{name}-এর জন্য ছাড়",
+      "removeAria": "{name} সরান"
+    },
+    "holdResume": {
+      "title": "স্থগিত কার্ট",
+      "closeAria": "স্থগিত কার্ট বন্ধ করুন",
+      "loading": "লোড হচ্ছে…",
+      "empty": "কোনো স্থগিত কার্ট নেই",
+      "itemsCount": {
+        "one": "{count}টি পণ্য",
+        "other": "{count}টি পণ্য"
+      },
+      "resume": "পুনরায় শুরু",
+      "delete": "মুছুন",
+      "deleteAria": {
+        "one": "{count}টি পণ্যসহ স্থগিত কার্ট মুছুন",
+        "other": "{count}টি পণ্যসহ স্থগিত কার্ট মুছুন"
+      }
+    },
+    "keyboardShortcuts": {
+      "title": "কীবোর্ড শর্টকাট",
+      "closeAria": "কীবোর্ড শর্টকাট বন্ধ করুন",
+      "close": "বন্ধ করুন"
+    },
+    "shortcuts": {
+      "submit_scan": {
+        "label": "স্ক্যান জমা দিন",
+        "description": "স্ক্যান করা বারকোড জমা দিন"
+      },
+      "open_payment": {
+        "label": "পেমেন্ট",
+        "description": "পেমেন্ট প্যানেল খুলুন"
+      },
+      "hold_cart": {
+        "label": "কার্ট স্থগিত করুন",
+        "description": "পরে ব্যবহারের জন্য বর্তমান কার্ট স্থগিত করুন"
+      },
+      "show_held": {
+        "label": "স্থগিত কার্ট দেখান",
+        "description": "স্থগিত কার্টগুলো দেখান"
+      },
+      "void_sale": {
+        "label": "বিক্রয় বাতিল",
+        "description": "বর্তমান বিক্রয় বাতিল করুন"
+      },
+      "cart_discount": {
+        "label": "ছাড়",
+        "description": "কার্টে ছাড় প্রয়োগ করুন"
+      },
+      "undo_scan": {
+        "label": "পূর্বাবস্থায় ফিরুন",
+        "description": "সর্বশেষ স্ক্যান পূর্বাবস্থায় ফিরান"
+      },
+      "close_modal": {
+        "label": "বন্ধ করুন",
+        "description": "খোলা মোডাল বন্ধ করুন"
+      },
+      "show_help": {
+        "label": "সহায়তা",
+        "description": "কীবোর্ড শর্টকাট দেখান"
+      }
+    },
+    "lineDiscount": {
+      "dialogAria": "লাইন ছাড়",
+      "typeGroupAria": "ছাড়ের ধরন",
+      "percentage": "শতাংশ",
+      "fixedAmount": "নির্দিষ্ট পরিমাণ",
+      "amountLabel": "ছাড়ের পরিমাণ",
+      "discountLabel": "ছাড়:",
+      "newTotalLabel": "নতুন মোট:",
+      "cancel": "বাতিল",
+      "apply": "প্রয়োগ করুন"
+    },
+    "managerOverride": {
+      "title": "ম্যানেজার অনুমোদন",
+      "description": "এই কাজের জন্য ম্যানেজারের অনুমোদন প্রয়োজন। আপনার ম্যানেজারের পরিচয়পত্র প্রবেশ করান।",
+      "emailLabel": "ম্যানেজারের ইমেইল",
+      "emailPlaceholder": "manager@store.com",
+      "pinLabel": "ম্যানেজারের পিন",
+      "genericError": "অনুমোদন ব্যর্থ হয়েছে",
+      "cancel": "বাতিল",
+      "approve": "অনুমোদন করুন",
+      "verifying": "যাচাই করা হচ্ছে…"
+    },
+    "openShift": {
+      "welcome": "স্বাগতম, {name}",
+      "floatLabel": "শুরুর নগদ পরিমাণ",
+      "floatHelp": "এই শিফটের জন্য এটি আপনার শুরুর নগদ পরিমাণ",
+      "openShift": "শিফট শুরু করুন",
+      "openingShift": "শিফট শুরু হচ্ছে…",
+      "genericError": "শিফট শুরু করা যায়নি"
+    },
+    "syncProgress": {
+      "syncing": "সিঙ্ক হচ্ছে…",
+      "synced": "সিঙ্ক সম্পন্ন হয়েছে"
+    },
+    "voidSale": {
+      "title": "বিক্রয় বাতিল করুন",
+      "description": "এই বিক্রয়টি বাতিল করার কারণ নির্বাচন করুন:",
+      "reasonGroupAria": "বাতিলের কারণ",
+      "reasons": {
+        "customer_changed_mind": "গ্রাহক মত পরিবর্তন করেছেন",
+        "duplicate_order": "ডুপ্লিকেট অর্ডার",
+        "wrong_item": "ভুল পণ্য স্ক্যান হয়েছে",
+        "technical_error": "প্রযুক্তিগত ত্রুটি",
+        "other": "অন্যান্য"
+      },
+      "otherReasonAria": "কারণ ব্যাখ্যা করুন",
+      "otherReasonPlaceholder": "কারণ ব্যাখ্যা করুন…",
+      "cancel": "বাতিল",
+      "confirm": "বিক্রয় বাতিল করুন"
+    }
+  },
+  "catalog": {
+    "title": "পণ্য তালিকা",
+    "subtitle": "আপনার পণ্য তালিকা পরিচালনা করুন",
+    "columnProduct": "পণ্যের নাম",
+    "columnSku": "এসকেইউ",
+    "columnStatus": "অবস্থা",
+    "empty": "তালিকায় কোনো পণ্য নেই",
+    "statusActive": "সক্রিয়",
+    "errorTitle": "পণ্য তালিকা লোড করা যায়নি",
+    "errorMessage": "পণ্য তালিকার তথ্য পুনরুদ্ধার করা যায়নি। আপনার ডিভাইসে থাকা তথ্য নিরাপদ আছে।"
+  }
+}

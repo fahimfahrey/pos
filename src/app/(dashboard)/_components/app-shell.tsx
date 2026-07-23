@@ -7,7 +7,7 @@ import { cn } from '@shared/utils/cn'
 import { Sheet, SheetContent, SheetTrigger } from '@shared/components/ui/sheet'
 import { Button } from '@shared/components/ui/button'
 import { VisuallyHidden } from '@shared/components/ui/visually-hidden'
-import LogoutButton from '@app/_components/logout-button'
+import LogoutButton from '@/app/_components/logout-button'
 import type { Persona } from '@domains/auth/services/role-context'
 import type { NavItem } from './nav-items'
 import type { Branch } from '@domains/organization/entities/branch'
@@ -20,7 +20,7 @@ interface AppShellProps {
   persona: Persona
   navItems: NavItem[]
   branches: Branch[]
-  currentBranchId: string
+  currentBranchId: string | null
   openShift?: Shift | null
   children: React.ReactNode
 }

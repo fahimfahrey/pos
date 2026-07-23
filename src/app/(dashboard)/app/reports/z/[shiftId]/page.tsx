@@ -1,6 +1,6 @@
 import { requireSession } from '@domains/auth/actions/session'
 import { resolveRoleContext } from '@domains/auth/services/role-context'
-import { createDefaultStorageProvider } from '@infra/storage/default-provider'
+import { getServerStorageProvider } from '@infra/auth/server-storage-provider'
 import { RouteError } from '@shared/components/ui/route-error'
 import { EmptyState } from '@shared/components/ui/empty-state'
 import { ZReportDocument, type ZReportLabels } from '@shared/components/reports/z-report-document'
@@ -11,10 +11,9 @@ export default async function ZReportPage({ params }: { params: Promise<{ shiftI
   const session = await requireSession()
 
   try {
-    const provider = await createDefaultStorageProvider()
+    const provider = await getServerStorageProvider()
 
-    const result = await provider.withTransaction(async (tx) => {
-      const repos = await provider.getRepositorySet(tx)
+    const result = await provider.withTransaction(async (repos) => {
 
       const membership = await repos.organization.findMembership(session.orgId!, session.sub)
       const roleContext = resolveRoleContext(session, membership)
@@ -47,8 +46,6 @@ export default async function ZReportPage({ params }: { params: Promise<{ shiftI
 
       return { report, labels, allowed: true }
     })
-
-    await provider.close()
 
     if (!result.allowed) {
       return (

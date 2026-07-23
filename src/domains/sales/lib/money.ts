@@ -194,7 +194,7 @@ export function priceCart(
 
   // Apply per-line discounts
   const discountedLines = pricedLines.map((line, i) =>
-    lines[i].discount ? applyLineDiscount(line, lines[i].discount!, taxMode, roundingRule) : line,
+    lines[i]!.discount ? applyLineDiscount(line, lines[i]!.discount!, taxMode, roundingRule) : line,
   )
 
   const subtotalCents = discountedLines.reduce(
@@ -232,8 +232,8 @@ export function priceCart(
 
     // Allocate integer parts
     for (let i = 0; i < lineDiscounts.length; i++) {
-      lineDiscounts[i] = Math.floor(allocations[i])
-      allocated += lineDiscounts[i]
+      lineDiscounts[i] = Math.floor(allocations[i]!)
+      allocated += lineDiscounts[i]!
     }
 
     // Largest-remainder: allocate remaining cents to lines with largest fractional parts
@@ -245,13 +245,14 @@ export function priceCart(
     fractionalParts.sort((a, b) => b.fraction - a.fraction)
 
     for (let i = 0; i < remainingCents; i++) {
-      lineDiscounts[fractionalParts[i].index]++
+      const fp = fractionalParts[i]!
+      lineDiscounts[fp.index] = (lineDiscounts[fp.index] ?? 0) + 1
     }
   }
 
   // Recalculate lines with distributed cart discount
   const finalLines = discountedLines.map((line, i) => {
-    const totalLineDiscount = line.discount + fromMinorUnits(lineDiscounts[i])
+    const totalLineDiscount = line.discount + fromMinorUnits(lineDiscounts[i]!)
     return applyLineDiscount(
       { ...line, discount: 0 },
       { type: DISCOUNT_TYPE.FIXED_AMOUNT, amount: totalLineDiscount },

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo, useCallback, useState } from 'react'
+import React, { useMemo, useCallback, useState, useRef, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { cn } from '@shared/utils/cn'
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from './table'
@@ -49,6 +49,15 @@ export function DataTable<T extends Record<string, any>>({
   // Keyboard navigation state
   const [focusedCell, setFocusedCell] = useState<{ row: number; col: number }>({ row: 0, col: 0 })
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const cellRefs = useRef<Map<string, HTMLTableCellElement>>(new Map())
+  const shouldFocusRef = useRef(false)
+
+  useEffect(() => {
+    if (!shouldFocusRef.current) return
+    shouldFocusRef.current = false
+    const key = `${focusedCell.row}-${focusedCell.col}`
+    cellRefs.current.get(key)?.focus()
+  }, [focusedCell])
 
   // Sorting
   const currentSort = searchParams.get('sort')
@@ -140,6 +149,7 @@ export function DataTable<T extends Record<string, any>>({
       }
 
       if (newRow !== row || newCol !== col) {
+        shouldFocusRef.current = true
         setFocusedCell({ row: newRow, col: newCol })
       }
     },
@@ -193,7 +203,7 @@ export function DataTable<T extends Record<string, any>>({
   }
 
   return (
-    <Table onKeyDown={handleKeyDown} className="w-full">
+    <Table onKeyDown={handleKeyDown} className="w-full" role="grid" aria-multiselectable={selectable || undefined}>
       <TableHeader>
         <TableRow>
           {selectable && (
@@ -208,6 +218,13 @@ export function DataTable<T extends Record<string, any>>({
           )}
           {columns.map((col, colIdx) => {
             const isActive = focusedCell.row === -1 && focusedCell.col === colIdx + (selectable ? 1 : 0)
+            const ariaSort = col.sortable
+              ? currentSort === col.id
+                ? currentDir === 'asc'
+                  ? 'ascending'
+                  : 'descending'
+                : 'none'
+              : undefined
             return (
               <TableHead
                 key={col.id}
@@ -216,18 +233,18 @@ export function DataTable<T extends Record<string, any>>({
                   isActive && 'bg-accent/10',
                   col.sortable && 'cursor-pointer select-none'
                 )}
-                onClick={() => col.sortable && handleSort(col.id)}
+                aria-sort={ariaSort}
               >
                 {col.sortable ? (
                   <Button
                     variant="ghost"
                     size="sm"
                     className="gap-2 px-0"
-                    tabIndex={isActive ? 0 : -1}
+                    onClick={() => handleSort(col.id)}
                   >
                     {col.header}
                     {currentSort === col.id && (
-                      <span>{currentDir === 'asc' ? '▲' : '▼'}</span>
+                      <span aria-hidden="true">{currentDir === 'asc' ? '▲' : '▼'}</span>
                     )}
                   </Button>
                 ) : (
@@ -252,11 +269,30 @@ export function DataTable<T extends Record<string, any>>({
                 isRowSelected && 'bg-accent/5'
               )}
               tabIndex={focusedCell.row === rowIdx ? 0 : -1}
+              aria-selected={selectable ? isRowSelected : undefined}
             >
               {selectable && (
-                <TableCell className="w-12">
+                <TableCell
+                  className={cn(
+                    'w-12 relative',
+                    focusedCell.row === rowIdx && focusedCell.col === 0 && 'ring-2 ring-accent ring-inset'
+                  )}
+                  role="gridcell"
+                  ref={(node) => {
+                    if (node) cellRefs.current.set(`${rowIdx}-0`, node)
+                    else cellRefs.current.delete(`${rowIdx}-0`)
+                  }}
+                  tabIndex={focusedCell.row === rowIdx && focusedCell.col === 0 ? 0 : -1}
+                  onFocus={() =>
+                    setFocusedCell((prev) =>
+                      prev.row === rowIdx && prev.col === 0 ? prev : { row: rowIdx, col: 0 }
+                    )
+                  }
+                >
                   <Checkbox
                     checked={isRowSelected}
+                    tabIndex={-1}
+                    aria-label={`Select row ${rowId}`}
                     onChange={(checked) => {
                       const newSelected = new Set(selectedIds)
                       if (checked) {
@@ -271,15 +307,27 @@ export function DataTable<T extends Record<string, any>>({
                 </TableCell>
               )}
               {columns.map((col, colIdx) => {
-                const isActive = focusedCell.row === rowIdx && focusedCell.col === colIdx + (selectable ? 1 : 0)
+                const cellCol = colIdx + (selectable ? 1 : 0)
+                const isActive = focusedCell.row === rowIdx && focusedCell.col === cellCol
+                const cellKey = `${rowIdx}-${cellCol}`
                 return (
                   <TableCell
                     key={col.id}
+                    role="gridcell"
+                    ref={(node) => {
+                      if (node) cellRefs.current.set(cellKey, node)
+                      else cellRefs.current.delete(cellKey)
+                    }}
                     className={cn(
                       'relative',
                       isActive && 'ring-2 ring-accent ring-inset'
                     )}
                     tabIndex={isActive ? 0 : -1}
+                    onFocus={() =>
+                      setFocusedCell((prev) =>
+                        prev.row === rowIdx && prev.col === cellCol ? prev : { row: rowIdx, col: cellCol }
+                      )
+                    }
                   >
                     {col.render
                       ? col.render(item[col.accessor], item)

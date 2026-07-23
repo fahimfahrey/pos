@@ -1,7 +1,7 @@
 import { requireSession } from '@domains/auth/actions/session'
 import { resolveRoleContext } from '@domains/auth/services/role-context'
 import { getServerStorageProvider } from '@infra/auth/server-storage-provider'
-import LogoutButton from '@app/_components/logout-button'
+import LogoutButton from '@/app/_components/logout-button'
 
 export default async function AdminLayout({
   children,
@@ -12,8 +12,7 @@ export default async function AdminLayout({
 
   // Gate admin access to owner and manager personas only
   const provider = await getServerStorageProvider()
-  await provider.withTransaction(async (tx) => {
-    const repos = await provider.getRepositorySet(tx)
+  await provider.withTransaction(async (repos) => {
     const membership = await repos.organization.findMembership(session.orgId!, session.sub)
     const roleContext = resolveRoleContext(session, membership)
 

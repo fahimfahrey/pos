@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState, useSearchParams } from 'react'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useCartBroadcast } from '../_lib/use-cart-broadcast'
 import { DisplayCartView } from './_components/display-cart-view'
 import type { CartSnapshot } from '@domains/sales/entities/cart-snapshot'

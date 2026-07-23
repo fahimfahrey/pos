@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { createDefaultStorageProvider } from '@infra/storage'
-import { RegisterService } from '@domains/organization/services/register-service'
 import { ShiftService } from '@domains/sales/services/shift-service'
-import { SystemClock } from '@domains/system/services/clock'
+import { SystemClock } from '@infra/adapters/system-clock'
+import { UuidIdGenerator } from '@infra/adapters/uuid-id-generator'
 import type { Register } from '@domains/organization/entities/register'
 import type { Shift } from '@domains/sales/entities/shift'
 
@@ -18,7 +18,8 @@ type RegisterSessionState =
 
 export function useRegisterSession(
   orgId: string,
-  branchId: string
+  branchId: string,
+  cashierId: string,
 ): RegisterSessionState & {
   openShift: (floatAmount: number) => Promise<void>
   retryLoad: () => void
@@ -33,59 +34,44 @@ export function useRegisterSession(
 
     const bootstrap = async () => {
       try {
-        const provider = createDefaultStorageProvider()
-        const repos = await provider.getRepositorySet()
+        const provider = await createDefaultStorageProvider()
         const clock = new SystemClock()
+        const storedRegisterId = localStorage.getItem(`${REGISTER_ID_KEY}-${branchId}`)
 
-        // Auto-select register from localStorage or use first active
-        let registerId = localStorage.getItem(`${REGISTER_ID_KEY}-${branchId}`)
+        const result = await provider.withTransaction(async (repos) => {
+          let registerId = storedRegisterId
 
-        if (!registerId) {
-          const registers = await repos.organization.listRegistersForBranch(branchId)
-          const activeRegister = registers.find((r) => r.active)
+          if (!registerId) {
+            const registers = await repos.organization.listRegistersForBranch(branchId)
+            const activeRegister = registers.find((r) => r.active)
 
-          if (!activeRegister) {
-            if (isMounted) {
-              setState({
-                status: 'error',
-                message: 'No active registers found for this branch',
-              })
+            if (!activeRegister) {
+              return { kind: 'error' as const, message: 'No active registers found for this branch' }
             }
-            return
+
+            registerId = activeRegister.id
+            localStorage.setItem(`${REGISTER_ID_KEY}-${branchId}`, registerId)
           }
 
-          registerId = activeRegister.id
-          localStorage.setItem(`${REGISTER_ID_KEY}-${branchId}`, registerId)
-        }
-
-        const register = await repos.organization.findRegisterById(registerId)
-        if (!register) {
-          if (isMounted) {
-            setState({
-              status: 'error',
-              message: 'Register not found',
-            })
+          const register = await repos.organization.findRegisterById(registerId)
+          if (!register) {
+            return { kind: 'error' as const, message: 'Register not found' }
           }
-          return
-        }
 
-        // Look for open shift
-        const shiftService = new ShiftService(repos.sales, clock)
-        const openShift = await shiftService.getOpenShiftForRegister(registerId)
+          const shiftService = new ShiftService(clock, new UuidIdGenerator())
+          const openShift = await shiftService.getOpenShiftForRegister({ sales: repos.sales }, register.id)
 
-        if (isMounted) {
-          if (openShift) {
-            setState({
-              status: 'ready',
-              register,
-              shift: openShift,
-            })
-          } else {
-            setState({
-              status: 'needs-shift',
-              register,
-            })
-          }
+          return { kind: 'ready' as const, register, shift: openShift }
+        })
+
+        if (!isMounted) return
+
+        if (result.kind === 'error') {
+          setState({ status: 'error', message: result.message })
+        } else if (result.shift) {
+          setState({ status: 'ready', register: result.register, shift: result.shift })
+        } else {
+          setState({ status: 'needs-shift', register: result.register })
         }
       } catch (error) {
         console.error('Failed to bootstrap register session:', error)
@@ -110,17 +96,29 @@ export function useRegisterSession(
       return
     }
 
-    try {
-      const provider = createDefaultStorageProvider()
-      const repos = await provider.getRepositorySet()
-      const clock = new SystemClock()
-      const shiftService = new ShiftService(repos.sales, clock)
+    const currentRegister = state.register
 
-      const newShift = await shiftService.openShift(state.register.id, floatAmount)
+    try {
+      const provider = await createDefaultStorageProvider()
+      const clock = new SystemClock()
+      const shiftService = new ShiftService(clock, new UuidIdGenerator())
+
+      const newShift = await provider.withTransaction((repos) =>
+        shiftService.openShift(
+          { sales: repos.sales },
+          {
+            orgId,
+            branchId,
+            registerId: currentRegister.id,
+            cashierUserId: cashierId,
+            floatAmount,
+          },
+        ),
+      )
 
       setState({
         status: 'ready',
-        register: state.register,
+        register: currentRegister,
         shift: newShift,
       })
     } catch (error) {

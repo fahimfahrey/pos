@@ -7,7 +7,7 @@ import { switchBranch } from '@domains/organization/actions/switch-branch'
 
 interface BranchSwitcherProps {
   branches: Branch[]
-  currentBranchId: string
+  currentBranchId: string | null
 }
 
 export function BranchSwitcher({ branches, currentBranchId }: BranchSwitcherProps) {
@@ -40,7 +40,7 @@ export function BranchSwitcher({ branches, currentBranchId }: BranchSwitcherProp
     <div className="w-full max-w-xs">
       <Combobox
         options={options}
-        value={currentBranchId}
+        value={currentBranchId ?? ''}
         onValueChange={handleBranchChange}
         placeholder="Search branches..."
         disabled={isPending}

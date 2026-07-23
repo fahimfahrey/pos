@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { Register } from '@domains/organization/entities/register'
+import { useTranslations } from '@shared/i18n'
 
 interface OpenShiftPanelProps {
   register: Register
@@ -17,6 +18,7 @@ export function OpenShiftPanel({
   const [floatAmount, setFloatAmount] = useState('100.00')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const t = useTranslations()
 
   const handleSubmit = async () => {
     setLoading(true)
@@ -26,7 +28,7 @@ export function OpenShiftPanel({
       const amount = parseFloat(floatAmount) * 100
       await onShiftOpened(Math.round(amount))
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to open shift')
+      setError(err instanceof Error ? err.message : t('checkout.openShift.genericError'))
     } finally {
       setLoading(false)
     }
@@ -40,17 +42,18 @@ export function OpenShiftPanel({
             {register.name}
           </h1>
           <p className="text-foreground">
-            Welcome, {cashierName}
+            {t('checkout.openShift.welcome', { name: cashierName })}
           </p>
         </div>
 
         <div className="space-y-3">
-          <label className="block text-sm font-semibold text-foreground">
-            Opening Float Amount
+          <label htmlFor="open-shift-float" className="block text-sm font-semibold text-foreground">
+            {t('checkout.openShift.floatLabel')}
           </label>
           <div className="flex gap-2 items-center">
-            <span className="text-foreground font-semibold">$</span>
+            <span aria-hidden="true" className="text-foreground font-semibold">$</span>
             <input
+              id="open-shift-float"
               type="number"
               value={floatAmount}
               onChange={(e) => setFloatAmount(e.target.value)}
@@ -62,12 +65,12 @@ export function OpenShiftPanel({
             />
           </div>
           <p className="text-xs text-foreground">
-            This is your starting cash float for this shift
+            {t('checkout.openShift.floatHelp')}
           </p>
         </div>
 
         {error && (
-          <div className="bg-danger/10 border border-danger text-foreground px-3 py-2 rounded text-sm">
+          <div role="alert" className="bg-danger/10 border border-danger text-foreground px-3 py-2 rounded text-sm">
             {error}
           </div>
         )}
@@ -78,7 +81,7 @@ export function OpenShiftPanel({
           className="w-full px-4 py-3 bg-accent text-accent-foreground rounded-[var(--radius-button)] hover:bg-accent-strong disabled:opacity-50 font-bold h-14 text-lg"
           data-scan-exempt
         >
-          {loading ? 'Opening Shift...' : 'Open Shift'}
+          {loading ? t('checkout.openShift.openingShift') : t('checkout.openShift.openShift')}
         </button>
       </div>
     </div>

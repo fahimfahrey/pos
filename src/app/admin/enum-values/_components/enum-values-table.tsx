@@ -64,7 +64,13 @@ export async function EnumValuesTable({
             {values
               .filter((v) => v.registryKey === category && v.active)
               .map((value) => (
-                <form key={value.id} action={deactivateEnumValueAction} className="flex items-center justify-between p-2 bg-blue-50 rounded">
+                <form
+                  key={value.id}
+                  action={async (formData: FormData) => {
+                    await deactivateEnumValueAction(undefined, formData)
+                  }}
+                  className="flex items-center justify-between p-2 bg-blue-50 rounded"
+                >
                   <input type="hidden" name="enumValueId" value={value.id} />
                   <input type="hidden" name="orgId" value={orgId} />
 

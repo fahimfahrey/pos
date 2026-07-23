@@ -54,7 +54,6 @@ export function OnboardingWizard() {
             registerName: formData.registerName,
             registerNumber: formData.registerNumber,
             plan: formData.plan,
-            ownerUserId: 'current-user-id',
           })
           setResult(res)
           setStep('done')
@@ -87,7 +86,7 @@ export function OnboardingWizard() {
 
   if (step === 'done' && result) {
     return (
-      <div className="space-y-6 p-8">
+      <div className="space-y-6 p-8" role="status" aria-live="polite">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">All Set!</h1>
           <p className="mt-2 text-gray-600">Your store is ready to use</p>
@@ -121,11 +120,18 @@ export function OnboardingWizard() {
     >
       {/* Progress indicator */}
       <div className="space-y-2">
-        <div className="flex justify-between text-sm text-gray-600">
+        <div className="flex justify-between text-sm text-gray-600" aria-live="polite">
           <span className="font-medium">Step {['organization', 'branch', 'register'].indexOf(step) + 1} of 3</span>
           <span>{step === 'organization' ? 'Organization' : step === 'branch' ? 'Branch' : 'Register'}</span>
         </div>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+        <div
+          className="h-2 w-full overflow-hidden rounded-full bg-gray-200"
+          role="progressbar"
+          aria-valuenow={['organization', 'branch', 'register'].indexOf(step) + 1}
+          aria-valuemin={1}
+          aria-valuemax={3}
+          aria-label="Setup progress"
+        >
           <div
             className="h-full bg-blue-600 transition-all"
             style={{
@@ -241,7 +247,7 @@ export function OnboardingWizard() {
 
       {/* Error message */}
       {error && (
-        <div className="rounded-lg bg-red-50 p-4">
+        <div className="rounded-lg bg-red-50 p-4" role="alert" aria-live="assertive">
           <p className="text-sm text-red-800">{error}</p>
         </div>
       )}

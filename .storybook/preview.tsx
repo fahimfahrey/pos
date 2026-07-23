@@ -1,6 +1,7 @@
 import '../src/app/globals.css'
 import type { Preview } from '@storybook/react'
 import React from 'react'
+import { LocaleProvider, getAllCatalogs, pseudoLocalizeCatalog } from '../src/shared/i18n'
 
 const preview: Preview = {
   globals: {
@@ -30,6 +31,7 @@ const preview: Preview = {
         items: [
           { value: 'en', title: 'English' },
           { value: 'bn', title: 'Bengali' },
+          { value: 'pseudo', title: 'Pseudo (length-stress)' },
         ],
         showName: true,
       },
@@ -44,13 +46,24 @@ const preview: Preview = {
       const localeClass = locale === 'bn' ? 'font-bengali' : 'font-body'
       const lang = locale === 'bn' ? 'bn' : 'en'
 
+      const resolvedLocale = locale === 'bn' ? 'bn-BD' : 'en-US'
+      const messagesOverride = locale === 'pseudo' ? pseudoLocalizeCatalog(getAllCatalogs()['en-US']) : undefined
+
       return (
         <div
           data-theme={theme}
           lang={lang}
           className={`${localeClass} bg-background text-foreground p-4`}
         >
-          <Story />
+          <LocaleProvider
+            defaultLocale={resolvedLocale}
+            timezone="UTC"
+            currency={resolvedLocale === 'bn-BD' ? 'BDT' : 'USD'}
+            useNativeDigits={resolvedLocale === 'bn-BD'}
+            messagesOverride={messagesOverride}
+          >
+            <Story />
+          </LocaleProvider>
         </div>
       )
     },

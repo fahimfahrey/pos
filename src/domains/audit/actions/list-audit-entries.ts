@@ -2,7 +2,7 @@
 
 import { z } from 'zod'
 import { getCurrentSession } from '@domains/auth/actions/session'
-import { createDefaultStorageProvider } from '@infra/storage/default-provider'
+import { getServerStorageProvider } from '@infra/auth/server-storage-provider'
 import { listAuditEntriesForOrg } from '@domains/audit/services/audit-service'
 import { toErrorResponse } from '@shared/errors'
 import type { AuditEntry } from '@domains/audit/entities/audit-entry'
@@ -26,23 +26,19 @@ export async function listAuditEntriesAction(filter?: AuditListFilter) {
 
     const validatedFilter = filter ? filterSchema.parse(filter) : undefined
 
-    const provider = await createDefaultStorageProvider()
+    const provider = await getServerStorageProvider()
 
-    try {
-      const entries = await provider.withTransaction(async (repos) => {
-        return await listAuditEntriesForOrg(
-          repos,
-          session.orgId!,
-          90, // Default retention of 90 days - TODO: get from settings
-          { now: () => new Date() },
-          validatedFilter,
-        )
-      })
+    const entries = await provider.withTransaction(async (repos) => {
+      return await listAuditEntriesForOrg(
+        repos,
+        session.orgId!,
+        90, // Default retention of 90 days - TODO: get from settings
+        { now: () => new Date() },
+        validatedFilter,
+      )
+    })
 
-      return { ok: true, data: entries }
-    } finally {
-      await provider.close()
-    }
+    return { ok: true, data: entries }
   } catch (error) {
     return { ok: false, error: toErrorResponse(error) }
   }

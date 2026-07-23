@@ -3,15 +3,15 @@
 import { useEffect } from 'react'
 
 export const SHORTCUTS = {
-  submit_scan: { key: 'Enter', label: 'Submit Scan', description: 'Submit scanned barcode' },
-  open_payment: { key: 'F2', label: 'Payment', description: 'Open payment panel' },
-  hold_cart: { key: 'F3', label: 'Hold Cart', description: 'Hold current cart for later' },
-  show_held: { key: 'F4', label: 'Show Held', description: 'Show held carts' },
-  void_sale: { key: 'F6', label: 'Void Sale', description: 'Void current sale' },
-  cart_discount: { key: 'F8', label: 'Discount', description: 'Apply cart discount' },
-  undo_scan: { key: 'Ctrl+Z', label: 'Undo', description: 'Undo last scan' },
-  close_modal: { key: 'Escape', label: 'Close', description: 'Close open modal' },
-  show_help: { key: '?', label: 'Help', description: 'Show keyboard shortcuts' },
+  submit_scan: { key: 'Enter' },
+  open_payment: { key: 'F2' },
+  hold_cart: { key: 'F3' },
+  show_held: { key: 'F4' },
+  void_sale: { key: 'F6' },
+  cart_discount: { key: 'F8' },
+  undo_scan: { key: 'Ctrl+Z' },
+  close_modal: { key: 'Escape' },
+  show_help: { key: '?' },
 }
 
 export interface KeyboardShortcutHandlers {

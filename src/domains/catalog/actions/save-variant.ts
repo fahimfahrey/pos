@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createDefaultStorageProvider } from '@infra/storage/default-provider'
+import { getServerStorageProvider } from '@infra/auth/server-storage-provider'
 import { UuidIdGenerator } from '@infra/adapters/uuid-id-generator'
 import { SystemClock } from '@infra/adapters/system-clock'
 import { getCurrentSession } from '@domains/auth/actions/session'
@@ -30,48 +30,44 @@ export async function saveVariantAction(
     }
 
     const session = await getCurrentSession()
-    if (!session?.userId) {
+    if (!session?.sub) {
       return { ok: false, error: 'Unauthorized' }
     }
 
-    const provider = await createDefaultStorageProvider()
+    const provider = await getServerStorageProvider()
     const idGen = new UuidIdGenerator()
     const clock = new SystemClock()
 
-    try {
-      await provider.withTransaction(async (repos) => {
-        await requireAdminMembership(repos.organization, orgId, session.userId)
+    await provider.withTransaction(async (repos) => {
+      await requireAdminMembership(repos.organization, orgId, session.sub)
 
-        const service = new CatalogService(repos.catalog, idGen, clock, catalogEventBus)
+      const service = new CatalogService(repos.catalog, idGen, clock, catalogEventBus)
 
-        if (variantId) {
-          // Update existing
-          await service.updateVariant(variantId, {
-            name: name || undefined,
-            barcode: barcode || undefined,
-            unitOfMeasure,
-            isDecimalQuantity,
-          })
-        } else {
-          // Create new
-          await service.createVariant({
-            orgId,
-            productId,
-            sku,
-            barcode: barcode || undefined,
-            name: name || undefined,
-            unitOfMeasure,
-            barcodeSymbology: barcodeSymbology || undefined,
-            isDecimalQuantity,
-          })
-        }
-      })
+      if (variantId) {
+        // Update existing
+        await service.updateVariant(variantId, {
+          name: name || undefined,
+          barcode: barcode || undefined,
+          unitOfMeasure,
+          isDecimalQuantity,
+        })
+      } else {
+        // Create new
+        await service.createVariant({
+          orgId,
+          productId,
+          sku,
+          barcode: barcode || undefined,
+          name: name || undefined,
+          unitOfMeasure,
+          barcodeSymbology: barcodeSymbology || undefined,
+          isDecimalQuantity,
+        })
+      }
+    })
 
-      revalidatePath('/app/catalog')
-      return { ok: true }
-    } finally {
-      await provider.close()
-    }
+    revalidatePath('/app/catalog')
+    return { ok: true }
   } catch (error: any) {
     return { ok: false, error: toErrorResponse(error) }
   }

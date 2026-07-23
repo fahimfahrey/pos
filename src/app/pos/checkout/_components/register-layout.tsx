@@ -3,8 +3,8 @@
 import { useRouter } from 'next/navigation'
 import { useRef, useState, useEffect } from 'react'
 import { createDefaultStorageProvider } from '@infra/storage'
-import { SystemClock } from '@domains/system/services/clock'
-import { UuidIdGenerator } from '@domains/system/services/uuid-id-generator'
+import { SystemClock } from '@infra/adapters/system-clock'
+import { UuidIdGenerator } from '@infra/adapters/uuid-id-generator'
 import { usePosCart } from '../_lib/pos-cart-context'
 import { useBarcodeScanner } from '../_lib/use-barcode-scanner'
 import { useScanFeedback } from '../_lib/use-scan-feedback'
@@ -57,7 +57,7 @@ export function RegisterLayout({
   const { feedback, handleScan } = useScanFeedback((itemName: string) => {
     // Scan successful, item found - dispatch to add it to cart
     // The actual addition happens via scan lookup in useScanFeedback
-  })
+  }, orgId)
 
   // Price the cart whenever lines or discount changes (simplified pricing)
   useEffect(() => {
@@ -118,21 +118,38 @@ export function RegisterLayout({
     }
 
     try {
-      const provider = createDefaultStorageProvider()
-      const repos = await provider.getRepositorySet()
+      const provider = await createDefaultStorageProvider()
       const clock = new SystemClock()
       const idGen = new UuidIdGenerator()
+      const cartId = idGen.next()
 
       const parkedCart = {
-        id: idGen.generate(),
+        id: cartId,
+        orgId,
+        branchId: register.branchId || 'default',
         registerId: register.id,
-        shiftId: shift.id,
-        lines: state.lines,
+        cartId,
+        lines: state.lines.map((line) => ({
+          variantId: line.variantId,
+          name: line.name,
+          barcode: line.barcode,
+          price: line.price,
+          quantity: line.quantity,
+          discount: line.discount
+            ? {
+                id: idGen.next(),
+                type: (line.discount.type === 'fixed' ? 'fixed_amount' : 'percentage') as
+                  | 'percentage'
+                  | 'fixed_amount',
+                amount: line.discount.amount,
+              }
+            : undefined,
+        })),
         createdAt: clock.now(),
         createdBy: cashierId,
       }
 
-      await repos.sales.createParkedCart(parkedCart)
+      await provider.withTransaction((repos) => repos.sales.saveParkedCart(parkedCart))
       dispatch({ type: 'HOLD_CART' })
       focusScanInput()
     } catch (error) {
@@ -155,20 +172,17 @@ export function RegisterLayout({
     if (!pricedCart) return
 
     try {
-      const provider = createDefaultStorageProvider()
-      const repos = await provider.getRepositorySet()
+      const provider = await createDefaultStorageProvider()
       const { resolveSettings } = await import('@domains/organization/services/settings-resolver')
       const { FinalizeSaleService } = await import('@domains/sales/services/finalize-sale-service')
       const clock = new SystemClock()
       const idGen = new UuidIdGenerator()
+      const branchId = register.branchId || 'default'
 
-      // Resolve settings
-      const settings = await resolveSettings(repos, orgId, register.branchId || 'default')
-
-      const saleId = idGen.generate()
+      const saleId = idGen.next()
 
       // Build payment input
-      const paymentId = idGen.generate()
+      const paymentId = idGen.next()
       const payments = [
         {
           id: paymentId,
@@ -179,25 +193,48 @@ export function RegisterLayout({
         },
       ]
 
+      const toDiscountSpec = (discount: { type: 'percentage' | 'fixed'; amount: number } | null | undefined) =>
+        discount
+          ? {
+              type: (discount.type === 'fixed' ? 'fixed_amount' : 'percentage') as
+                | 'percentage'
+                | 'fixed_amount',
+              amount: discount.amount,
+            }
+          : undefined
+
       // Build sale input
       const saleInput = {
         saleId,
         shiftId: shift.id,
         orgId,
-        branchId: register.branchId || 'default',
+        branchId,
         createdBy: cashierId,
         lines: state.lines.map((line) => ({
           variantId: line.variantId,
           quantity: line.quantity,
-          discount: line.discount,
+          discount: toDiscountSpec(line.discount),
         })),
-        cartDiscount: state.cartDiscount,
+        cartDiscount: toDiscountSpec(state.cartDiscount),
         payments,
       }
 
       // Finalize sale
       const service = new FinalizeSaleService(clock, idGen)
-      const result = await service.finalize(repos, settings, saleInput)
+      const result = await provider.withTransaction(async (repos) => {
+        const organization = await repos.organization.findOrganizationById(orgId)
+        if (!organization) {
+          throw new Error(`Organization ${orgId} not found`)
+        }
+        const branch = await repos.organization.findBranchById(branchId)
+
+        const settings = resolveSettings(
+          { settings: organization.settings },
+          branch ? { settings: branch.settings } : null,
+        )
+
+        return service.finalize(repos, settings, saleInput)
+      })
 
       if (result.outcome === 'paid' && result.sale) {
         getOutbox().markResolved(`sale-${saleId}`)
@@ -244,7 +281,7 @@ export function RegisterLayout({
         registerName={register.name}
         registerNumber={register.number}
         cashierName={cashierName}
-        shiftStartedAt={shift.startedAt}
+        shiftStartedAt={shift.openedAt}
         isOnline={isOnline}
       />
 

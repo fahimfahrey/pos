@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getCurrentSession } from '@domains/auth/actions/session'
-import { createDefaultStorageProvider } from '@infra/storage/default-provider'
+import { getServerStorageProvider } from '@infra/auth/server-storage-provider'
 import { requireOwnerMembership } from '@domains/auth/services/authorization-service'
 import { listEnumValues } from '@domains/system-enums/actions/enum-values'
 import { CreateEnumValueForm } from './_components/create-enum-value-form'
@@ -9,7 +9,7 @@ import { EnumValuesTable } from './_components/enum-values-table'
 export default async function EnumValuesPage() {
   const session = await getCurrentSession()
 
-  if (!session?.userId) {
+  if (!session?.sub) {
     redirect('/login')
   }
 
@@ -23,21 +23,17 @@ export default async function EnumValuesPage() {
   }
 
   // Check OWNER membership at page render time (server-side gating for UX)
-  const provider = await createDefaultStorageProvider()
+  const provider = await getServerStorageProvider()
   let isOwner = false
 
-  try {
-    await provider.withTransaction(async (repos) => {
-      try {
-        await requireOwnerMembership(repos.organization, session.orgId!, session.userId)
-        isOwner = true
-      } catch {
-        isOwner = false
-      }
-    })
-  } finally {
-    await provider.close()
-  }
+  await provider.withTransaction(async (repos) => {
+    try {
+      await requireOwnerMembership(repos.organization, session.orgId!, session.sub)
+      isOwner = true
+    } catch {
+      isOwner = false
+    }
+  })
 
   if (!isOwner) {
     return (

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import type { CartLine } from '@domains/sales/entities/cart-line'
-import { formatMoney } from '../_lib/format-money'
+import { useTranslations, useFormatters } from '@shared/i18n'
 import { QtyStepper } from './qty-stepper'
 import { LineDiscountPopover } from './line-discount-popover'
 
@@ -29,6 +29,8 @@ export function CartRow({
   onDiscountChange,
 }: CartRowProps) {
   const [showDiscount, setShowDiscount] = useState(false)
+  const t = useTranslations()
+  const { money } = useFormatters()
   const lineSubtotal = (line.price * line.quantity) / 100
   const lineTotal = line.discount
     ? lineSubtotal - (line.discount.type === 'percentage'
@@ -45,7 +47,7 @@ export function CartRow({
             {line.name}
           </div>
           <div className="text-sm text-foreground">
-            {formatMoney(line.price)} ea
+            {t('checkout.cartRow.pricePerUnit', { price: money(line.price) })}
           </div>
         </div>
 
@@ -60,7 +62,7 @@ export function CartRow({
           <button
             onClick={() => setShowDiscount(!showDiscount)}
             className="h-10 w-10 min-h-10 min-w-10 short:h-8 short:w-8 short:min-h-8 short:min-w-8 mouse:h-8 mouse:w-8 mouse:min-h-8 mouse:min-w-8 rounded-[var(--radius-input)] border border-border bg-surface text-foreground hover:bg-background transition-colors text-xs font-semibold"
-            aria-label="Discount"
+            aria-label={t('checkout.cartRow.discountAria', { name: line.name })}
             data-scan-exempt
           >
             %
@@ -69,7 +71,7 @@ export function CartRow({
           {showDiscount && (
             <LineDiscountPopover
               lineSubtotal={lineSubtotal}
-              currentDiscount={line.discount}
+              currentDiscount={line.discount ?? null}
               onApply={(discount) => {
                 onDiscountChange(index, discount)
                 setShowDiscount(false)
@@ -80,13 +82,13 @@ export function CartRow({
         </div>
 
         {/* Line total */}
-        <div className="flex flex-col justify-center text-right min-w-24">
+        <div className="flex flex-col justify-center text-end min-w-24">
           <div className="font-bold text-foreground tabular-nums">
-            {formatMoney(lineTotal * 100)}
+            {money(lineTotal * 100)}
           </div>
           {line.discount && (
             <div className="text-xs text-foreground">
-              -{formatMoney(
+              -{money(
                 line.discount.type === 'percentage'
                   ? (lineSubtotal * line.discount.amount) / 100 * 100
                   : line.discount.amount
@@ -99,7 +101,7 @@ export function CartRow({
         <button
           onClick={() => onRemove(index)}
           className="h-10 w-10 min-h-10 min-w-10 short:h-8 short:w-8 short:min-h-8 short:min-w-8 mouse:h-8 mouse:w-8 mouse:min-h-8 mouse:min-w-8 rounded-[var(--radius-input)] border border-border bg-surface text-danger hover:bg-danger/10 transition-colors text-lg font-bold"
-          aria-label="Remove item"
+          aria-label={t('checkout.cartRow.removeAria', { name: line.name })}
           data-scan-exempt
         >
           ✕

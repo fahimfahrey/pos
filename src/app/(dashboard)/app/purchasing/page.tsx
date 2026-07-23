@@ -1,6 +1,6 @@
 import { requireActiveBranch, requireSession } from '@domains/auth/actions/session'
 import { resolveRoleContext } from '@domains/auth/services/role-context'
-import { createDefaultStorageProvider } from '@infra/storage/default-provider'
+import { getServerStorageProvider } from '@infra/auth/server-storage-provider'
 import { Badge } from '@shared/components/ui/badge'
 import { RouteError } from '@shared/components/ui/route-error'
 
@@ -9,10 +9,9 @@ export default async function PurchasingPage() {
   const branchId = await requireActiveBranch()
 
   try {
-    const provider = await createDefaultStorageProvider()
+    const provider = await getServerStorageProvider()
 
-    const { purchaseOrders, roleContext } = await provider.withTransaction(async (tx) => {
-      const repos = await provider.getRepositorySet(tx)
+    const { purchaseOrders, roleContext } = await provider.withTransaction(async (repos) => {
 
       // Check role
       const membership = await repos.organization.findMembership(session.orgId!, session.sub)
@@ -24,15 +23,13 @@ export default async function PurchasingPage() {
       }
 
       // Get purchase orders for org (branch filtering would happen at domain level)
-      const allPOs = await repos.purchasing.listPurchaseOrders(session.orgId!)
+      const allPOs = await repos.purchasing.listPurchaseOrdersByOrg(session.orgId!)
 
       return {
         purchaseOrders: allPOs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
         roleContext,
       }
     })
-
-    await provider.close()
 
     function getStatusBadge(status: string) {
       switch (status) {

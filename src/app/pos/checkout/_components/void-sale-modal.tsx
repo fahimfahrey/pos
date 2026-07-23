@@ -1,24 +1,26 @@
 'use client'
 
 import { useState } from 'react'
-import { Dialog } from '@shared/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@shared/components/ui/dialog'
+import { useTranslations } from '@shared/i18n'
 
 interface VoidSaleModalProps {
   onClose: () => void
   onConfirm: () => void
 }
 
-const VOID_REASONS = [
-  'Customer changed mind',
-  'Duplicate order',
-  'Wrong item scanned',
-  'Technical error',
-  'Other',
-]
+const VOID_REASON_IDS = [
+  'customer_changed_mind',
+  'duplicate_order',
+  'wrong_item',
+  'technical_error',
+  'other',
+] as const
 
 export function VoidSaleModal({ onClose, onConfirm }: VoidSaleModalProps) {
   const [selectedReason, setSelectedReason] = useState<string | null>(null)
   const [otherReason, setOtherReason] = useState('')
+  const t = useTranslations()
 
   const handleConfirm = () => {
     if (selectedReason) {
@@ -28,71 +30,69 @@ export function VoidSaleModal({ onClose, onConfirm }: VoidSaleModalProps) {
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <div
-        className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center"
-        data-scan-exempt
-      >
-        <div className="bg-surface border border-border rounded-[var(--radius-card)] p-6 max-w-md w-full mx-4 space-y-4">
-          <h2 className="text-xl font-semibold text-foreground">Void Sale</h2>
+      <DialogContent className="max-w-md p-6 space-y-4" data-scan-exempt>
+        <DialogTitle className="text-xl font-semibold text-foreground">{t('checkout.voidSale.title')}</DialogTitle>
 
-          <p className="text-sm text-foreground">
-            Please select a reason for voiding this sale:
-          </p>
+        <DialogDescription className="text-sm text-foreground">
+          {t('checkout.voidSale.description')}
+        </DialogDescription>
 
-          <div className="space-y-2">
-            {VOID_REASONS.map((reason) => (
-              <button
-                key={reason}
-                onClick={() => {
-                  setSelectedReason(reason)
-                  if (reason !== 'Other') {
-                    setOtherReason('')
-                  }
-                }}
-                className={`w-full px-4 py-3 rounded-[var(--radius-input)] text-left font-semibold transition-colors ${
-                  selectedReason === reason
-                    ? 'bg-danger text-white'
-                    : 'border border-border bg-background text-foreground hover:bg-surface'
-                }`}
-                data-scan-exempt
-              >
-                {reason}
-              </button>
-            ))}
-          </div>
-
-          {selectedReason === 'Other' && (
-            <div>
-              <input
-                type="text"
-                value={otherReason}
-                onChange={(e) => setOtherReason(e.target.value)}
-                placeholder="Explain reason..."
-                className="w-full px-3 py-2 border border-border rounded-[var(--radius-input)] text-foreground bg-background"
-                data-scan-exempt
-              />
-            </div>
-          )}
-
-          <div className="flex gap-2">
+        <div role="radiogroup" aria-label={t('checkout.voidSale.reasonGroupAria')} className="space-y-2">
+          {VOID_REASON_IDS.map((reasonId) => (
             <button
-              onClick={onClose}
-              className="flex-1 px-4 py-2 border border-border rounded-[var(--radius-input)] text-foreground hover:bg-background font-semibold"
-              data-scan-exempt
+              key={reasonId}
+              type="button"
+              role="radio"
+              aria-checked={selectedReason === reasonId}
+              onClick={() => {
+                setSelectedReason(reasonId)
+                if (reasonId !== 'other') {
+                  setOtherReason('')
+                }
+              }}
+              className={`w-full px-4 py-3 rounded-[var(--radius-input)] text-left font-semibold transition-colors ${
+                selectedReason === reasonId
+                  ? 'bg-danger text-[var(--on-danger)]'
+                  : 'border border-border bg-background text-foreground hover:bg-surface'
+              }`}
             >
-              Cancel
+              {t(`checkout.voidSale.reasons.${reasonId}`)}
             </button>
-            <button
-              onClick={handleConfirm}
-              disabled={!selectedReason}
-              className="flex-1 px-4 py-2 bg-danger text-white rounded-[var(--radius-input)] hover:bg-danger/90 disabled:opacity-50 font-semibold"
-              data-scan-exempt
-            >
-              Void Sale
-            </button>
-          </div>
+          ))}
         </div>
-      </div>
+
+        {selectedReason === 'other' && (
+          <div>
+            <label htmlFor="void-other-reason" className="sr-only">
+              {t('checkout.voidSale.otherReasonAria')}
+            </label>
+            <input
+              id="void-other-reason"
+              type="text"
+              value={otherReason}
+              onChange={(e) => setOtherReason(e.target.value)}
+              placeholder={t('checkout.voidSale.otherReasonPlaceholder')}
+              className="w-full px-3 py-2 border border-border rounded-[var(--radius-input)] text-foreground bg-background"
+            />
+          </div>
+        )}
+
+        <div className="flex gap-2">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 border border-border rounded-[var(--radius-input)] text-foreground hover:bg-background font-semibold"
+          >
+            {t('checkout.voidSale.cancel')}
+          </button>
+          <button
+            onClick={handleConfirm}
+            disabled={!selectedReason}
+            className="flex-1 px-4 py-2 bg-danger text-[var(--on-danger)] rounded-[var(--radius-input)] hover:bg-danger/90 disabled:opacity-50 font-semibold"
+          >
+            {t('checkout.voidSale.confirm')}
+          </button>
+        </div>
+      </DialogContent>
     </Dialog>
   )
 }

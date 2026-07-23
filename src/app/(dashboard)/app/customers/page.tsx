@@ -1,6 +1,6 @@
 import { requireActiveBranch, requireSession } from '@domains/auth/actions/session'
 import { resolveRoleContext } from '@domains/auth/services/role-context'
-import { createDefaultStorageProvider } from '@infra/storage/default-provider'
+import { getServerStorageProvider } from '@infra/auth/server-storage-provider'
 import { RouteError } from '@shared/components/ui/route-error'
 
 export default async function CustomersPage() {
@@ -8,10 +8,9 @@ export default async function CustomersPage() {
   const branchId = await requireActiveBranch()
 
   try {
-    const provider = await createDefaultStorageProvider()
+    const provider = await getServerStorageProvider()
 
-    const { customers, roleContext } = await provider.withTransaction(async (tx) => {
-      const repos = await provider.getRepositorySet(tx)
+    const { customers, roleContext } = await provider.withTransaction(async (repos) => {
 
       // Check role
       const membership = await repos.organization.findMembership(session.orgId!, session.sub)
@@ -23,15 +22,15 @@ export default async function CustomersPage() {
       }
 
       // Get customers
-      const customers = await repos.customers.listCustomers(session.orgId!)
+      const customers = await repos.customers.listByOrg(session.orgId!)
 
       return {
-        customers: customers.sort((a, b) => a.name.localeCompare(b.name)),
+        customers: customers.sort((a, b) =>
+          `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`),
+        ),
         roleContext,
       }
     })
-
-    await provider.close()
 
     return (
       <div className="space-y-6">
@@ -65,11 +64,11 @@ export default async function CustomersPage() {
                 ) : (
                   customers.map((customer) => (
                     <tr key={customer.id} className="border-b border-border hover:bg-surface-muted transition-colors">
-                      <td className="px-4 py-3 text-foreground font-medium">{customer.name}</td>
+                      <td className="px-4 py-3 text-foreground font-medium">{customer.firstName} {customer.lastName}</td>
                       <td className="px-4 py-3 text-foreground-muted text-label">{customer.phone || '—'}</td>
                       <td className="px-4 py-3 text-foreground-muted text-label">{customer.email || '—'}</td>
                       <td className="px-4 py-3 text-right text-foreground tabular-nums">
-                        ${((customer.loyaltyBalance || 0) / 100).toFixed(2)}
+                        ${((customer.loyaltyPointsBalance || 0) / 100).toFixed(2)}
                       </td>
                     </tr>
                   ))

@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getCurrentSession } from '@domains/auth/actions/session'
-import { createDefaultStorageProvider } from '@infra/storage/default-provider'
+import { getServerStorageProvider } from '@infra/auth/server-storage-provider'
 import { listAuditEntriesAction } from '@domains/audit/actions/list-audit-entries'
 import { MEMBERSHIP_ROLE } from '@constants/enums'
 import { AuditLogTable } from './_components/audit-log-table'
@@ -22,19 +22,15 @@ export default async function AuditPage() {
   }
 
   // Check membership role - allow OWNER and VIEWER (and possibly ADMIN)
-  const provider = await createDefaultStorageProvider()
+  const provider = await getServerStorageProvider()
   let hasAccess = false
 
-  try {
-    await provider.withTransaction(async (repos) => {
-      const membership = await repos.organization.findMembership(session.orgId!, session.sub)
-      if (membership && (membership.role === MEMBERSHIP_ROLE.OWNER || membership.role === MEMBERSHIP_ROLE.ADMIN || membership.role === MEMBERSHIP_ROLE.VIEWER)) {
-        hasAccess = true
-      }
-    })
-  } finally {
-    await provider.close()
-  }
+  await provider.withTransaction(async (repos) => {
+    const membership = await repos.organization.findMembership(session.orgId!, session.sub)
+    if (membership && (membership.role === MEMBERSHIP_ROLE.OWNER || membership.role === MEMBERSHIP_ROLE.ADMIN || membership.role === MEMBERSHIP_ROLE.VIEWER)) {
+      hasAccess = true
+    }
+  })
 
   if (!hasAccess) {
     return (

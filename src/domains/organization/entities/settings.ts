@@ -64,6 +64,10 @@ export interface InventorySettings {
   allowOversell: boolean
 }
 
+export interface LocalizationSettings {
+  /** Render numerals in the locale's native numbering system (e.g. Bengali ০-৯) when the tenant prefers it. */
+  useNativeDigits: boolean
+}
 export interface ResolvedSettings {
   currency: string
   locale: string
@@ -79,6 +83,7 @@ export interface ResolvedSettings {
   discountLimits: DiscountLimits
   inventory: InventorySettings
   theme: ThemeSettings
+  localization: LocalizationSettings
 }
 
 export type OrganizationSettings = Partial<ResolvedSettings>
@@ -127,5 +132,8 @@ export const DEFAULT_SETTINGS: ResolvedSettings = {
   },
   theme: {
     colorScheme: 'system',
+  },
+  localization: {
+    useNativeDigits: false,
   },
 }

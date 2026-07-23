@@ -1,17 +1,20 @@
 import { requireActiveBranch, requireSession } from '@domains/auth/actions/session'
 import { resolveRoleContext } from '@domains/auth/services/role-context'
-import { createDefaultStorageProvider } from '@infra/storage/default-provider'
+import { getServerStorageProvider } from '@infra/auth/server-storage-provider'
 import { RouteError } from '@shared/components/ui/route-error'
+import { createTranslator, resolveLocale } from '@shared/i18n'
+import { cookies } from 'next/headers'
 
 export default async function CatalogPage() {
   const session = await requireSession()
   const branchId = await requireActiveBranch()
+  const locale = resolveLocale((await cookies()).get('locale')?.value)
+  const t = createTranslator(locale)
 
   try {
-    const provider = await createDefaultStorageProvider()
+    const provider = await getServerStorageProvider()
 
-    const { products, roleContext } = await provider.withTransaction(async (tx) => {
-      const repos = await provider.getRepositorySet(tx)
+    const { products, roleContext } = await provider.withTransaction(async (repos) => {
 
       // Check role
       const membership = await repos.organization.findMembership(session.orgId!, session.sub)
@@ -31,16 +34,14 @@ export default async function CatalogPage() {
       }
     })
 
-    await provider.close()
-
     return (
       <div className="space-y-6">
         <div>
           <h1 className="text-display-2xl font-display font-semibold text-foreground mb-2">
-            Catalog
+            {t('catalog.title')}
           </h1>
           <p className="text-body text-foreground-muted">
-            Manage your product catalog
+            {t('catalog.subtitle')}
           </p>
         </div>
 
@@ -49,16 +50,16 @@ export default async function CatalogPage() {
             <table className="w-full text-body">
               <thead className="bg-surface-muted border-b border-border">
                 <tr>
-                  <th className="px-4 py-3 text-left font-semibold text-foreground">Product Name</th>
-                  <th className="px-4 py-3 text-left font-semibold text-foreground">SKU</th>
-                  <th className="px-4 py-3 text-left font-semibold text-foreground">Status</th>
+                  <th className="px-4 py-3 text-start font-semibold text-foreground">{t('catalog.columnProduct')}</th>
+                  <th className="px-4 py-3 text-start font-semibold text-foreground">{t('catalog.columnSku')}</th>
+                  <th className="px-4 py-3 text-start font-semibold text-foreground">{t('catalog.columnStatus')}</th>
                 </tr>
               </thead>
               <tbody>
                 {products.length === 0 ? (
                   <tr>
                     <td colSpan={3} className="px-4 py-8 text-center text-foreground-muted">
-                      No products in catalog
+                      {t('catalog.empty')}
                     </td>
                   </tr>
                 ) : (
@@ -67,8 +68,8 @@ export default async function CatalogPage() {
                       <td className="px-4 py-3 text-foreground">{product.name}</td>
                       <td className="px-4 py-3 text-foreground-muted text-label">{product.id}</td>
                       <td className="px-4 py-3">
-                        <span className="inline-flex items-center px-2 py-1 rounded text-label font-semibold bg-success text-white">
-                          Active
+                        <span className="inline-flex items-center px-2 py-1 rounded text-label font-semibold bg-success text-[var(--on-success)]">
+                          {t('catalog.statusActive')}
                         </span>
                       </td>
                     </tr>
@@ -84,8 +85,8 @@ export default async function CatalogPage() {
     console.error('Catalog error:', error)
     return (
       <RouteError
-        title="Failed to load catalog"
-        message="Unable to retrieve catalog data. Your data on this device is safe."
+        title={t('catalog.errorTitle')}
+        message={t('catalog.errorMessage')}
         kind="system"
       />
     )

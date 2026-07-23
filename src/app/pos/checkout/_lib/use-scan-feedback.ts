@@ -15,7 +15,7 @@ export interface ScanFeedbackResult {
 
 const DUPLICATE_WINDOW_MS = 1500
 
-export function useScanFeedback(onScan: (itemName: string) => void) {
+export function useScanFeedback(onScan: (itemName: string) => void, orgId: string) {
   const [feedback, setFeedback] = useState<ScanFeedbackResult>({ state: 'idle' })
   const lastScannedRef = useRef<{ code: string; time: number } | null>(null)
   const decayTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -27,13 +27,11 @@ export function useScanFeedback(onScan: (itemName: string) => void) {
       performanceMark.current = performance.now()
 
       try {
-        const provider = createDefaultStorageProvider()
-        const repos = await provider.getRepositorySet()
+        const provider = await createDefaultStorageProvider()
 
         // Look up the variant by barcode
-        const variant = await repos.catalog.findVariantByBarcode(
-          undefined, // orgId determined from context in real impl
-          barcode
+        const variant = await provider.withTransaction((repos) =>
+          repos.catalog.findVariantByBarcode(orgId, barcode),
         )
 
         if (!variant) {
@@ -70,7 +68,7 @@ export function useScanFeedback(onScan: (itemName: string) => void) {
           isLineAdded: true,
         })
         playFeedbackSound('success')
-        onScan(variant.name)
+        onScan(variant.name ?? variant.sku)
 
         // Measure latency
         const latency = performance.now() - performanceMark.current
@@ -84,7 +82,7 @@ export function useScanFeedback(onScan: (itemName: string) => void) {
         playFeedbackSound('not-found')
       }
     },
-    [onScan]
+    [onScan, orgId]
   )
 
   // Auto-decay feedback after 2 seconds

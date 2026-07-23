@@ -7,7 +7,7 @@ const mockLine = {
   price: 350,
   quantity: 1,
   barcode: 'ESPRESSO-001',
-  discount: null,
+  discount: undefined,
 }
 
 const initialState: CartState = {
@@ -46,7 +46,7 @@ describe('cartReducer', () => {
     const result = cartReducer(state, action)
 
     expect(result.lines).toHaveLength(1)
-    expect(result.lines[0].quantity).toBe(2)
+    expect(result.lines[0]!.quantity).toBe(2)
   })
 
   it('should set quantity via SET_QTY', () => {
@@ -63,7 +63,7 @@ describe('cartReducer', () => {
 
     const result = cartReducer(state, action)
 
-    expect(result.lines[0].quantity).toBe(5)
+    expect(result.lines[0]!.quantity).toBe(5)
   })
 
   it('should remove line when quantity set to 0', () => {
@@ -97,7 +97,7 @@ describe('cartReducer', () => {
     const result = cartReducer(state, action)
 
     expect(result.lines).toHaveLength(1)
-    expect(result.lines[0].name).toBe('Americano')
+    expect(result.lines[0]!.name).toBe('Americano')
   })
 
   it('should set line discount via SET_LINE_DISCOUNT', () => {
@@ -114,7 +114,7 @@ describe('cartReducer', () => {
 
     const result = cartReducer(state, action)
 
-    expect(result.lines[0].discount).toEqual({ type: 'percentage', amount: 10 })
+    expect(result.lines[0]!.discount).toEqual({ type: 'percentage', amount: 10 })
   })
 
   it('should clear line discount via CLEAR_LINE_DISCOUNT', () => {
@@ -130,7 +130,7 @@ describe('cartReducer', () => {
 
     const result = cartReducer(state, action)
 
-    expect(result.lines[0].discount).toBeNull()
+    expect(result.lines[0]!.discount).toBeUndefined()
   })
 
   it('should set cart-level discount via SET_CART_DISCOUNT', () => {

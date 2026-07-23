@@ -1,4 +1,7 @@
-import { createStorageProvider } from '@infra/storage/core/storage-provider'
+// Import from the top-level barrel (not core/storage-provider directly) so the
+// memory/indexeddb engine registrations run as a side effect. Server Actions get
+// their own isolated bundle, so nothing else guarantees those registrations happen.
+import { createStorageProvider } from '@infra/storage'
 import type { StorageProvider } from '@infra/storage/core/storage-provider'
 
 let serverProvider: StorageProvider | null = null

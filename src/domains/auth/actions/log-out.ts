@@ -1,6 +1,6 @@
 'use server'
 
-import { redirect } from 'next/navigation'
+import { redirect, unstable_rethrow } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getServerStorageProvider } from '@infra/auth/server-storage-provider'
 import { tokenSigner, cookieSessionStore } from '@infra/auth/auth-container'
@@ -19,8 +19,7 @@ export async function logOutAction(): Promise<void> {
         const provider = await getServerStorageProvider()
         const clock = new SystemClock()
 
-        await provider.withTransaction(async (tx) => {
-          const repos = await provider.getRepositorySet(tx)
+        await provider.withTransaction(async (repos) => {
           const authService = new AuthService(
             repos.auth,
             {} as any,
@@ -44,6 +43,7 @@ export async function logOutAction(): Promise<void> {
     // Redirect to login
     redirect('/login')
   } catch (error) {
+    unstable_rethrow(error)
     console.error('Log out error:', error)
     // Clear the cookie anyway
     try {
